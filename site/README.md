@@ -10,17 +10,16 @@ Auto Plan Loom 구성부터 OHAYO Task Graph 실행과 배포 결과까지 연�
 ./demo_start
 ```
 
-Shell에 Codex CLI가 열립니다. Harness 구성 요청을 한 번 입력하면 STEP 1~5가 각 60초씩 실행되고, 완료 후 Web Harness Viewer가 자동으로 열립니다.
+`./demo-start`로 실행해도 동일합니다. 시작할 때 실행 모드를 선택합니다.
 
-빠른 리허설:
+- `1  5분 테스트 모드`: 전체 자동 진행 구간을 약 3분 37초로 압축해 입력과 화면 전환을 포함한 전체 흐름을 5분 이내에 검증합니다.
+- `2  데모 모드`: STEP 1~5 각 60초, Task 10개 각 120초의 발표 기준 시간을 그대로 사용합니다.
 
-```bash
-DEMO_SPEED=60 ./demo_start
-```
+모드를 고르면 Shell에 Codex CLI가 열립니다. Harness 구성 요청을 한 번 입력하면 STEP 1~5가 자동 실행되고, 완료 후 Web Harness Viewer가 열립니다.
 
 ## 발표 흐름
 
-1. Shell에서 `./demo_start` 실행
+1. Shell에서 `./demo_start` 또는 `./demo-start` 실행 후 모드 선택
 2. Codex CLI에 Harness 구성 프롬프트 입력
 3. STEP 1~5가 각 60초씩 Shell에서 순차 진행
 4. Web이 자동으로 열리고 최종 Mermaid Harness Viewer 표시

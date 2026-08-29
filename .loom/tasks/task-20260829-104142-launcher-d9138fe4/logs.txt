@@ -1,0 +1,6 @@
+[2026-08-29T10:41:46+00:00] agent=codex task=task-20260829-104142-launcher-d9138fe4 Foreground task session started.
+[2026-08-29T10:43:00+00:00] 1번 5분 테스트 모드와 2번 데모 모드를 Launcher에 추가하고 demo-start 실행 별칭을 생성했다.
+[2026-08-29T10:44:20+00:00] TTY에서 1번 선택 후 STEP 1~5가 약 43초에 완료되고 Viewer URL에 speed=7이 전달됨을 확인했다.
+[2026-08-29T10:45:00+00:00] lint, validate:scenario, production build가 성공했다. 테스트 자동 구간은 217초로 검증됐다.
+[2026-08-29T10:46:36+00:00] Sites 비공개 배포 버전 7이 succeeded 상태로 완료됐다.
+[2026-08-29T10:47:20+00:00] agent=foreground task=task-20260829-104142-launcher-d9138fe4 Foreground task session completed.

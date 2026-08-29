@@ -1,0 +1,28 @@
+{
+  "id": "checkpoint-20260829-104720-task-completed-launcher-b787cfa9",
+  "created_at": "2026-08-29T10:47:20+00:00",
+  "reason": "Task completed: Launcher 실행 모드 선택과 전체 흐름 가속",
+  "summary": "Launcher 실행 모드 선택과 전체 흐름 가속 -> DONE @ develop/c653e1fd0143",
+  "job_id": "job-20260829-104134-5-c5723a03",
+  "task_id": "task-20260829-104142-launcher-d9138fe4",
+  "commit_sha": "c653e1fd0143f094bf1f00d377955e3d67289f73",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/events.jsonl",
+    "site/README.md",
+    "site/scripts/demo-launcher.mjs",
+    "site/scripts/validate-simulator.mjs"
+  ],
+  "untracked_files": [
+    ".loom/job-runs/job-run-20260829-104146-job-20260829-104134-5-c5723a03-c951b47e/",
+    ".loom/jobs/job-20260829-104134-5-c5723a03/",
+    ".loom/task-definitions/task-def-20260829-104142-launcher-1f777eb6/",
+    ".loom/task-runs/task-run-20260829-104146-task-def-20260829-104142-launcher-1f777eb6-b7824346/",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/",
+    "demo-start"
+  ],
+  "snapshot_captured_at": "2026-08-29T10:47:20+00:00",
+  "rollback_strategy": "revert-or-branch"
+}

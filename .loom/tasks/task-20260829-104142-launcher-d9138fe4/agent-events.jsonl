@@ -1,0 +1,5 @@
+{"id": "event-dc5960f564db", "type": "foreground_session_started", "message": "Foreground task session started.", "created_at": "2026-08-29T10:41:46+00:00", "agent": "codex", "task_id": "task-20260829-104142-launcher-d9138fe4"}
+{"id":"event-9cb18d6bb623","type":"implementation_completed","message":"실행 모드 선택, 7× 테스트 속도, 1× 데모 속도 및 demo-start 별칭 구현을 완료했다.","created_at":"2026-08-29T10:45:00+00:00","agent":"codex","task_id":"task-20260829-104142-launcher-d9138fe4"}
+{"id":"event-04c316f95e7c","type":"validation_completed","message":"TTY 실행, 시나리오 검증, lint, production build와 Web speed 전달을 확인했다.","created_at":"2026-08-29T10:45:20+00:00","agent":"codex","task_id":"task-20260829-104142-launcher-d9138fe4"}
+{"id":"event-96ea86622eb8","type":"deployment_completed","message":"Sites 비공개 배포 버전 7이 성공했다.","created_at":"2026-08-29T10:46:36+00:00","agent":"codex","task_id":"task-20260829-104142-launcher-d9138fe4"}
+{"id": "event-70e75726316f", "type": "foreground_session_done", "message": "Foreground task session completed.", "created_at": "2026-08-29T10:47:20+00:00", "agent": "foreground", "task_id": "task-20260829-104142-launcher-d9138fe4"}

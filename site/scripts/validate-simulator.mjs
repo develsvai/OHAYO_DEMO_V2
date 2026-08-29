@@ -10,6 +10,8 @@ const demoCli = readFileSync(new URL('./demo-cli.mjs', import.meta.url), 'utf8')
 const demoLauncher = readFileSync(new URL('./demo-launcher.mjs', import.meta.url), 'utf8');
 const demoStartUrl = new URL('../../demo_start', import.meta.url);
 const demoStart = readFileSync(demoStartUrl, 'utf8');
+const demoAliasUrl = new URL('../../demo-start', import.meta.url);
+const demoAlias = readFileSync(demoAliasUrl, 'utf8');
 
 function matches(source, pattern) {
   return source.match(pattern)?.length ?? 0;
@@ -31,8 +33,13 @@ const mermaidCharts = [...buildSource.matchAll(/mermaid: `([\s\S]*?)`,\n  }/g)].
 assert(mermaidCharts.length === 5 && mermaidCharts.every((chart) => chart.startsWith('flowchart TD')), 'STEP 1~5 Mermaid flowchart가 정확히 5개여야 합니다.');
 
 assert((statSync(demoStartUrl).mode & 0o111) !== 0, 'demo_start에 실행 권한이 필요합니다.');
+assert((statSync(demoAliasUrl).mode & 0o111) !== 0, 'demo-start에 실행 권한이 필요합니다.');
 assert(demoStart.includes('demo-launcher.mjs') && demoStart.split('\n').length <= 8, 'demo_start는 최소 Shell wrapper로 Launcher를 실행해야 합니다.');
-assert(demoLauncher.includes('runDemoCli') && demoLauncher.includes('openViewer()'), 'Launcher가 Shell CLI 완료 후 Viewer를 자동으로 열어야 합니다.');
+assert(demoAlias.includes('exec "./demo_start"'), 'demo-start는 demo_start 실행 별칭이어야 합니다.');
+assert(demoLauncher.includes('runDemoCli') && demoLauncher.includes('openViewer(viewerUrl)'), 'Launcher가 Shell CLI 완료 후 Viewer를 자동으로 열어야 합니다.');
+assert(demoLauncher.includes("test: { id: '1', name: '5분 테스트 모드', speed: 7 }") && demoLauncher.includes("demo: { id: '2', name: '데모 모드', speed: 1 }"), '실행 모드 1/2의 속도 설정이 정확하지 않습니다.');
+assert(demoLauncher.includes('chooseMode()') && demoLauncher.includes('DEMO_MODE'), 'Launcher 실행 모드 선택 또는 자동화용 환경 설정이 누락됐습니다.');
+assert(demoLauncher.includes('const speed = mode.speed;') && !demoLauncher.includes('process.env.DEMO_SPEED'), '선택한 실행 모드의 속도를 다른 값이 덮어쓰면 안 됩니다.');
 assert(demoLauncher.includes('reset=1') && page.includes("params.get('reset') === '1'"), '새 발표 시작 시 이전 Web 실행 상태를 초기화해야 합니다.');
 assert(demoCli.includes("import { buildStages } from '../lib/scenario.ts'"), 'Shell CLI는 scenario.ts의 단일 Build Data를 사용해야 합니다.');
 assert(demoCli.includes('for (const stage of buildStages)') && demoCli.includes('readPrompt()'), 'Shell CLI 단일 입력 후 STEP 1~5 자동 실행이 누락됐습니다.');
@@ -66,6 +73,9 @@ assert(matches(finalSource, /events: retryEvents\(/g) === 2, 'Repair/Retry Task�
 assert(finalSource.includes('taskDuration: 120_000'), 'Task 실행 시간은 120초여야 합니다.');
 assert(finalSource.includes("finalUrl: 'https://ohayo.tail2dac17.ts.net/'"), '최종 OHAYO URL이 정확하지 않습니다.');
 
+const timedFlowDuration = (2_000 + (5 * 60_000) + 8_000 + (10 * 120_000) + 8_000) / 7;
+assert(timedFlowDuration < 240_000, '5분 테스트 모드는 수동 조작을 위한 최소 60초 여유를 확보해야 합니다.');
+
 for (const command of ['pause', 'resume', 'next-event', 'next-task', 'complete-current', 'reset-run', 'reset-all', 'show-result', 'set-speed']) {
   assert(controls.includes(`type: '${command}'`), `Presenter command ${command}가 누락됐습니다.`);
 }
@@ -77,7 +87,8 @@ assert(finalExperience.includes('if (!hydrated) return;'), '상태 복원 전 �
 assert(presenter.includes('planningElapsed') && presenter.includes('finalRun.taskGraphDuration'), 'Presenter가 Task 구성 화면을 추적하지 않습니다.');
 
 console.log('Presentation flow validation [OK]');
-console.log('- Shell entry: ./demo_start');
+console.log('- Shell entry: ./demo_start + ./demo-start');
+console.log(`- Launcher modes: test ${Math.round(timedFlowDuration / 1_000)}s timed flow / demo 1×`);
 console.log('- Codex CLI: 1 input → 5 × 60-second stages');
 console.log('- Web entry: final Mermaid viewer');
 console.log('- Task graph: 10 nodes visible together');

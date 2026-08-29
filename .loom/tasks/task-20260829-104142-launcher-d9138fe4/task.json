@@ -1,0 +1,43 @@
+{
+  "id": "task-20260829-104142-launcher-d9138fe4",
+  "job_id": "job-20260829-104134-5-c5723a03",
+  "title": "Launcher 실행 모드 선택과 전체 흐름 가속",
+  "description": "demo_start와 demo-start 실행 시 1번 5분 테스트 모드, 2번 데모 모드를 선택하게 한다. 테스트 모드는 동일한 시나리오를 speed 7로 실행하고 데모 모드는 기존 speed 1 타이밍을 유지한다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T10:41:42+00:00",
+  "updated_at": "2026-08-29T10:47:20+00:00",
+  "order_index": 1,
+  "assigned_agent": "foreground",
+  "depends_on": [],
+  "expected_output": "TTY 모드 선택 메뉴, 두 실행 진입점, 속도 전달, README와 정적 검증 및 배포 반영",
+  "done_condition": "1/2 선택이 각각 speed 7/1로 CLI와 Web에 전달되고 테스트 모드 자동 구간이 약 3분 37초이며 lint, scenario validation, build, Loom strict validation 및 배포가 성공한다.",
+  "in_scope": "demo launcher, demo-start alias, site README, validation script, local and deployed site",
+  "out_of_scope": "시나리오 내용, 그래프 디자인, 데모 모드 기존 시간 변경",
+  "validation_hint": "bash syntax, node syntax, menu PTY, npm lint, npm run validate:scenario, npm run build, speed timing assertion",
+  "required_docs": [],
+  "memory_refs": [],
+  "document_outputs": [],
+  "document_output_exceptions": [],
+  "run_attempts": 0,
+  "last_error": "",
+  "commit_refs": [
+    "c653e1fd0143f094bf1f00d377955e3d67289f73"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-08-29T10:47:20+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/agent-events.jsonl",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/artifacts.json",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/context.md",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/decision.md",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/git-snapshot.json",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/logs.txt",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/previous-results.md",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/prompt.md",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/result.md",
+    ".loom/tasks/task-20260829-104142-launcher-d9138fe4/troubleshooting.md"
+  ],
+  "source_proposal_id": "",
+  "source_prompt": ""
+}

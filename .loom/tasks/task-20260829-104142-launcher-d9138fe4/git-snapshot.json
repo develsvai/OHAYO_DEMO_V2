@@ -1,0 +1,42 @@
+{
+  "before": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "c653e1fd0143f094bf1f00d377955e3d67289f73",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-104146-job-20260829-104134-5-c5723a03-c951b47e/",
+      ".loom/jobs/job-20260829-104134-5-c5723a03/",
+      ".loom/task-definitions/task-def-20260829-104142-launcher-1f777eb6/",
+      ".loom/task-runs/task-run-20260829-104146-task-def-20260829-104142-launcher-1f777eb6-b7824346/",
+      ".loom/tasks/task-20260829-104142-launcher-d9138fe4/"
+    ],
+    "captured_at": "2026-08-29T10:41:46+00:00"
+  },
+  "after": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "c653e1fd0143f094bf1f00d377955e3d67289f73",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl",
+      "site/README.md",
+      "site/scripts/demo-launcher.mjs",
+      "site/scripts/validate-simulator.mjs"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-104146-job-20260829-104134-5-c5723a03-c951b47e/",
+      ".loom/jobs/job-20260829-104134-5-c5723a03/",
+      ".loom/task-definitions/task-def-20260829-104142-launcher-1f777eb6/",
+      ".loom/task-runs/task-run-20260829-104146-task-def-20260829-104142-launcher-1f777eb6-b7824346/",
+      ".loom/tasks/task-20260829-104142-launcher-d9138fe4/",
+      "demo-start"
+    ],
+    "captured_at": "2026-08-29T10:47:20+00:00"
+  }
+}

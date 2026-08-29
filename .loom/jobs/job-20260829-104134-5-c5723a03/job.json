@@ -1,0 +1,16 @@
+{
+  "id": "job-20260829-104134-5-c5723a03",
+  "title": "5분 테스트 모드와 데모 모드 선택기",
+  "goal": "demo_start 실행 시 5분 테스트 모드와 발표용 데모 모드를 선택하게 하고, 테스트 모드의 전체 자동 진행 시간을 수동 전환 여유를 포함해 5분 이내로 압축한다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T10:41:34+00:00",
+  "updated_at": "2026-08-29T10:47:20+00:00",
+  "context_refs": [],
+  "task_ids": [
+    "task-20260829-104142-launcher-d9138fe4"
+  ],
+  "branch_name": "develop",
+  "checkpoint_ids": [
+    "checkpoint-20260829-104720-task-completed-launcher-b787cfa9"
+  ]
+}
