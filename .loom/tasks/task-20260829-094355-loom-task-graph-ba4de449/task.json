@@ -3,11 +3,11 @@
   "job_id": "job-20260829-094347-ohayo-task-graph-b9452b22",
   "title": "Loom Task Graph 계획·실행 화면 구현",
   "description": "최종 Mermaid Viewer Continue 이후 Loom 제품 Prompt를 받고, harness_viewer_demo.gif의 어두운 Node Graph 시각 문법으로 10개 Task를 20초마다 하나씩 구성한 뒤 동일 Graph에서 Task를 순차 실행하고 지정된 OHAYO URL과 QR을 표시한다. 주요 UI 문구는 한국어로 정리한다.",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-08-29T09:43:55+00:00",
-  "updated_at": "2026-08-29T09:43:59+00:00",
+  "updated_at": "2026-08-29T09:58:01+00:00",
   "order_index": 1,
-  "assigned_agent": "codex",
+  "assigned_agent": "foreground",
   "depends_on": [],
   "expected_output": "CLI Build, 최종 Mermaid Viewer, Loom Prompt, 200초 Task 구성 Graph, 10 Task 실행 Graph, OHAYO QR이 연결된 발표용 웹앱",
   "done_condition": "Task 구성 단계가 정확히 10개×20초로 동작하고 구성 완료 후 실행 단계로 전환되며 최종 URL이 https://ohayo.tail2dac17.ts.net/ 로 표시되고 Presenter 복구와 빠른 리허설이 정상 작동한다.",
@@ -21,12 +21,24 @@
   "run_attempts": 0,
   "last_error": "",
   "commit_refs": [
-    "7a0bd27ace26c941e612650c2873eca9e659a753"
+    "7a0bd27ace26c941e612650c2873eca9e659a753",
+    "12022168d3a626d13d77a16e9d1afffa4b41281f"
   ],
   "branch_name": "develop",
   "git_dirty": true,
-  "git_snapshot_captured_at": "2026-08-29T09:43:59+00:00",
-  "artifacts": [],
+  "git_snapshot_captured_at": "2026-08-29T09:58:01+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/agent-events.jsonl",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/artifacts.json",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/context.md",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/decision.md",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/git-snapshot.json",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/logs.txt",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/previous-results.md",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/prompt.md",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/result.md",
+    ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/troubleshooting.md"
+  ],
   "source_proposal_id": "",
   "source_prompt": ""
 }

@@ -1,0 +1,21 @@
+{
+  "id": "checkpoint-20260829-095801-task-completed-loom-task-graph-c80f1a65",
+  "created_at": "2026-08-29T09:58:01+00:00",
+  "reason": "Task completed: Loom Task Graph 계획·실행 화면 구현",
+  "summary": "Loom Task Graph 계획·실행 화면 구현 -> DONE @ develop/12022168d3a6",
+  "job_id": "job-20260829-094347-ohayo-task-graph-b9452b22",
+  "task_id": "task-20260829-094355-loom-task-graph-ba4de449",
+  "commit_sha": "12022168d3a626d13d77a16e9d1afffa4b41281f",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/job-runs/job-run-20260829-094359-job-20260829-094347-ohayo-task-graph-b9452b22-beec81cc/job-run.json",
+    ".loom/task-definitions/task-def-20260829-094355-loom-task-graph-dcc3b9d2/task-definition.json"
+  ],
+  "untracked_files": [
+    ".DS_Store"
+  ],
+  "snapshot_captured_at": "2026-08-29T09:58:01+00:00",
+  "rollback_strategy": "revert-or-branch"
+}

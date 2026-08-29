@@ -6,3 +6,4 @@
 [2026-08-29T09:54:00+00:00] 10개 Task Node를 20초마다 구성하는 planning 상태와 Graph 기반 실행 UI를 구현했다.
 [2026-08-29T09:55:00+00:00] Presenter Control, 상태 복원, 한국어 UI, 새 OHAYO URL과 QR을 연결했다.
 [2026-08-29T09:56:00+00:00] Shell Launcher 빠른 완주, lint, Scenario contract, build, diff, HTTP Route 검증을 통과했다.
+[2026-08-29T09:58:01+00:00] agent=foreground task=task-20260829-094355-loom-task-graph-ba4de449 Foreground task session completed.
