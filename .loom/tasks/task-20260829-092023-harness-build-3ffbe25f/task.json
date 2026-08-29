@@ -1,0 +1,32 @@
+{
+  "id": "task-20260829-092023-harness-build-3ffbe25f",
+  "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
+  "title": "Harness Build 단일 입력 자동 실행 흐름 교정",
+  "description": "최초 자유 입력 한 번으로 hidden canonical prompt STEP 1~5를 각 약 1분씩 자동 순차 실행하고, 중간 입력·Viewer 없이 STEP 5 완료 후 통합 Mermaid Harness Viewer를 한 번만 표시하도록 Build State Machine을 교정한다.",
+  "status": "PENDING",
+  "created_at": "2026-08-29T09:20:23+00:00",
+  "updated_at": "2026-08-29T09:20:23+00:00",
+  "order_index": 4,
+  "assigned_agent": "",
+  "depends_on": [
+    "task-20260829-090106-scenario-harness-building-2cd8be8f"
+  ],
+  "expected_output": "INITIAL_PROMPT → BUILD_STEP_1 → BUILD_STEP_2 → BUILD_STEP_3 → BUILD_STEP_4 → BUILD_STEP_5 → FINAL_HARNESS_VIEWER → AUTO_PLAN_LOOM_READY 상태 흐름",
+  "done_condition": "사용자 입력은 최초 한 번만 필요하고 5개 단계가 자동 실행되며, 단계 사이 Viewer가 없고 마지막 통합 Mermaid Viewer 한 번 뒤 Auto Plan Loom Ready 상태가 된다.",
+  "in_scope": "Build CLI State Machine 교정, 5개 hidden canonical prompt 순차 실행, 단계별 로그와 총 진행률, 마지막 통합 Mermaid Graph, 상태 저장과 재시작",
+  "out_of_scope": "제품 Prompt, 10개 Task 실행, Presenter Control, 결과 URL과 QR",
+  "validation_hint": "가속 모드에서 단일 입력 후 5개 단계 자동 완주, 중간 Viewer 미노출, 마지막 Viewer 1회, 제품명 사전 미노출을 확인한다.",
+  "required_docs": [],
+  "memory_refs": [],
+  "document_outputs": [],
+  "document_output_exceptions": [],
+  "run_attempts": 0,
+  "last_error": "",
+  "commit_refs": [],
+  "branch_name": "",
+  "git_dirty": false,
+  "git_snapshot_captured_at": "",
+  "artifacts": [],
+  "source_proposal_id": "",
+  "source_prompt": ""
+}
