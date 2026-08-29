@@ -36,7 +36,7 @@ Loom 프로젝트 메모리 루트입니다.
 - Title: OHAYO 발표용 Autonomous Harness Simulator 구현
 - Goal: 고정 Scenario Data가 통제하는 5단계 Auto Plan Loom 구축 시연과 10개 Task OHAYO 실행, Presenter Control, URL 및 QR 결과 화면을 갖춘 재현 가능한 발표용 웹앱을 완성한다.
 - Branch: develop
-- Task count: `3`
+- Task count: `4`
 
 ## Task
 
@@ -52,8 +52,8 @@ Loom 프로젝트 메모리 루트입니다.
 - Document outputs: -
 - Document output exceptions: -
 - Source proposal: `-`
-- Status: PENDING
-- Assigned agent: -
+- Status: REVIEW_REQUIRED
+- Assigned agent: codex
 
 ## Advisor Source Prompt
 

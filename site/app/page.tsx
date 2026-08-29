@@ -1,11 +1,12 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FinalRunExperience } from '@/components/FinalRunExperience';
 import { MermaidChart } from '@/components/MermaidChart';
 import { buildStages, scenarioMeta } from '@/lib/scenario';
 
 type BuildState = 'idle' | 'running' | 'complete';
-type Screen = 'cli' | 'viewer' | 'ready';
+type Screen = 'cli' | 'viewer' | 'ready' | 'product';
 
 const storageKey = 'flogi-harness-build-state-v2';
 const totalDuration = buildStages.reduce((sum, stage) => sum + stage.duration, 0);
@@ -35,7 +36,7 @@ export default function Home() {
     if (!stored) return;
     try {
       const state = JSON.parse(stored) as { screen?: Screen; buildState?: BuildState; submittedPrompt?: string; totalElapsed?: number };
-      if (state.screen === 'viewer' || state.screen === 'ready') setScreen(state.screen);
+      if (state.screen === 'viewer' || state.screen === 'ready' || state.screen === 'product') setScreen(state.screen);
       if (state.buildState === 'running' || state.buildState === 'complete') setBuildState(state.buildState);
       if (typeof state.submittedPrompt === 'string') setSubmittedPrompt(state.submittedPrompt);
       if (typeof state.totalElapsed === 'number') setTotalElapsed(Math.min(totalDuration, Math.max(0, state.totalElapsed)));
@@ -94,6 +95,10 @@ export default function Home() {
         setScreen('ready');
         window.history.replaceState(null, '', '/?screen=ready');
       }
+      if (event.key === 'Enter' && screen === 'ready') {
+        setScreen('product');
+        window.history.replaceState(null, '', '/?screen=run');
+      }
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -118,6 +123,20 @@ export default function Home() {
     setPrompt('');
     setTotalElapsed(0);
     setBuildState('running');
+  }
+
+  const resetAll = useCallback(() => {
+    setScreen('cli');
+    setBuildState('idle');
+    setPrompt('');
+    setSubmittedPrompt('');
+    setTotalElapsed(0);
+    window.localStorage.removeItem(storageKey);
+    window.history.replaceState(null, '', '/');
+  }, []);
+
+  if (screen === 'product') {
+    return <FinalRunExperience onResetAll={resetAll} />;
   }
 
   if (screen === 'viewer') {
@@ -178,7 +197,7 @@ export default function Home() {
           <div className="ready-summary">
             {buildStages.map((item) => <div key={item.id}><span>0{item.id}</span><strong>{item.title}</strong><i>✓</i></div>)}
           </div>
-          <div className="ready-command"><span>›</span><p>The completed loom is ready for its first product specification.</p><kbd>ENTER</kbd></div>
+          <button className="ready-command" onClick={() => setScreen('product')}><span>›</span><p>The completed loom is ready for its first product specification.</p><kbd>ENTER</kbd></button>
         </section>
         <footer className="ready-footer"><span>Autonomous Product Engineering Harness</span><strong>v1.0</strong></footer>
       </main>

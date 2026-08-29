@@ -292,3 +292,129 @@ export const scenarioMeta = {
 };
 
 export const buildStageNames = buildStages.map((stage) => stage.shortTitle);
+
+export type ProductTaskState =
+  | 'running'
+  | 'context'
+  | 'implementing'
+  | 'validating'
+  | 'failed'
+  | 'repairing'
+  | 'retrying'
+  | 'done';
+
+export type ProductTaskEvent = {
+  at: number;
+  state: ProductTaskState;
+  label: string;
+  detail: string;
+};
+
+export type ProductTask = {
+  id: number;
+  title: string;
+  owner: string;
+  goal: string;
+  events: ProductTaskEvent[];
+};
+
+const standardEvents = (context: string, implementation: string, validation: string): ProductTaskEvent[] => [
+  { at: 0, state: 'running', label: 'RUNNING', detail: 'Task execution started' },
+  { at: 8_000, state: 'context', label: 'CONTEXT LOADED', detail: context },
+  { at: 32_000, state: 'implementing', label: 'IMPLEMENTING', detail: implementation },
+  { at: 92_000, state: 'validating', label: 'VALIDATING', detail: validation },
+  { at: 120_000, state: 'done', label: 'DONE', detail: 'Goal satisfied' },
+];
+
+const retryEvents = (context: string, implementation: string, validation: string, repair: string): ProductTaskEvent[] => [
+  { at: 0, state: 'running', label: 'RUNNING', detail: 'Task execution started' },
+  { at: 8_000, state: 'context', label: 'CONTEXT LOADED', detail: context },
+  { at: 30_000, state: 'implementing', label: 'IMPLEMENTING', detail: implementation },
+  { at: 78_000, state: 'validating', label: 'VALIDATING', detail: validation },
+  { at: 91_000, state: 'failed', label: 'VALIDATION FAILED', detail: 'One acceptance condition is not satisfied' },
+  { at: 97_000, state: 'repairing', label: 'REPAIRING', detail: repair },
+  { at: 108_000, state: 'retrying', label: 'RETRY', detail: 'Re-running the validation loop' },
+  { at: 114_000, state: 'validating', label: 'VALIDATING', detail: 'Acceptance conditions re-evaluated' },
+  { at: 120_000, state: 'done', label: 'DONE', detail: 'Goal satisfied after repair' },
+];
+
+export const finalRun = {
+  canonicalPrompt: `지정된 폴더의 명세와 Context를 사용해서
+OHAYO를 처음부터 끝까지 완성하고
+배포까지 진행해줘.`,
+  taskDuration: 120_000,
+  finalUrl: 'https://ohayo.flogi.app',
+  tasks: [
+    {
+      id: 1,
+      title: 'Product Scope & Architecture',
+      owner: 'Planning',
+      goal: '제품 명세를 실행 가능한 구조와 acceptance criteria로 변환',
+      events: standardEvents('Product spec · stakeholder notes · constraints', 'Defining product architecture and execution boundaries', 'Reviewing scope and dependency graph'),
+    },
+    {
+      id: 2,
+      title: 'Design System & App Shell',
+      owner: 'Design',
+      goal: '일관된 UI 토큰과 핵심 화면 구조 구성',
+      events: standardEvents('Brand references · UI principles · target devices', 'Building the visual system and responsive app shell', 'Checking layout consistency and accessibility'),
+    },
+    {
+      id: 3,
+      title: 'Authentication & Profile',
+      owner: 'Backend',
+      goal: '사용자 인증과 프로필 데이터 흐름 구현',
+      events: standardEvents('Identity contract · profile schema · security rules', 'Implementing session and profile workflows', 'Validating access boundaries and data integrity'),
+    },
+    {
+      id: 4,
+      title: 'Lunch Preference Onboarding',
+      owner: 'Frontend',
+      goal: '점심 취향과 제약을 수집하는 온보딩 경험 구현',
+      events: standardEvents('Preference taxonomy · UX copy · validation rules', 'Building preference collection and state transitions', 'Testing form states and edge cases'),
+    },
+    {
+      id: 5,
+      title: 'Lunch Matching Engine',
+      owner: 'Engineering',
+      goal: '그룹 조건을 반영한 점심 매칭 로직 구현',
+      events: retryEvents('Matching rules · preference vectors · sample groups', 'Implementing the matching and ranking pipeline', 'Evaluating match quality against fixtures', 'Adjusting score weights and conflict resolution'),
+    },
+    {
+      id: 6,
+      title: 'Restaurant Discovery',
+      owner: 'Research',
+      goal: '후보 식당 데이터와 추천 결과 연결',
+      events: standardEvents('Restaurant dataset · location constraints · filters', 'Connecting ranked places to the discovery surface', 'Verifying filters, empty states and result quality'),
+    },
+    {
+      id: 7,
+      title: 'Group Coordination',
+      owner: 'Engineering',
+      goal: '초대·투표·최종 선택의 그룹 협업 흐름 구현',
+      events: standardEvents('Group lifecycle · invitation rules · voting policy', 'Building room coordination and synchronized decisions', 'Validating multi-user state transitions'),
+    },
+    {
+      id: 8,
+      title: 'Notifications & Reminders',
+      owner: 'Infrastructure',
+      goal: '선택 완료와 약속 리마인더 흐름 구성',
+      events: standardEvents('Notification matrix · timing rules · opt-out policy', 'Configuring event-driven reminders and delivery states', 'Checking timing, fallbacks and user preferences'),
+    },
+    {
+      id: 9,
+      title: 'End-to-End Validation',
+      owner: 'Validation',
+      goal: '핵심 사용자 여정과 실패 복구 시나리오 검증',
+      events: retryEvents('Acceptance suite · device matrix · failure scenarios', 'Executing end-to-end product journeys', 'Running the release acceptance suite', 'Repairing a mobile coordination state regression'),
+    },
+    {
+      id: 10,
+      title: 'Production Release',
+      owner: 'Deployment',
+      goal: '패키징·배포·Health Check·Monitoring 완료',
+      events: standardEvents('Release manifest · deploy target · health policy', 'Packaging artifacts and deploying the release', 'Running health checks and monitoring handoff'),
+    },
+  ] satisfies ProductTask[],
+  completionChecks: ['Validation', 'Packaging', 'Deployment', 'Health Check', 'Monitoring'],
+};

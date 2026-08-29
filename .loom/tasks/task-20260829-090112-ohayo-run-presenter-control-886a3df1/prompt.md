@@ -24,9 +24,9 @@ Keep code identifiers, file paths, shell commands, URLs, commit hashes, and orig
 - Job ID: `job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221`
 - Title: OHAYO 발표용 Autonomous Harness Simulator 구현
 - Goal: 고정 Scenario Data가 통제하는 5단계 Auto Plan Loom 구축 시연과 10개 Task OHAYO 실행, Presenter Control, URL 및 QR 결과 화면을 갖춘 재현 가능한 발표용 웹앱을 완성한다.
-- Status: `PENDING`
+- Status: `REVIEW_REQUIRED`
 - Required branch: `develop`
-- Task count: `3`
+- Task count: `4`
 
 ## Task
 
@@ -41,7 +41,7 @@ Keep code identifiers, file paths, shell commands, URLs, commit hashes, and orig
 - Document outputs: -
 - Document output exceptions: -
 - Source proposal: `-`
-- Status: `PENDING`
+- Status: `REVIEW_REQUIRED`
 - Agent: `codex`
 - Order: `2`
 - Depends on: `task-20260829-090106-scenario-harness-building-2cd8be8f`

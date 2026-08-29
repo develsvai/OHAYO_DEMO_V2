@@ -1,7 +1,12 @@
 # 문제 해결
 
-## 선행 상태 흐름 불일치
+## 선행 Build 흐름 불일치
 
-- 증상: 완료된 첫 Task가 STEP마다 사용자 입력과 Viewer 왕복을 요구했다.
-- 원인: writing-block.md의 단계별 서술을 UI 왕복 규칙으로 해석했으나, 회의록 후반 최종 확인은 최초 입력 1회와 마지막 결과 Viewer 1회를 확정한다.
-- 조치: 현재 Task를 검토 대기로 전환하고 선행 교정 Task 완료 후 재개한다.
+- 증상: 첫 실행 시 STEP별 입력·Viewer 왕복 구조가 남아 있었다.
+- 조치: 별도 선행 Task에서 단일 최초 입력과 5개 STEP 자동 실행, 최종 Viewer 1회 구조로 교정한 뒤 이 Task를 재개했다.
+
+## Presenter 명령 중복 가능성
+
+- 증상: BroadcastChannel과 storage event를 동시에 수신하면 Next Task 같은 명령이 두 번 실행될 수 있었다.
+- 조치: BroadcastChannel 사용 가능 시 storage event 수신을 fallback으로만 남겼다.
+- 결과: 한 Presenter 조작이 Audience 상태에 한 번만 적용된다.
