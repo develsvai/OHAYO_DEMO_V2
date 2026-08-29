@@ -1,0 +1,43 @@
+{
+  "id": "task-20260829-110737-0-task-timeline-90bd2a46",
+  "job_id": "job-20260829-110729-task-cf1970a2",
+  "title": "0부터 시작하는 Task 선별 생성 Timeline",
+  "description": "Task Graph 구성 화면에서 plannedCount를 elapsed time으로 계산해 0/10부터 10/10까지 순차 생성한다. 데모 모드 기본 구성 시간은 200초이며 테스트 모드 speed 7에서는 약 28.6초다. RESET 후 Prompt 제출 시 반드시 이 과정을 다시 거친다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T11:07:37+00:00",
+  "updated_at": "2026-08-29T11:10:26+00:00",
+  "order_index": 1,
+  "assigned_agent": "foreground",
+  "depends_on": [],
+  "expected_output": "순차 Task Node 생성, 진행 상태 문구, Presenter 동기화, 5분 테스트 예산 갱신, 검증과 재배포",
+  "done_condition": "Prompt 제출 직후 plannedCount가 0이고 20초마다 1개씩 증가해 200초에 10개가 되며 speed 7에서는 약 28.6초에 동일 과정이 끝난다. RESET 후에도 동일하고 lint, validate, build, Loom strict validation과 배포가 성공한다.",
+  "in_scope": "scenario timing, FinalRunExperience planning count/status, presenter planning status, validator, README, local/deployed site",
+  "out_of_scope": "Task 내용, 실행 Task 120초 타이밍, graph layout",
+  "validation_hint": "plannedCount formula assertion, timing budget, lint, validate:scenario, build, local 3000 response",
+  "required_docs": [],
+  "memory_refs": [],
+  "document_outputs": [],
+  "document_output_exceptions": [],
+  "run_attempts": 0,
+  "last_error": "",
+  "commit_refs": [
+    "c09db398176e1867d441756d8bcf77bf8b11d799"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-08-29T11:10:26+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/agent-events.jsonl",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/artifacts.json",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/context.md",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/decision.md",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/git-snapshot.json",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/logs.txt",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/previous-results.md",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/prompt.md",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/result.md",
+    ".loom/tasks/task-20260829-110737-0-task-timeline-90bd2a46/troubleshooting.md"
+  ],
+  "source_proposal_id": "",
+  "source_prompt": ""
+}

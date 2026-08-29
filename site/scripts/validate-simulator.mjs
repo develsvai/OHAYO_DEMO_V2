@@ -49,12 +49,20 @@ assert(!/가짜|고정 시나리오|아무 문장|입력 내용은 표시만|실
 assert(page.includes('<MermaidChart') && page.includes("type Screen = 'viewer' | 'product'"), 'Web은 최종 Mermaid Viewer부터 시작해야 합니다.');
 assert(!page.includes('buildState') && !page.includes('prompt-form'), '브라우저에 Harness Build CLI가 중복 구현되어 있습니다.');
 assert(page.includes('Loom 구성 계속') && page.includes("setScreen('product')"), 'Viewer Continue 후 Loom 제품 화면으로 이동해야 합니다.');
+assert(page.includes('`/?screen=run&speed=${speed}`') && page.includes('initialSpeed={runSpeed}'), 'Viewer에서 Product Run으로 테스트 모드 속도를 전달해야 합니다.');
+assert(page.includes('className="global-reset-button"') && styles.includes('.global-reset-button'), '모든 Web 화면의 전역 RESET 버튼이 누락됐습니다.');
+assert(page.includes('setRunKey((value) => value + 1)') && page.includes("setScreen('product')"), '전체 RESET은 Product Run을 새로 마운트하고 Prompt 화면으로 이동해야 합니다.');
+assert(matches(page, /removeItem\((?:finalRunStorageKey|presenterCommandKey)\)/g) >= 4, '전체 RESET은 실행 상태와 Presenter 명령을 모두 삭제해야 합니다.');
+assert(finalExperience.includes('initialSpeed') && finalExperience.includes('useState(initialSpeed)'), 'Web 실행 속도는 Launcher가 전달한 모드 속도로 시작해야 합니다.');
+assert(finalExperience.includes("setScreen('prompt')") && finalExperience.includes('setPlanningElapsed(0)') && finalExperience.includes('setCompletedTaskIds([])'), 'Product Run 초기화 상태가 완전하지 않습니다.');
+assert(presenter.includes('제품 Prompt부터 재시작'), 'Presenter 전체 초기화 설명이 실제 동작과 일치하지 않습니다.');
 
 assert(matches(finalSource, /^      id: \d+,/gm) === 10, 'Final Run Task는 정확히 10개여야 합니다.');
-assert(finalSource.includes('taskGraphDuration: 8_000'), 'Task Graph 확인 화면은 8초여야 합니다.');
-assert(!finalSource.includes('taskPlanningInterval') && !finalExperience.includes('20초마다 Task Node'), 'Task Node의 20초 순차 구성 로직이 남아 있습니다.');
+assert(finalSource.includes('taskGraphDuration: 200_000'), 'Task 선별·생성은 10개 × 20초로 총 200초여야 합니다.');
+assert(!finalSource.includes('taskPlanningInterval') && !finalExperience.includes('20초마다 Task Node'), '발표 화면에 내부 Task 생성 간격 설명이 노출되면 안 됩니다.');
 assert(finalExperience.includes("setScreen('planning')") && finalExperience.includes("screen === 'planning'"), '제품 Prompt 뒤 Task 구성 단계가 누락됐습니다.');
-assert(finalExperience.includes('const plannedCount = finalRun.tasks.length'), 'Task 구성 화면에서 전체 Node를 즉시 표시해야 합니다.');
+assert(finalExperience.includes('const nodeRevealDuration = planningDuration / finalRun.tasks.length') && finalExperience.includes('Math.floor(planningElapsed / nodeRevealDuration)'), 'Task 구성 화면은 0/10부터 Node를 순차 생성해야 합니다.');
+assert(finalExperience.includes("plannedCount === 0") && finalExperience.includes('Task 선별·생성 중'), 'Task 0/10 선별·생성 시작 상태가 누락됐습니다.');
 assert(matches(finalExperience, /\[\d+, \d+\]/g) >= 14 && finalExperience.includes('task-node'), '10개 Task 의존성 Graph가 누락됐습니다.');
 assert(finalExperience.includes('task-node-spinner') && finalExperience.includes("aria-label=\"실행 중\""), '실행 중인 Task Node Spinner가 누락됐습니다.');
 assert(finalExperience.includes('ResizeObserver') && finalExperience.includes('graphScale'), 'Task Graph의 화면 자동 맞춤이 누락됐습니다.');
@@ -73,8 +81,8 @@ assert(matches(finalSource, /events: retryEvents\(/g) === 2, 'Repair/Retry Task�
 assert(finalSource.includes('taskDuration: 120_000'), 'Task 실행 시간은 120초여야 합니다.');
 assert(finalSource.includes("finalUrl: 'https://ohayo.tail2dac17.ts.net/'"), '최종 OHAYO URL이 정확하지 않습니다.');
 
-const timedFlowDuration = (2_000 + (5 * 60_000) + 8_000 + (10 * 120_000) + 8_000) / 7;
-assert(timedFlowDuration < 240_000, '5분 테스트 모드는 수동 조작을 위한 최소 60초 여유를 확보해야 합니다.');
+const timedFlowDuration = (2_000 + (5 * 60_000) + 200_000 + (10 * 120_000) + 8_000) / 7;
+assert(timedFlowDuration < 250_000, '5분 테스트 모드는 수동 조작을 위한 최소 50초 여유를 확보해야 합니다.');
 
 for (const command of ['pause', 'resume', 'next-event', 'next-task', 'complete-current', 'reset-run', 'reset-all', 'show-result', 'set-speed']) {
   assert(controls.includes(`type: '${command}'`), `Presenter command ${command}가 누락됐습니다.`);
@@ -91,7 +99,7 @@ console.log('- Shell entry: ./demo_start + ./demo-start');
 console.log(`- Launcher modes: test ${Math.round(timedFlowDuration / 1_000)}s timed flow / demo 1×`);
 console.log('- Codex CLI: 1 input → 5 × 60-second stages');
 console.log('- Web entry: final Mermaid viewer');
-console.log('- Task graph: 10 nodes visible together');
+console.log('- Task graph: 0 → 10 nodes across 200 seconds');
 console.log('- Viewport fit: 1440×900 + 1920×1080');
 console.log('- Task execution: 10 × 120 seconds');
 console.log('- Presenter commands: 9');

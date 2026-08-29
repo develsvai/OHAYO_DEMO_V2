@@ -1,0 +1,16 @@
+{
+  "id": "job-20260829-110100-web-d50b6037",
+  "title": "Web 전체 실행 초기화와 테스트 속도 유지",
+  "goal": "모든 Web 화면에서 전체 실행 상태를 언제든 초기화해 OHAYO 제품 Prompt와 Task 구성 시작점으로 돌아가게 하고, Launcher에서 선택한 7배속 테스트 모드가 Viewer 이후 Web 전체에 유지되도록 한다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T11:01:00+00:00",
+  "updated_at": "2026-08-29T11:06:56+00:00",
+  "context_refs": [],
+  "task_ids": [
+    "task-20260829-110106-web-1924575b"
+  ],
+  "branch_name": "develop",
+  "checkpoint_ids": [
+    "checkpoint-20260829-110656-task-completed-web-213a70af"
+  ]
+}

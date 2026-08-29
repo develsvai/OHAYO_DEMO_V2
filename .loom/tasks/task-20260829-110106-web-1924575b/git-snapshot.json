@@ -1,0 +1,50 @@
+{
+  "before": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "c09db398176e1867d441756d8bcf77bf8b11d799",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl",
+      "site/README.md",
+      "site/app/globals.css",
+      "site/app/page.tsx",
+      "site/app/presenter/page.tsx",
+      "site/components/FinalRunExperience.tsx",
+      "site/scripts/validate-simulator.mjs"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-110110-job-20260829-110100-web-d50b6037-715c6732/",
+      ".loom/jobs/job-20260829-110100-web-d50b6037/",
+      ".loom/task-definitions/task-def-20260829-110106-web-0b925c83/",
+      ".loom/task-runs/task-run-20260829-110110-task-def-20260829-110106-web-0b925c83-9ab3f3c2/",
+      ".loom/tasks/task-20260829-110106-web-1924575b/"
+    ],
+    "captured_at": "2026-08-29T11:06:50+00:00"
+  },
+  "after": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "c09db398176e1867d441756d8bcf77bf8b11d799",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl",
+      "site/README.md",
+      "site/app/globals.css",
+      "site/app/page.tsx",
+      "site/app/presenter/page.tsx",
+      "site/components/FinalRunExperience.tsx",
+      "site/scripts/validate-simulator.mjs"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-110110-job-20260829-110100-web-d50b6037-715c6732/",
+      ".loom/jobs/job-20260829-110100-web-d50b6037/",
+      ".loom/task-definitions/task-def-20260829-110106-web-0b925c83/",
+      ".loom/task-runs/task-run-20260829-110110-task-def-20260829-110106-web-0b925c83-9ab3f3c2/",
+      ".loom/tasks/task-20260829-110106-web-1924575b/"
+    ],
+    "captured_at": "2026-08-29T11:06:56+00:00"
+  }
+}

@@ -185,9 +185,14 @@ function TaskGraphScreen({
   setViewMode: (mode: ViewMode) => void;
 }) {
   const planning = phase === 'planning';
+  const planningComplete = plannedCount >= finalRun.tasks.length;
   const displayOwner = planning ? 'AUTO PLAN LOOM' : `${currentTask.owner} ORCHESTRATOR`;
   const displayTitle = planning ? 'OHAYO Task Graph' : currentTask.title;
-  const displayGoal = planning ? '10개 Task와 실행 의존 관계를 구성했습니다.' : currentTask.goal;
+  const displayGoal = planning
+    ? plannedCount === 0
+      ? '제품 목표를 분석하고 실행 Task를 선별하고 있습니다.'
+      : `${plannedCount}개 Task와 실행 의존 관계를 생성하고 있습니다.`
+    : currentTask.goal;
   const graphCount = planning ? plannedCount : completedTaskIds.length;
   const runElapsed = currentTaskIndex * finalRun.taskDuration + taskElapsed;
 
@@ -196,7 +201,7 @@ function TaskGraphScreen({
       <header className="run-topbar loom-graph-topbar">
         <div className="brand-lockup"><span className="brand-mark">F</span><div><strong>Auto Plan Loom</strong><span>{planning ? 'TASK GRAPH 구성 모드' : 'OHAYO 실행 모드'}</span></div></div>
         <div className="mode-transition"><span>LOOM</span><i>→</i><strong>{planning ? 'TASK 구성' : 'TASK 실행'}</strong></div>
-        <div className={`run-status ${paused ? 'paused' : ''}`}><span />{paused ? '일시정지' : planning ? '구성 중' : '실행 중'}</div>
+        <div className={`run-status ${paused ? 'paused' : ''}`}><span />{paused ? '일시정지' : planning ? planningComplete ? '구성 완료' : '구성 중' : '실행 중'}</div>
       </header>
 
       <section className="loom-graph-layout">
@@ -208,8 +213,8 @@ function TaskGraphScreen({
           <p>{displayGoal}</p>
 
           <div className={`graph-state-card ${currentEvent?.state ?? ''}`}>
-            <span>{paused ? '일시정지' : planning ? '구성 완료' : currentEvent?.label}</span>
-            <p>{paused ? 'Presenter가 Timeline을 정지했습니다.' : planning ? '전체 Task와 의존 관계가 실행 가능한 Graph로 준비되었습니다.' : currentEvent?.detail}</p>
+            <span>{paused ? '일시정지' : planning ? planningComplete ? 'Task Graph 준비 완료' : 'Task 선별·생성 중' : currentEvent?.label}</span>
+            <p>{paused ? 'Presenter가 Timeline을 정지했습니다.' : planning ? planningComplete ? '전체 Task와 의존 관계가 실행 가능한 Graph로 준비되었습니다.' : `${String(plannedCount).padStart(2, '0')} / 10 Task를 Graph에 연결했습니다.` : currentEvent?.detail}</p>
           </div>
 
           <div className="graph-prompt-card"><span>입력된 제품 목표</span><p>{prompt}</p></div>
@@ -234,7 +239,7 @@ function TaskGraphScreen({
 
       <footer className="run-footer loom-graph-footer">
         <span>CTRL + SHIFT + P · PRESENTER</span>
-        <div>{planning ? '10개 Task와 의존 관계 구성 완료' : 'Graph 경로를 따라 Task 순차 실행'}</div>
+        <div>{planning ? planningComplete ? '10개 Task와 의존 관계 구성 완료' : `${String(plannedCount).padStart(2, '0')} / 10 Task 선별·생성 중` : 'Graph 경로를 따라 Task 순차 실행'}</div>
         {!planning && <button className="graph-cli-toggle" onClick={() => setViewMode('cli')}>CLI FALLBACK</button>}
         <strong>{planning ? 'TASK GRAPH READY' : `${formatClock(runElapsed)} / 20:00`}</strong>
       </footer>
@@ -243,7 +248,7 @@ function TaskGraphScreen({
   );
 }
 
-export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
+export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed: number; onResetAll: () => void }) {
   const [screen, setScreen] = useState<FinalScreen>('prompt');
   const [prompt, setPrompt] = useState('');
   const [submittedPrompt, setSubmittedPrompt] = useState('');
@@ -253,12 +258,13 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
   const [completionElapsed, setCompletionElapsed] = useState(0);
   const [completedTaskIds, setCompletedTaskIds] = useState<number[]>([]);
   const [paused, setPaused] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(initialSpeed);
   const [viewMode, setViewMode] = useState<ViewMode>('web');
   const [hydrated, setHydrated] = useState(false);
   const lastTickAt = useRef(0);
 
-  const plannedCount = finalRun.tasks.length;
+  const nodeRevealDuration = planningDuration / finalRun.tasks.length;
+  const plannedCount = Math.min(finalRun.tasks.length, Math.floor(planningElapsed / nodeRevealDuration));
   const currentTask = finalRun.tasks[currentTaskIndex];
   const currentEvent = useMemo(() => {
     const events = currentTask?.events ?? [];
@@ -291,7 +297,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
       setHydrated(true);
     }, 0);
     return () => window.clearTimeout(restore);
-  }, []);
+  }, [initialSpeed]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -326,6 +332,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
     setPaused(false);
     setViewMode('web');
     window.localStorage.removeItem(finalRunStorageKey);
+    window.localStorage.removeItem(presenterCommandKey);
   }, []);
 
   const advancePlanning = useCallback(() => {
@@ -348,7 +355,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
       if (screen === 'running') completeCurrentTask();
     }
     if (command.type === 'reset-run') resetRun();
-    if (command.type === 'reset-all') { resetRun(); onResetAll(); }
+    if (command.type === 'reset-all') onResetAll();
     if (command.type === 'show-result') {
       setPlanningElapsed(planningDuration);
       setCompletedTaskIds(finalRun.tasks.map((task) => task.id));

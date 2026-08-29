@@ -17,6 +17,29 @@ html, body { margin: 0; width: 100%; height: 100%; min-height: 100%; overflow: h
 body { font-family: var(--sans); }
 button, textarea { font: inherit; }
 
+.global-reset-button {
+  position: fixed;
+  z-index: 100;
+  right: 9px;
+  bottom: 8px;
+  height: 22px;
+  padding: 0 7px;
+  border: 1px solid rgba(126, 134, 145, .2);
+  background: rgba(9, 10, 12, .58);
+  color: rgba(168, 175, 184, .34);
+  cursor: pointer;
+  opacity: .48;
+  font: 7px/1 var(--mono);
+  letter-spacing: .08em;
+  transition: opacity .18s ease, color .18s ease, border-color .18s ease;
+}
+.global-reset-button:hover, .global-reset-button:focus-visible {
+  opacity: 1;
+  color: #ffcf75;
+  border-color: rgba(255, 207, 117, .55);
+  outline: none;
+}
+
 .app-shell {
   min-height: 100vh;
   overflow: hidden;

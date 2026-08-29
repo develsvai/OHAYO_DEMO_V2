@@ -4,34 +4,55 @@ import { useCallback, useEffect, useState } from 'react';
 import { FinalRunExperience } from '@/components/FinalRunExperience';
 import { MermaidChart } from '@/components/MermaidChart';
 import { buildStages } from '@/lib/scenario';
-import { finalRunStorageKey } from '@/lib/run-control';
+import { finalRunStorageKey, presenterCommandKey } from '@/lib/run-control';
 
 type Screen = 'viewer' | 'product';
+
+function validSpeed(value: string | null) {
+  const speed = Number(value);
+  return Number.isFinite(speed) && speed >= 1 && speed <= 60 ? speed : 1;
+}
+
+function GlobalResetButton({ onReset }: { onReset: () => void }) {
+  return <button className="global-reset-button" type="button" onClick={onReset} aria-label="모든 실행 흐름 초기화" title="모든 실행 흐름 초기화">↻ RESET</button>;
+}
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>('viewer');
   const [zoom, setZoom] = useState(1);
+  const [runSpeed, setRunSpeed] = useState(1);
+  const [runKey, setRunKey] = useState(0);
 
   useEffect(() => {
     const restore = window.setTimeout(() => {
       const params = new URLSearchParams(window.location.search);
       const requested = params.get('screen');
-      if (params.get('reset') === '1') window.localStorage.removeItem(finalRunStorageKey);
+      setRunSpeed(validSpeed(params.get('speed')));
+      if (params.get('reset') === '1') {
+        window.localStorage.removeItem(finalRunStorageKey);
+        window.localStorage.removeItem(presenterCommandKey);
+      }
       if (requested === 'run') setScreen('product');
     }, 0);
     return () => window.clearTimeout(restore);
   }, []);
 
   const openLoom = useCallback(() => {
+    const speed = validSpeed(new URLSearchParams(window.location.search).get('speed'));
+    setRunSpeed(speed);
     setScreen('product');
-    window.history.replaceState(null, '', '/?screen=run');
+    window.history.replaceState(null, '', `/?screen=run&speed=${speed}`);
   }, []);
 
   const resetAll = useCallback(() => {
+    const speed = validSpeed(new URLSearchParams(window.location.search).get('speed'));
     window.localStorage.removeItem(finalRunStorageKey);
-    setScreen('viewer');
+    window.localStorage.removeItem(presenterCommandKey);
+    setRunSpeed(speed);
+    setScreen('product');
     setZoom(1);
-    window.history.replaceState(null, '', '/?screen=viewer');
+    setRunKey((value) => value + 1);
+    window.history.replaceState(null, '', `/?screen=run&speed=${speed}`);
   }, []);
 
   useEffect(() => {
@@ -47,11 +68,13 @@ export default function Home() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [openLoom, screen]);
 
-  if (screen === 'product') return <FinalRunExperience onResetAll={resetAll} />;
+  if (screen === 'product') {
+    return <><FinalRunExperience key={runKey} initialSpeed={runSpeed} onResetAll={resetAll} /><GlobalResetButton onReset={resetAll} /></>;
+  }
 
   const finalStage = buildStages[buildStages.length - 1];
   return (
-    <main className="viewer-shell">
+    <><main className="viewer-shell">
       <header className="viewer-topbar">
         <div className="brand-lockup">
           <span className="brand-mark" aria-hidden="true">F</span>
@@ -87,6 +110,6 @@ export default function Home() {
         <div className="shortcut-list"><kbd>R</kbd> 배율 초기화 <kbd>ENTER</kbd> 계속 <kbd>→</kbd> 계속</div>
         <button onClick={openLoom}>Loom 구성 계속 <span>→</span></button>
       </footer>
-    </main>
+    </main><GlobalResetButton onReset={resetAll} /></>
   );
 }

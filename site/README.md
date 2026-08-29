@@ -12,7 +12,7 @@ Auto Plan Loom 구성부터 OHAYO Task Graph 실행과 배포 결과까지 연�
 
 `./demo-start`로 실행해도 동일합니다. 시작할 때 실행 모드를 선택합니다.
 
-- `1  5분 테스트 모드`: 전체 자동 진행 구간을 약 3분 37초로 압축해 입력과 화면 전환을 포함한 전체 흐름을 5분 이내에 검증합니다.
+- `1  5분 테스트 모드`: 전체 자동 진행 구간을 약 4분 4초로 압축해 입력과 화면 전환을 포함한 전체 흐름을 5분 이내에 검증합니다.
 - `2  데모 모드`: STEP 1~5 각 60초, Task 10개 각 120초의 발표 기준 시간을 그대로 사용합니다.
 
 모드를 고르면 Shell에 Codex CLI가 열립니다. Harness 구성 요청을 한 번 입력하면 STEP 1~5가 자동 실행되고, 완료 후 Web Harness Viewer가 열립니다.
@@ -24,7 +24,7 @@ Auto Plan Loom 구성부터 OHAYO Task Graph 실행과 배포 결과까지 연�
 3. STEP 1~5가 각 60초씩 Shell에서 순차 진행
 4. Web이 자동으로 열리고 최종 Mermaid Harness Viewer 표시
 5. `Loom 구성 계속`을 눌러 OHAYO 제품 Prompt 입력
-6. 10개 Task Node와 의존 관계 전체를 한 화면에서 확인
+6. 0 / 10부터 10개 Task Node가 순차 선별·생성되고 의존 관계가 연결되는 과정을 확인
 7. 완성된 Node Graph에서 실행 중 Spinner와 함께 10개 Task를 각 120초씩 순차 실행
 8. 검증·복구·재시도 후 OHAYO URL과 QR 표시
 
@@ -37,7 +37,7 @@ Prompt, CLI 로그, Mermaid flowchart, Task, 시간, 결과 URL은 [`lib/scenari
 - `buildStages[].duration`: 각 60초
 - `buildStages[].logs`: Shell에 순차 출력할 로그
 - `buildStages[].mermaid`: 최종 Viewer용 Mermaid Data
-- `finalRun.taskGraphDuration`: 전체 Task Graph 확인 시간 8초
+- `finalRun.taskGraphDuration`: Task 10개 선별·생성 시간 200초
 - `finalRun.taskDuration`: Task 실행 시간 120초
 - `finalRun.tasks`: 정확히 10개인 OHAYO Task
 - `finalRun.finalUrl`: 결과 URL과 QR의 공통 값
@@ -52,6 +52,8 @@ Web에서 `/presenter` 또는 `Ctrl + Shift + P`로 엽니다.
 - 실행 초기화 / 전체 초기화 / 결과 강제 표시
 
 Product Run 중 `C`를 누르면 Node Graph와 CLI fallback이 전환됩니다.
+
+모든 Web 화면의 오른쪽 아래에는 작은 `RESET` 버튼이 있습니다. 누르면 Prompt, Task 구성, 실행 Timer, 완료 상태, 일시정지와 화면 모드를 모두 지우고 제품 Prompt부터 다시 시작합니다. 선택한 테스트/데모 속도는 유지됩니다.
 
 ## 검증
 

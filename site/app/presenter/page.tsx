@@ -41,8 +41,9 @@ export default function PresenterPage() {
   }
 
   const planning = state.screen === 'planning';
+  const plannedCount = Math.min(finalRun.tasks.length, Math.floor(state.planningElapsed / (finalRun.taskGraphDuration / finalRun.tasks.length)));
   const task = planning ? finalRun.tasks[0] : finalRun.tasks[state.currentTaskIndex];
-  const activeCount = planning ? finalRun.tasks.length : state.completedTaskIds.length;
+  const activeCount = planning ? plannedCount : state.completedTaskIds.length;
   const activeProgress = planning
     ? Math.min(100, state.planningElapsed / finalRun.taskGraphDuration * 100)
     : Math.min(100, state.taskElapsed / finalRun.taskDuration * 100);
@@ -60,8 +61,8 @@ export default function PresenterPage() {
 
       <section className="presenter-current">
         <span>{planning ? 'Task Graph 상태' : '현재 실행 대상'}</span>
-        <div><strong>{planning ? '10' : String(task?.id ?? 0).padStart(2, '0')}</strong><h2>{planning ? 'OHAYO Task Graph' : task?.title ?? '제품 프롬프트 대기'}</h2></div>
-        <p>{planning ? '10개 Task와 의존 관계 구성이 완료되었습니다.' : task?.goal ?? '관객 화면에서 OHAYO 제품 목표를 입력하세요.'}</p>
+        <div><strong>{planning ? String(plannedCount).padStart(2, '0') : String(task?.id ?? 0).padStart(2, '0')}</strong><h2>{planning ? 'OHAYO Task Graph' : task?.title ?? '제품 프롬프트 대기'}</h2></div>
+        <p>{planning ? plannedCount >= finalRun.tasks.length ? '10개 Task와 의존 관계 구성이 완료되었습니다.' : `${plannedCount}개 Task를 선별하고 Graph에 연결했습니다.` : task?.goal ?? '관객 화면에서 OHAYO 제품 목표를 입력하세요.'}</p>
         <div className="presenter-progress"><i style={{ width: `${activeProgress}%` }} /></div>
       </section>
 
@@ -82,7 +83,7 @@ export default function PresenterPage() {
 
       <section className="control-group danger-zone"><div className="control-heading"><span>복구</span><small>발표 사고 대응</small></div><div className="control-grid">
         <button onClick={() => send({ type: 'reset-run' }, '실행 초기화')}><span>↻</span><strong>실행 초기화</strong><small>제품 Prompt로 이동</small></button>
-        <button onClick={() => send({ type: 'reset-all' }, '전체 초기화')}><span>×</span><strong>전체 초기화</strong><small>Harness Viewer로 이동</small></button>
+        <button onClick={() => send({ type: 'reset-all' }, '전체 초기화')}><span>×</span><strong>전체 초기화</strong><small>제품 Prompt부터 재시작</small></button>
         <button className="force" onClick={() => send({ type: 'show-result' }, '결과 표시')}><span>⚡</span><strong>결과 표시</strong><small>최종 QR로 이동</small></button>
       </div></section>
 

@@ -1,0 +1,40 @@
+{
+  "id": "task-run-20260829-110110-task-def-20260829-110106-web-0b925c83-9ab3f3c2",
+  "job_run_id": "job-run-20260829-110110-job-20260829-110100-web-d50b6037-715c6732",
+  "task_definition_id": "task-def-20260829-110106-web-0b925c83",
+  "status": "DONE",
+  "created_at": "2026-08-29T11:01:10+00:00",
+  "updated_at": "2026-08-29T11:06:56+00:00",
+  "legacy_task_id": "task-20260829-110106-web-1924575b",
+  "attempt": 1,
+  "assigned_agent": "foreground",
+  "worker_id": "",
+  "heartbeat_at": "",
+  "lease_expires_at": "",
+  "queued_at": "",
+  "started_at": "2026-08-29T11:01:10+00:00",
+  "completed_at": "2026-08-29T11:06:56+00:00",
+  "last_error": "",
+  "commit_refs": [
+    "c09db398176e1867d441756d8bcf77bf8b11d799"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-08-29T11:06:56+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-110106-web-1924575b/agent-events.jsonl",
+    ".loom/tasks/task-20260829-110106-web-1924575b/artifacts.json",
+    ".loom/tasks/task-20260829-110106-web-1924575b/context.md",
+    ".loom/tasks/task-20260829-110106-web-1924575b/decision.md",
+    ".loom/tasks/task-20260829-110106-web-1924575b/git-snapshot.json",
+    ".loom/tasks/task-20260829-110106-web-1924575b/logs.txt",
+    ".loom/tasks/task-20260829-110106-web-1924575b/previous-results.md",
+    ".loom/tasks/task-20260829-110106-web-1924575b/prompt.md",
+    ".loom/tasks/task-20260829-110106-web-1924575b/result.md",
+    ".loom/tasks/task-20260829-110106-web-1924575b/troubleshooting.md"
+  ],
+  "checkpoint_ids": [
+    "checkpoint-20260829-110656-task-completed-web-213a70af"
+  ],
+  "review_required_reason": "DONE guardrail requires review: validation evidence. 완료 계약을 증명하는 기록이 부족하거나 미해결 요청이 있어 검토가 필요합니다. result/decision/troubleshooting/log/event/artifact와 검증 근거를 보강하거나 요청을 해결한 뒤 다시 완료 처리하세요."
+}
