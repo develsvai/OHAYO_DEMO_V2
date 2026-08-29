@@ -345,7 +345,7 @@ export const finalRun = {
   canonicalPrompt: `지정된 폴더의 명세와 Context를 사용해서
 OHAYO를 처음부터 끝까지 완성하고
 배포까지 진행해줘.`,
-  taskPlanningInterval: 20_000,
+  taskGraphDuration: 8_000,
   taskDuration: 120_000,
   finalUrl: 'https://ohayo.tail2dac17.ts.net/',
   tasks: [

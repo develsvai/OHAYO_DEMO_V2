@@ -25,8 +25,8 @@ DEMO_SPEED=60 ./demo_start
 3. STEP 1~5가 각 60초씩 Shell에서 순차 진행
 4. Web이 자동으로 열리고 최종 Mermaid Harness Viewer 표시
 5. `Loom 구성 계속`을 눌러 OHAYO 제품 Prompt 입력
-6. 20초마다 Task Node 1개 구성, 10개 총 200초
-7. 완성된 Node Graph에서 10개 Task를 각 120초씩 순차 실행
+6. 10개 Task Node와 의존 관계 전체를 한 화면에서 확인
+7. 완성된 Node Graph에서 실행 중 Spinner와 함께 10개 Task를 각 120초씩 순차 실행
 8. 검증·복구·재시도 후 OHAYO URL과 QR 표시
 
 ## 발표 데이터 수정
@@ -38,7 +38,7 @@ Prompt, CLI 로그, Mermaid flowchart, Task, 시간, 결과 URL은 [`lib/scenari
 - `buildStages[].duration`: 각 60초
 - `buildStages[].logs`: Shell에 순차 출력할 로그
 - `buildStages[].mermaid`: 최종 Viewer용 Mermaid Data
-- `finalRun.taskPlanningInterval`: Task Node 구성 간격 20초
+- `finalRun.taskGraphDuration`: 전체 Task Graph 확인 시간 8초
 - `finalRun.taskDuration`: Task 실행 시간 120초
 - `finalRun.tasks`: 정확히 10개인 OHAYO Task
 - `finalRun.finalUrl`: 결과 URL과 QR의 공통 값

@@ -5,6 +5,7 @@ const page = readFileSync(new URL('../app/page.tsx', import.meta.url), 'utf8');
 const finalExperience = readFileSync(new URL('../components/FinalRunExperience.tsx', import.meta.url), 'utf8');
 const controls = readFileSync(new URL('../lib/run-control.ts', import.meta.url), 'utf8');
 const presenter = readFileSync(new URL('../app/presenter/page.tsx', import.meta.url), 'utf8');
+const styles = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
 const demoCli = readFileSync(new URL('./demo-cli.mjs', import.meta.url), 'utf8');
 const demoLauncher = readFileSync(new URL('./demo-launcher.mjs', import.meta.url), 'utf8');
 const demoStartUrl = new URL('../../demo_start', import.meta.url);
@@ -43,10 +44,23 @@ assert(!page.includes('buildState') && !page.includes('prompt-form'), '브라우
 assert(page.includes('Loom 구성 계속') && page.includes("setScreen('product')"), 'Viewer Continue 후 Loom 제품 화면으로 이동해야 합니다.');
 
 assert(matches(finalSource, /^      id: \d+,/gm) === 10, 'Final Run Task는 정확히 10개여야 합니다.');
-assert(finalSource.includes('taskPlanningInterval: 20_000'), 'Task Node 구성 간격은 20초여야 합니다.');
+assert(finalSource.includes('taskGraphDuration: 8_000'), 'Task Graph 확인 화면은 8초여야 합니다.');
+assert(!finalSource.includes('taskPlanningInterval') && !finalExperience.includes('20초마다 Task Node'), 'Task Node의 20초 순차 구성 로직이 남아 있습니다.');
 assert(finalExperience.includes("setScreen('planning')") && finalExperience.includes("screen === 'planning'"), '제품 Prompt 뒤 Task 구성 단계가 누락됐습니다.');
-assert(finalExperience.includes('Math.floor(planningElapsed / finalRun.taskPlanningInterval)'), '20초마다 Task Node가 하나씩 구성되어야 합니다.');
+assert(finalExperience.includes('const plannedCount = finalRun.tasks.length'), 'Task 구성 화면에서 전체 Node를 즉시 표시해야 합니다.');
 assert(matches(finalExperience, /\[\d+, \d+\]/g) >= 14 && finalExperience.includes('task-node'), '10개 Task 의존성 Graph가 누락됐습니다.');
+assert(finalExperience.includes('task-node-spinner') && finalExperience.includes("aria-label=\"실행 중\""), '실행 중인 Task Node Spinner가 누락됐습니다.');
+assert(finalExperience.includes('ResizeObserver') && finalExperience.includes('graphScale'), 'Task Graph의 화면 자동 맞춤이 누락됐습니다.');
+assert(styles.includes('grid-template-columns: 224px minmax(0, 1fr)') && styles.includes('.task-graph-fit'), '축소된 Inspector와 전체 Graph Fit Layout이 누락됐습니다.');
+assert(styles.includes('.task-node-spinner') && styles.includes('animation: spin .72s linear infinite'), '실행 Node Spinner Animation이 누락됐습니다.');
+assert(!styles.includes('overflow: auto'), 'Web 화면에 Scroll Container가 남아 있습니다.');
+assert(styles.includes('height: 100dvh') && styles.includes('html, body') && styles.includes('overflow: hidden'), 'Web 화면의 Viewport 고정 규칙이 누락됐습니다.');
+for (const [viewportWidth, viewportHeight] of [[1440, 900], [1920, 1080]]) {
+  const graphViewportWidth = viewportWidth - 224;
+  const graphViewportHeight = viewportHeight - 68 - 46 - 46;
+  const scale = Math.max(.42, Math.min(1, (graphViewportWidth - 28) / 1270, (graphViewportHeight - 28) / 620));
+  assert(1270 * scale <= graphViewportWidth && 620 * scale <= graphViewportHeight, `${viewportWidth}×${viewportHeight}에서 Task Graph가 화면을 넘습니다.`);
+}
 assert(matches(finalSource, /events: (?:standardEvents|retryEvents)\(/g) === 10, '모든 실행 Task에 Event Timeline이 있어야 합니다.');
 assert(matches(finalSource, /events: retryEvents\(/g) === 2, 'Repair/Retry Task는 정확히 2개여야 합니다.');
 assert(finalSource.includes('taskDuration: 120_000'), 'Task 실행 시간은 120초여야 합니다.');
@@ -60,13 +74,14 @@ assert(finalExperience.includes('QRCodeSVG') && finalExperience.includes('finalR
 assert(finalExperience.includes("viewMode === 'cli'") && finalExperience.includes('cli-fallback-shell'), '실행용 CLI fallback이 누락됐습니다.');
 assert(finalExperience.includes('BroadcastChannel') && finalExperience.includes('localStorage'), 'Presenter 통신 fallback이 누락됐습니다.');
 assert(finalExperience.includes('if (!hydrated) return;'), '상태 복원 전 저장을 막는 hydration guard가 누락됐습니다.');
-assert(presenter.includes('planningElapsed') && presenter.includes('finalRun.taskPlanningInterval'), 'Presenter가 Task 구성 단계를 추적하지 않습니다.');
+assert(presenter.includes('planningElapsed') && presenter.includes('finalRun.taskGraphDuration'), 'Presenter가 Task 구성 화면을 추적하지 않습니다.');
 
 console.log('Presentation flow validation [OK]');
 console.log('- Shell entry: ./demo_start');
 console.log('- Codex CLI: 1 input → 5 × 60-second stages');
 console.log('- Web entry: final Mermaid viewer');
-console.log('- Task graph planning: 10 × 20 seconds = 200 seconds');
+console.log('- Task graph: 10 nodes visible together');
+console.log('- Viewport fit: 1440×900 + 1920×1080');
 console.log('- Task execution: 10 × 120 seconds');
 console.log('- Presenter commands: 9');
 console.log('- Result URL + QR: https://ohayo.tail2dac17.ts.net/');

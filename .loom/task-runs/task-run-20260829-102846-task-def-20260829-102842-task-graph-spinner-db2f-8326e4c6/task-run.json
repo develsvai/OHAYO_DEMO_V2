@@ -1,0 +1,40 @@
+{
+  "id": "task-run-20260829-102846-task-def-20260829-102842-task-graph-spinner-db2f-8326e4c6",
+  "job_run_id": "job-run-20260829-102846-job-20260829-102833-web-task-graph-e226223f-e9b08f07",
+  "task_definition_id": "task-def-20260829-102842-task-graph-spinner-db2f03e7",
+  "status": "DONE",
+  "created_at": "2026-08-29T10:28:46+00:00",
+  "updated_at": "2026-08-29T10:37:09+00:00",
+  "legacy_task_id": "task-20260829-102842-task-graph-spinner-037540ae",
+  "attempt": 1,
+  "assigned_agent": "codex",
+  "worker_id": "",
+  "heartbeat_at": "",
+  "lease_expires_at": "",
+  "queued_at": "",
+  "started_at": "2026-08-29T10:28:46+00:00",
+  "completed_at": "2026-08-29T10:37:09+00:00",
+  "last_error": "",
+  "commit_refs": [
+    "969deab4a7238a89daac9bc40c91596e2e24ac55"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-08-29T10:37:09+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/agent-events.jsonl",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/artifacts.json",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/context.md",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/decision.md",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/git-snapshot.json",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/logs.txt",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/previous-results.md",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/prompt.md",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/result.md",
+    ".loom/tasks/task-20260829-102842-task-graph-spinner-037540ae/troubleshooting.md"
+  ],
+  "checkpoint_ids": [
+    "checkpoint-20260829-103709-task-completed-task-graph-spinner-028dcad5"
+  ],
+  "review_required_reason": ""
+}

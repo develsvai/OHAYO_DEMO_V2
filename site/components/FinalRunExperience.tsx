@@ -16,7 +16,9 @@ type ViewMode = StoredFinalRunState['viewMode'];
 type GraphPhase = 'planning' | 'running';
 
 const completionDuration = 8_000;
-const planningDuration = finalRun.tasks.length * finalRun.taskPlanningInterval;
+const planningDuration = finalRun.taskGraphDuration;
+const graphWidth = 1270;
+const graphHeight = 620;
 
 const graphLayout = [
   { id: 0, x: 34, y: 258 },
@@ -74,14 +76,31 @@ function TaskGraphCanvas({
   completedTaskIds: number[];
   currentState?: ProductTaskState;
 }) {
-  const visibleCount = phase === 'running' ? finalRun.tasks.length : plannedCount;
-  const activeId = phase === 'running' ? activeTaskIndex + 1 : plannedCount;
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [graphScale, setGraphScale] = useState(1);
+  const visibleCount = plannedCount;
+  const activeId = phase === 'running' ? activeTaskIndex + 1 : -1;
   const visibleIds = new Set([0, ...finalRun.tasks.filter((task) => task.id <= visibleCount).map((task) => task.id)]);
 
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const fitGraph = () => {
+      const widthScale = (viewport.clientWidth - 28) / graphWidth;
+      const heightScale = (viewport.clientHeight - 28) / graphHeight;
+      setGraphScale(Math.max(.42, Math.min(1, widthScale, heightScale)));
+    };
+    fitGraph();
+    const observer = new ResizeObserver(fitGraph);
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="task-graph-viewport" aria-label={phase === 'planning' ? 'Task 구성 Graph' : 'Task 실행 Graph'}>
+    <div ref={viewportRef} className="task-graph-viewport" aria-label={phase === 'planning' ? 'Task 구성 Graph' : 'Task 실행 Graph'}>
       <div className="task-graph-grid" />
-      <div className="task-graph-world">
+      <div className="task-graph-fit" style={{ width: graphWidth * graphScale, height: graphHeight * graphScale }}>
+      <div className="task-graph-world" style={{ transform: `scale(${graphScale})` }}>
         <svg className="task-graph-edges" viewBox="0 0 1270 620" aria-hidden="true">
           {graphEdges.map(([sourceId, targetId]) => {
             const source = graphLayout.find((node) => node.id === sourceId)!;
@@ -123,6 +142,7 @@ function TaskGraphCanvas({
               <b>{nodeIcons[task.owner] ?? '◆'}</b>
               <strong><i>{String(task.id).padStart(2, '0')}</i>{task.title}</strong>
               <span>{active && phase === 'running' ? stateLabel(state ?? 'pending') : visible ? 'Task 구성 완료' : '구성 대기'}</span>
+              {active && phase === 'running' && <i className="task-node-spinner" aria-label="실행 중" />}
             </div>
           );
         })}
@@ -131,6 +151,7 @@ function TaskGraphCanvas({
           {graphLayout.map((node) => <i key={node.id} className={visibleIds.has(node.id) ? 'visible' : ''} style={{ left: `${node.x / 12.7}%`, top: `${node.y / 6.2}%` }} />)}
         </div>
         <div className="graph-canvas-controls" aria-hidden="true"><span>＋</span><span>−</span><span>⌂</span></div>
+      </div>
       </div>
     </div>
   );
@@ -164,14 +185,11 @@ function TaskGraphScreen({
   setViewMode: (mode: ViewMode) => void;
 }) {
   const planning = phase === 'planning';
-  const displayTask = planning
-    ? finalRun.tasks[Math.min(plannedCount, finalRun.tasks.length - 1)]
-    : currentTask;
+  const displayOwner = planning ? 'AUTO PLAN LOOM' : `${currentTask.owner} ORCHESTRATOR`;
+  const displayTitle = planning ? 'OHAYO Task Graph' : currentTask.title;
+  const displayGoal = planning ? '10개 Task와 실행 의존 관계를 구성했습니다.' : currentTask.goal;
   const graphCount = planning ? plannedCount : completedTaskIds.length;
   const runElapsed = currentTaskIndex * finalRun.taskDuration + taskElapsed;
-  const nextNodeIn = planning
-    ? Math.max(0, finalRun.taskPlanningInterval - (planningElapsed % finalRun.taskPlanningInterval || (plannedCount === 10 ? finalRun.taskPlanningInterval : 0)))
-    : 0;
 
   return (
     <main className="loom-graph-shell">
@@ -183,15 +201,15 @@ function TaskGraphScreen({
 
       <section className="loom-graph-layout">
         <aside className="graph-inspector">
-          <div className="graph-inspector-label">{planning ? '현재 구성 대상' : '현재 실행 대상'}</div>
-          <div className="graph-task-number">{planning ? String(Math.min(plannedCount + 1, 10)).padStart(2, '0') : String(currentTask.id).padStart(2, '0')}</div>
-          <span className="graph-owner">{displayTask.owner} ORCHESTRATOR</span>
-          <h1>{displayTask.title}</h1>
-          <p>{displayTask.goal}</p>
+          <div className="graph-inspector-label">{planning ? 'TASK GRAPH 상태' : '현재 실행 대상'}</div>
+          <div className="graph-task-number">{planning ? '10' : String(currentTask.id).padStart(2, '0')}</div>
+          <span className="graph-owner">{displayOwner}</span>
+          <h1>{displayTitle}</h1>
+          <p>{displayGoal}</p>
 
           <div className={`graph-state-card ${currentEvent?.state ?? ''}`}>
-            <span>{paused ? '일시정지' : planning ? plannedCount === 10 ? '구성 완료' : 'Task 분해 중' : currentEvent?.label}</span>
-            <p>{paused ? 'Presenter가 Timeline을 정지했습니다.' : planning ? '제품 목표를 실행 가능한 의존성 Graph로 변환하고 있습니다.' : currentEvent?.detail}</p>
+            <span>{paused ? '일시정지' : planning ? '구성 완료' : currentEvent?.label}</span>
+            <p>{paused ? 'Presenter가 Timeline을 정지했습니다.' : planning ? '전체 Task와 의존 관계가 실행 가능한 Graph로 준비되었습니다.' : currentEvent?.detail}</p>
           </div>
 
           <div className="graph-prompt-card"><span>입력된 제품 목표</span><p>{prompt}</p></div>
@@ -200,7 +218,7 @@ function TaskGraphScreen({
             <div><span>{planning ? '구성된 Task' : '완료된 Task'}</span><strong>{String(graphCount).padStart(2, '0')} / 10</strong></div>
             <div><span>실행 속도</span><strong>{speed}×</strong></div>
             {planning
-              ? <div><span>다음 Node</span><strong>{plannedCount === 10 ? 'READY' : formatClock(nextNodeIn)}</strong></div>
+              ? <div><span>Graph 상태</span><strong>READY</strong></div>
               : <div><span>현재 Task</span><strong>{formatClock(taskElapsed)} / 02:00</strong></div>}
           </div>
         </aside>
@@ -216,9 +234,9 @@ function TaskGraphScreen({
 
       <footer className="run-footer loom-graph-footer">
         <span>CTRL + SHIFT + P · PRESENTER</span>
-        <div>{planning ? '20초마다 Task Node 1개 구성' : 'Graph 경로를 따라 Task 순차 실행'}</div>
+        <div>{planning ? '10개 Task와 의존 관계 구성 완료' : 'Graph 경로를 따라 Task 순차 실행'}</div>
         {!planning && <button className="graph-cli-toggle" onClick={() => setViewMode('cli')}>CLI FALLBACK</button>}
-        <strong>{planning ? `${formatClock(planningElapsed)} / 03:20` : `${formatClock(runElapsed)} / 20:00`}</strong>
+        <strong>{planning ? 'TASK GRAPH READY' : `${formatClock(runElapsed)} / 20:00`}</strong>
       </footer>
       <div className="run-progress"><i style={{ width: `${planning ? Math.min(100, planningElapsed / planningDuration * 100) : Math.min(100, runElapsed / (finalRun.tasks.length * finalRun.taskDuration) * 100)}%` }} /></div>
     </main>
@@ -240,7 +258,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
   const [hydrated, setHydrated] = useState(false);
   const lastTickAt = useRef(0);
 
-  const plannedCount = Math.min(finalRun.tasks.length, Math.floor(planningElapsed / finalRun.taskPlanningInterval));
+  const plannedCount = finalRun.tasks.length;
   const currentTask = finalRun.tasks[currentTaskIndex];
   const currentEvent = useMemo(() => {
     const events = currentTask?.events ?? [];
@@ -311,7 +329,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
   }, []);
 
   const advancePlanning = useCallback(() => {
-    setPlanningElapsed((value) => Math.min(planningDuration, value + finalRun.taskPlanningInterval));
+    setPlanningElapsed(planningDuration);
   }, []);
 
   const executeCommand = useCallback((command: PresenterCommand) => {

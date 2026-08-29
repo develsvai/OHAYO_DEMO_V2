@@ -41,11 +41,10 @@ export default function PresenterPage() {
   }
 
   const planning = state.screen === 'planning';
-  const plannedCount = Math.min(10, Math.floor(state.planningElapsed / finalRun.taskPlanningInterval));
-  const task = planning ? finalRun.tasks[Math.min(plannedCount, 9)] : finalRun.tasks[state.currentTaskIndex];
-  const activeCount = planning ? plannedCount : state.completedTaskIds.length;
+  const task = planning ? finalRun.tasks[0] : finalRun.tasks[state.currentTaskIndex];
+  const activeCount = planning ? finalRun.tasks.length : state.completedTaskIds.length;
   const activeProgress = planning
-    ? Math.min(100, state.planningElapsed / (finalRun.taskPlanningInterval * 10) * 100)
+    ? Math.min(100, state.planningElapsed / finalRun.taskGraphDuration * 100)
     : Math.min(100, state.taskElapsed / finalRun.taskDuration * 100);
 
   return (
@@ -55,14 +54,14 @@ export default function PresenterPage() {
       <section className="presenter-status">
         <div><span>화면</span><strong>{state.screen.toUpperCase()}</strong></div>
         <div><span>상태</span><strong className={state.paused ? 'warning' : 'healthy'}>{state.paused ? '일시정지' : '활성'}</strong></div>
-        <div><span>{planning ? '구성 Node' : '완료 Task'}</span><strong>{String(activeCount).padStart(2, '0')} / 10</strong></div>
+        <div><span>{planning ? '구성 Task' : '완료 Task'}</span><strong>{String(activeCount).padStart(2, '0')} / 10</strong></div>
         <div><span>속도</span><strong>{state.speed}×</strong></div>
       </section>
 
       <section className="presenter-current">
-        <span>{planning ? '현재 구성 대상' : '현재 실행 대상'}</span>
-        <div><strong>{String(task?.id ?? 0).padStart(2, '0')}</strong><h2>{task?.title ?? '제품 프롬프트 대기'}</h2></div>
-        <p>{task?.goal ?? '관객 화면에서 OHAYO 제품 목표를 입력하세요.'}</p>
+        <span>{planning ? 'Task Graph 상태' : '현재 실행 대상'}</span>
+        <div><strong>{planning ? '10' : String(task?.id ?? 0).padStart(2, '0')}</strong><h2>{planning ? 'OHAYO Task Graph' : task?.title ?? '제품 프롬프트 대기'}</h2></div>
+        <p>{planning ? '10개 Task와 의존 관계 구성이 완료되었습니다.' : task?.goal ?? '관객 화면에서 OHAYO 제품 목표를 입력하세요.'}</p>
         <div className="presenter-progress"><i style={{ width: `${activeProgress}%` }} /></div>
       </section>
 

@@ -1,0 +1,16 @@
+{
+  "id": "job-20260829-102833-web-task-graph-e226223f",
+  "title": "Web 발표 화면 비율 및 Task Graph 최적화",
+  "goal": "Task Node의 20초 순차 구성을 제거하고 모든 Web 화면을 100% 배율 한 화면에 맞추며 Task Graph의 사이드 폭을 줄여 전체 Graph가 스크롤 없이 보이도록 완성한다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T10:28:33+00:00",
+  "updated_at": "2026-08-29T10:37:09+00:00",
+  "context_refs": [],
+  "task_ids": [
+    "task-20260829-102842-task-graph-spinner-037540ae"
+  ],
+  "branch_name": "develop",
+  "checkpoint_ids": [
+    "checkpoint-20260829-103709-task-completed-task-graph-spinner-028dcad5"
+  ]
+}
