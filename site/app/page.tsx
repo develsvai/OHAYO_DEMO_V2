@@ -2,27 +2,31 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MermaidChart } from '@/components/MermaidChart';
-import { buildStageNames, buildStages, scenarioMeta } from '@/lib/scenario';
+import { buildStages, scenarioMeta } from '@/lib/scenario';
 
-type RunState = 'idle' | 'running' | 'complete';
+type BuildState = 'idle' | 'running' | 'complete';
 type Screen = 'cli' | 'viewer' | 'ready';
 
-const storageKey = 'flogi-harness-build-state';
+const storageKey = 'flogi-harness-build-state-v2';
+const totalDuration = buildStages.reduce((sum, stage) => sum + stage.duration, 0);
 
 export default function Home() {
-  const [stageIndex, setStageIndex] = useState(0);
   const [screen, setScreen] = useState<Screen>('cli');
-  const [runState, setRunState] = useState<RunState>('idle');
+  const [buildState, setBuildState] = useState<BuildState>('idle');
   const [prompt, setPrompt] = useState('');
-  const [promptHistory, setPromptHistory] = useState<Record<number, string>>({});
-  const [completed, setCompleted] = useState<number[]>([]);
-  const [elapsed, setElapsed] = useState(0);
+  const [submittedPrompt, setSubmittedPrompt] = useState('');
+  const [totalElapsed, setTotalElapsed] = useState(0);
   const [timeScale, setTimeScale] = useState(1);
   const [zoom, setZoom] = useState(1);
-  const startedAt = useRef(0);
+  const lastTickAt = useRef(0);
+  const terminalEndRef = useRef<HTMLDivElement>(null);
 
-  const stage = buildStages[stageIndex];
-  const scaledDuration = stage.duration / timeScale;
+  const completedCount = Math.min(buildStages.length, Math.floor(totalElapsed / buildStages[0].duration));
+  const currentStageIndex = Math.min(buildStages.length - 1, completedCount);
+  const currentStage = buildStages[currentStageIndex];
+  const currentStageElapsed = buildState === 'complete' ? currentStage.duration : totalElapsed - currentStageIndex * currentStage.duration;
+  const progress = Math.min(100, (totalElapsed / totalDuration) * 100);
+  const currentVisibleLogCount = currentStage.logs.filter((log) => log.at <= currentStageElapsed).length;
 
   useEffect(() => {
     const speed = Number(new URLSearchParams(window.location.search).get('speed'));
@@ -30,120 +34,119 @@ export default function Home() {
     const stored = window.localStorage.getItem(storageKey);
     if (!stored) return;
     try {
-      const state = JSON.parse(stored) as { stageIndex?: number; screen?: Screen; completed?: number[]; promptHistory?: Record<number, string> };
-      if (typeof state.stageIndex === 'number') setStageIndex(Math.min(4, Math.max(0, state.stageIndex)));
+      const state = JSON.parse(stored) as { screen?: Screen; buildState?: BuildState; submittedPrompt?: string; totalElapsed?: number };
       if (state.screen === 'viewer' || state.screen === 'ready') setScreen(state.screen);
-      if (Array.isArray(state.completed)) setCompleted(state.completed);
-      if (state.promptHistory) setPromptHistory(state.promptHistory);
+      if (state.buildState === 'running' || state.buildState === 'complete') setBuildState(state.buildState);
+      if (typeof state.submittedPrompt === 'string') setSubmittedPrompt(state.submittedPrompt);
+      if (typeof state.totalElapsed === 'number') setTotalElapsed(Math.min(totalDuration, Math.max(0, state.totalElapsed)));
     } catch {
       window.localStorage.removeItem(storageKey);
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify({ stageIndex, screen, completed, promptHistory }));
-  }, [completed, promptHistory, screen, stageIndex]);
+    window.localStorage.setItem(storageKey, JSON.stringify({ screen, buildState, submittedPrompt, totalElapsed }));
+  }, [buildState, screen, submittedPrompt, totalElapsed]);
 
   useEffect(() => {
-    if (runState !== 'running') return;
-    startedAt.current = Date.now();
+    if (buildState !== 'running') return;
+    lastTickAt.current = Date.now();
     const timer = window.setInterval(() => {
-      const next = Date.now() - startedAt.current;
-      setElapsed(next);
-      if (next >= scaledDuration) {
-        window.clearInterval(timer);
-        setElapsed(scaledDuration);
-        setRunState('complete');
-        setCompleted((items) => items.includes(stage.id) ? items : [...items, stage.id]);
-      }
+      const now = Date.now();
+      const delta = (now - lastTickAt.current) * timeScale;
+      lastTickAt.current = now;
+      setTotalElapsed((value) => {
+        const next = Math.min(totalDuration, value + delta);
+        if (next >= totalDuration) setBuildState('complete');
+        return next;
+      });
     }, 120);
     return () => window.clearInterval(timer);
-  }, [runState, scaledDuration, stage.id]);
+  }, [buildState, timeScale]);
 
   useEffect(() => {
-    if (runState !== 'complete' || screen !== 'cli') return;
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [completedCount, currentStageIndex, currentVisibleLogCount]);
+
+  useEffect(() => {
+    if (buildState !== 'complete' || screen !== 'cli') return;
     const autoOpen = window.setTimeout(() => {
       setScreen('viewer');
       setZoom(1);
-      window.history.replaceState(null, '', `/?screen=viewer&stage=${stage.id}`);
-    }, Math.max(500, 1_800 / timeScale));
+      window.history.replaceState(null, '', '/?screen=viewer');
+    }, Math.max(700, 1_800 / timeScale));
     return () => window.clearTimeout(autoOpen);
-  }, [runState, screen, stage.id, timeScale]);
+  }, [buildState, screen, timeScale]);
 
-  const advanceFromViewer = useCallback(() => {
-    if (stageIndex === buildStages.length - 1) {
-      setScreen('ready');
-      window.history.replaceState(null, '', '/?screen=ready');
-      return;
-    }
-    setStageIndex((index) => index + 1);
+  const replayBuild = useCallback(() => {
     setScreen('cli');
-    setRunState('idle');
-    setElapsed(0);
-    setPrompt('');
+    setBuildState('idle');
+    setPrompt(submittedPrompt);
+    setSubmittedPrompt('');
+    setTotalElapsed(0);
     window.history.replaceState(null, '', '/');
-  }, [stageIndex]);
-
-  const replayStage = useCallback(() => {
-    setScreen('cli');
-    setRunState('idle');
-    setElapsed(0);
-    setPrompt(promptHistory[stage.id] ?? '');
-    window.history.replaceState(null, '', '/');
-  }, [promptHistory, stage.id]);
+  }, [submittedPrompt]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape' && screen === 'viewer') advanceFromViewer();
-      if (event.key === 'ArrowRight' && screen === 'viewer') advanceFromViewer();
-      if (event.key.toLowerCase() === 'r' && screen === 'viewer') replayStage();
+      if (event.key.toLowerCase() === 'r' && screen === 'viewer') replayBuild();
+      if ((event.key === 'Escape' || event.key === 'ArrowRight') && screen === 'viewer') {
+        setScreen('ready');
+        window.history.replaceState(null, '', '/?screen=ready');
+      }
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [advanceFromViewer, replayStage, screen]);
+  }, [replayBuild, screen]);
 
-  const visibleLogs = useMemo(
-    () => stage.logs.filter((log) => log.at / timeScale <= elapsed),
-    [elapsed, stage.logs, timeScale],
-  );
+  const stageOutputs = useMemo(() => buildStages.map((stage, index) => {
+    const isComplete = totalElapsed >= (index + 1) * stage.duration;
+    const isCurrent = buildState !== 'idle' && index === currentStageIndex;
+    const elapsed = isComplete ? stage.duration : isCurrent ? currentStageElapsed : 0;
+    return {
+      stage,
+      isComplete,
+      isCurrent,
+      logs: stage.logs.filter((log) => log.at <= elapsed),
+    };
+  }), [buildState, currentStageElapsed, currentStageIndex, totalElapsed]);
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    if (!prompt.trim() || runState === 'running') return;
-    setPromptHistory((items) => ({ ...items, [stage.id]: prompt.trim() }));
+    if (!prompt.trim() || buildState !== 'idle') return;
+    setSubmittedPrompt(prompt.trim());
     setPrompt('');
-    setElapsed(0);
-    setRunState('running');
+    setTotalElapsed(0);
+    setBuildState('running');
   }
 
   if (screen === 'viewer') {
+    const finalStage = buildStages[buildStages.length - 1];
     return (
       <main className="viewer-shell">
         <header className="viewer-topbar">
           <div className="brand-lockup">
             <span className="brand-mark" aria-hidden="true">F</span>
-            <div><strong>Harness Viewer</strong><span>STATIC GRAPH SNAPSHOT</span></div>
+            <div><strong>Harness Viewer</strong><span>FINAL MERMAID SNAPSHOT</span></div>
           </div>
-          <div className="viewer-version">HARNESS {stage.version}</div>
-          <div className="viewer-step">STEP {String(stage.id).padStart(2, '0')} <span>/ 05</span></div>
+          <div className="viewer-version">HARNESS v1.0</div>
+          <div className="viewer-step">05 <span>/ 05 COMPLETE</span></div>
         </header>
 
         <section className="viewer-titlebar">
           <div>
-            <div className="viewer-breadcrumb">
-              <span>GLOBAL HARNESS</span><i>/</i><strong>{stage.subtitle.toUpperCase()}</strong>
-            </div>
-            <p>STEP {stage.id} / 5</p>
-            <h1>{stage.title}</h1>
-            <h2>{stage.subtitle}</h2>
+            <div className="viewer-breadcrumb"><span>BUILD COMPLETE</span><i>/</i><strong>GLOBAL RUNTIME GRAPH</strong></div>
+            <p>AUTO PLAN LOOM</p>
+            <h1>Production Harness</h1>
+            <h2>Autonomous Product Engineering Harness</h2>
           </div>
-          <p className="viewer-description">{stage.description}</p>
+          <p className="viewer-description">5개의 hidden build instruction이 순차 적용된 최종 Harness입니다. Planning, Research, Engineering, Validation과 Production lifecycle이 하나의 Runtime Graph로 연결됩니다.</p>
         </section>
 
         <section className="graph-canvas">
           <div className="graph-grid" />
-          <div className="graph-badge"><span /> MERMAID FLOWCHART</div>
-          <MermaidChart chart={stage.mermaid} stageId={stage.id} zoom={zoom} />
+          <div className="graph-badge"><span /> MERMAID FLOWCHART · FINAL SNAPSHOT</div>
+          <MermaidChart chart={finalStage.mermaid} stageId={finalStage.id} zoom={zoom} />
           <div className="zoom-controls" aria-label="Graph zoom controls">
             <button onClick={() => setZoom((value) => Math.min(1.5, value + .1))} aria-label="Zoom in">+</button>
             <button onClick={() => setZoom(1)} aria-label="Reset zoom">{Math.round(zoom * 100)}%</button>
@@ -152,9 +155,9 @@ export default function Home() {
         </section>
 
         <footer className="viewer-footer">
-          <div><span className="complete-dot" /> SNAPSHOT READY</div>
-          <div className="shortcut-list"><kbd>R</kbd> Replay <kbd>ESC</kbd> CLI <kbd>→</kbd> Next</div>
-          <button onClick={advanceFromViewer}>Back to CLI <span>→</span></button>
+          <div><span className="complete-dot" /> AUTO PLAN LOOM READY</div>
+          <div className="shortcut-list"><kbd>R</kbd> Replay <kbd>ESC</kbd> Continue <kbd>→</kbd> Continue</div>
+          <button onClick={() => setScreen('ready')}>Continue <span>→</span></button>
         </footer>
       </main>
     );
@@ -165,108 +168,106 @@ export default function Home() {
       <main className="ready-shell">
         <div className="ready-grid" />
         <header className="ready-topbar">
-          <div className="brand-lockup"><span className="brand-mark">F</span><div><strong>Flogi Agent</strong><span>BUILD MODE</span></div></div>
-          <span>SESSION 5 / 5 COMPLETE</span>
+          <div className="brand-lockup"><span className="brand-mark">F</span><div><strong>Flogi Agent</strong><span>AUTO PLAN LOOM</span></div></div>
+          <span>BUILD 5 / 5 COMPLETE</span>
         </header>
         <section className="ready-content">
           <div className="ready-kicker"><span /> ALL SYSTEMS COMPOSED</div>
           <p>AUTONOMOUS PRODUCT ENGINEERING</p>
-          <h1>HARNESS<br />READY</h1>
+          <h1>LOOM<br />READY</h1>
           <div className="ready-summary">
             {buildStages.map((item) => <div key={item.id}><span>0{item.id}</span><strong>{item.title}</strong><i>✓</i></div>)}
           </div>
-          <div className="ready-command"><span>›</span><p>The completed harness is ready for its first product specification.</p><kbd>ENTER</kbd></div>
+          <div className="ready-command"><span>›</span><p>The completed loom is ready for its first product specification.</p><kbd>ENTER</kbd></div>
         </section>
         <footer className="ready-footer"><span>Autonomous Product Engineering Harness</span><strong>v1.0</strong></footer>
       </main>
     );
   }
 
-  const submittedPrompt = promptHistory[stage.id];
-  const progress = Math.min(100, (elapsed / scaledDuration) * 100);
-
   return (
     <main className="app-shell">
       <header className="topbar">
-        <div className="brand-lockup">
-          <span className="brand-mark" aria-hidden="true">F</span>
-          <div><strong>Flogi Agent</strong><span>Autonomous Harness Builder</span></div>
-        </div>
-        <div className="mode-lockup"><span className="live-dot" /><span>{scenarioMeta.mode}</span><i /><span>LOCAL SESSION</span></div>
-        <div className="step-counter"><span>STEP</span><strong>{String(stage.id).padStart(2, '0')}</strong><em>/ 05</em></div>
+        <div className="brand-lockup"><span className="brand-mark" aria-hidden="true">F</span><div><strong>Flogi Agent</strong><span>Autonomous Harness Builder</span></div></div>
+        <div className="mode-lockup"><span className="live-dot" /><span>{scenarioMeta.mode}</span><i /><span>DETERMINISTIC SESSION</span></div>
+        <div className="step-counter"><span>STEP</span><strong>{buildState === 'idle' ? '00' : String(currentStage.id).padStart(2, '0')}</strong><em>/ 05</em></div>
       </header>
 
       <section className="workspace">
         <aside className="stage-rail" aria-label="Harness build progress">
-          <p className="rail-label">BUILD SEQUENCE</p>
+          <p className="rail-label">AUTOMATED BUILD SEQUENCE</p>
           <ol>
-            {buildStageNames.map((name, index) => {
-              const id = index + 1;
-              const status = id === stage.id ? 'ACTIVE' : completed.includes(id) ? 'COMPLETE' : 'LOCKED';
+            {buildStages.map((stage, index) => {
+              const isDone = totalElapsed >= (index + 1) * stage.duration;
+              const isActive = buildState !== 'idle' && index === currentStageIndex && !isDone;
               return (
-                <li key={name} className={`${id === stage.id ? 'active' : ''} ${completed.includes(id) ? 'done' : ''}`}>
-                  <span>{String(id).padStart(2, '0')}</span>
-                  <div><strong>{name}</strong><small>{status}</small></div>
+                <li key={stage.id} className={`${isActive ? 'active' : ''} ${isDone ? 'done' : ''}`}>
+                  <span>{String(stage.id).padStart(2, '0')}</span>
+                  <div><strong>{stage.shortTitle}</strong><small>{isDone ? 'COMPLETE' : isActive ? 'RUNNING' : 'QUEUED'}</small></div>
                 </li>
               );
             })}
           </ol>
-          <div className="rail-footer"><span>HARNESS</span><strong>{stage.version}</strong></div>
+          <div className="rail-footer"><span>TOTAL</span><strong>{Math.round(progress)}%</strong></div>
         </aside>
 
         <section className="terminal-wrap">
           <div className="terminal-heading">
-            <div><span>STEP {stage.id} / 5</span><h1>{stage.title}</h1><p>{stage.eyebrow}</p></div>
-            <div className="terminal-status"><span className={runState === 'running' ? 'spinning' : ''} />{runState === 'idle' ? 'WAITING FOR INPUT' : runState === 'running' ? 'AGENT WORKING' : 'BUILD COMPLETE'}</div>
+            <div><span>{buildState === 'idle' ? 'READY TO BUILD' : `STEP ${currentStage.id} / 5`}</span><h1>{buildState === 'idle' ? 'Auto Plan Loom' : currentStage.title}</h1><p>{buildState === 'idle' ? 'One prompt. Five hidden build stages. One final viewer.' : currentStage.eyebrow}</p></div>
+            <div className="terminal-status"><span className={buildState === 'running' ? 'spinning' : ''} />{buildState === 'idle' ? 'WAITING FOR INITIAL PROMPT' : buildState === 'running' ? 'AUTONOMOUS BUILD RUNNING' : 'BUILD COMPLETE'}</div>
           </div>
 
-          <div className="terminal" aria-live="polite">
-            <div className="terminal-bar">
-              <div className="traffic"><i /><i /><i /></div>
-              <span>flogi-agent — /autonomous-harness</span>
-              <kbd>⌘ K</kbd>
-            </div>
+          <div className="terminal build-terminal" aria-live="polite">
+            <div className="terminal-bar"><div className="traffic"><i /><i /><i /></div><span>flogi-agent — /auto-plan-loom</span><kbd>⌘ K</kbd></div>
             <div className="terminal-body">
               <div className="welcome-block">
                 <span className="prompt-glyph">╭─</span>
-                <div><strong>Autonomous Harness Builder</strong><p>Describe the change. The current scenario stage controls the build.</p></div>
+                <div><strong>Autonomous Harness Builder</strong><p>Your first prompt starts the complete five-stage build sequence.</p></div>
               </div>
+
               {submittedPrompt && <div className="prompt-history"><span>›</span><p>{submittedPrompt}</p></div>}
-              {runState !== 'idle' && (
-                <div className="agent-output">
-                  {runState === 'running' && <div className="thinking-line"><span className="spinner" /><strong>Thinking</strong><small>{Math.ceil(elapsed * timeScale / 1000)}s</small></div>}
-                  {visibleLogs.map((log) => <div className={`log-line ${log.type}`} key={`${log.at}-${log.text}`}><span>{log.type === 'success' ? '✓' : log.type === 'work' ? '•' : '·'}</span><p>{log.text}</p></div>)}
-                  {runState === 'complete' && <div className="complete-block"><strong>✓ Harness updated</strong><code>http://localhost:3000/viewer/step-{stage.id}</code><small>Opening Harness Viewer…</small></div>}
+
+              {buildState !== 'idle' && (
+                <div className="agent-output build-output">
+                  {stageOutputs.map(({ stage, isComplete, isCurrent, logs }) => {
+                    if (!isComplete && !isCurrent) return null;
+                    return (
+                      <section className={`stage-output ${isComplete ? 'stage-complete' : ''}`} key={stage.id}>
+                        <div className="stage-output-header">
+                          <span>0{stage.id}</span>
+                          <div><strong>{stage.title}</strong><small>Applying hidden instruction {String(stage.id).padStart(2, '0')} / 05</small></div>
+                          {isComplete ? <i>✓</i> : <span className="spinner" />}
+                        </div>
+                        <div className="stage-log-list">
+                          {logs.map((log) => <div className={`log-line ${log.type}`} key={`${stage.id}-${log.at}`}><span>{log.type === 'success' ? '✓' : log.type === 'work' ? '•' : '·'}</span><p>{log.text}</p></div>)}
+                        </div>
+                        {isComplete && <div className="stage-done-line">✓ STEP {stage.id} COMPLETE <span>{stage.id < 5 ? 'CONTINUING AUTOMATICALLY' : 'FINALIZING HARNESS'}</span></div>}
+                      </section>
+                    );
+                  })}
+                  {buildState === 'complete' && <div className="complete-block"><strong>✓ Autonomous Product Engineering Harness ready</strong><code>http://localhost:3000/viewer/harness</code><small>Opening final Harness Viewer…</small></div>}
+                  <div ref={terminalEndRef} />
                 </div>
               )}
             </div>
 
             <form className="prompt-form" onSubmit={submit}>
               <label htmlFor="agent-prompt">›</label>
-              <textarea
-                id="agent-prompt"
-                value={prompt}
-                onChange={(event) => setPrompt(event.target.value)}
-                onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }}
-                placeholder={stage.id === 1 ? '하네스의 전체 실행 구조를 설계해줘…' : `Stage ${stage.id}에 필요한 변경을 요청하세요…`}
-                disabled={runState === 'running' || runState === 'complete'}
-                rows={1}
-                autoFocus
-              />
-              {runState === 'idle' && !prompt ? <button type="button" className="canonical-button" onClick={() => setPrompt(stage.canonicalPrompt)} aria-label="Use canonical prompt">⊕</button> : <button type="submit" disabled={!prompt.trim() || runState !== 'idle'} aria-label="Submit prompt">↑</button>}
+              <textarea id="agent-prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} placeholder="완전한 자율 제품 개발 하네스를 만들어줘…" disabled={buildState !== 'idle'} rows={1} autoFocus />
+              {buildState === 'idle' && !prompt ? <button type="button" className="canonical-button" onClick={() => setPrompt(buildStages[0].canonicalPrompt)} aria-label="Use initial canonical prompt">⊕</button> : <button type="submit" disabled={!prompt.trim() || buildState !== 'idle'} aria-label="Start complete build">↑</button>}
             </form>
           </div>
-          <p className="terminal-hint"><kbd>ENTER</kbd> send <span /> <kbd>⊕</kbd> canonical prompt <span /> <kbd>SHIFT + ENTER</kbd> new line</p>
+          <p className="terminal-hint"><kbd>ENTER</kbd> start all 5 stages <span /> <kbd>⊕</kbd> load initial prompt <span /> no further input required</p>
         </section>
 
         <aside className="context-panel">
           <div className="context-top"><span>SCENARIO</span><strong>LOCKED</strong></div>
-          <h2>{stage.subtitle}</h2>
-          <p>{stage.description}</p>
-          <div className="resource-stack">
-            {stage.resources.map((item, index) => <div key={item}><span>{String(index + 1).padStart(2, '0')}</span><p>{item}</p><i>→</i></div>)}
+          <h2>5 hidden instructions</h2>
+          <p>최초 입력 한 번으로 준비된 5개 canonical prompt가 순서대로 실행됩니다. Viewer는 모든 단계가 끝난 뒤 한 번만 열립니다.</p>
+          <div className="resource-stack hidden-prompts">
+            {buildStages.map((stage) => <div key={stage.id}><span>0{stage.id}</span><p>{stage.title}</p><i>{totalElapsed >= stage.id * stage.duration ? '✓' : currentStage.id === stage.id && buildState === 'running' ? '▶' : '·'}</i></div>)}
           </div>
-          <div className="scenario-note"><span>CANONICAL PROMPT</span><p>실제 입력은 화면에 보존되지만, 실행은 현재 Stage의 고정 Scenario를 따릅니다.</p></div>
+          <div className="scenario-note"><span>ONE INPUT · FIXED SCENARIO</span><p>사용자 문장은 화면에 그대로 남지만 Build 단계와 결과는 Scenario Data가 결정합니다.</p></div>
         </aside>
       </section>
       <div className="progress-track"><i style={{ width: `${progress}%` }} /></div>

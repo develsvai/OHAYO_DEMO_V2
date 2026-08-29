@@ -1,0 +1,5 @@
+[2026-08-29T09:20:35+00:00] agent=codex task=task-20260829-092023-harness-build-3ffbe25f Foreground task session started.
+[2026-08-29T09:21:00+00:00] 기존 STEP별 입력·Viewer 왕복 State Machine을 단일 totalElapsed 기반 자동 sequence로 교정했다.
+[2026-08-29T09:22:00+00:00] STEP 1~5 hidden instruction 진행 UI와 단계별 Streaming Log를 구현했다.
+[2026-08-29T09:23:00+00:00] STEP 5 완료 후 최종 Mermaid Viewer 1회 및 Auto Plan Loom Ready 상태를 구현했다.
+[2026-08-29T09:24:00+00:00] npm run build와 정적 상태 전이 검증을 통과했다.
