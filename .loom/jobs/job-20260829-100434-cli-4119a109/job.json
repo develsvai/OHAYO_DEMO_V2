@@ -1,0 +1,16 @@
+{
+  "id": "job-20260829-100434-cli-4119a109",
+  "title": "CLI 시작 화면 재현 및 실행기 안정화",
+  "goal": "Codex 스크린샷과 같은 Shell 시작 화면을 구현하고 발표 중 가짜임을 드러내는 문구를 제거하며 demo_start 인용부호 오류가 재발하지 않는 실행 흐름을 완성한다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T10:04:34+00:00",
+  "updated_at": "2026-08-29T10:14:33+00:00",
+  "context_refs": [],
+  "task_ids": [
+    "task-20260829-100442-codex-cli-launcher-875b5036"
+  ],
+  "branch_name": "develop",
+  "checkpoint_ids": [
+    "checkpoint-20260829-101433-task-completed-codex-cli-launcher-dab02362"
+  ]
+}

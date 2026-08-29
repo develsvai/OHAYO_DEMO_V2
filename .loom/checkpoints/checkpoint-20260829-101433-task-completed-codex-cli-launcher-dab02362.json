@@ -1,0 +1,32 @@
+{
+  "id": "checkpoint-20260829-101433-task-completed-codex-cli-launcher-dab02362",
+  "created_at": "2026-08-29T10:14:33+00:00",
+  "reason": "Task completed: Codex CLI 시작 화면과 Launcher 수정",
+  "summary": "Codex CLI 시작 화면과 Launcher 수정 -> DONE @ develop/189a6437fbf2",
+  "job_id": "job-20260829-100434-cli-4119a109",
+  "task_id": "task-20260829-100442-codex-cli-launcher-875b5036",
+  "commit_sha": "189a6437fbf248e8ae202265c1e5206e034b9a2c",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/events.jsonl",
+    "demo_start",
+    "site/README.md",
+    "site/app/layout.tsx",
+    "site/app/page.tsx",
+    "site/components/FinalRunExperience.tsx",
+    "site/scripts/demo-cli.mjs",
+    "site/scripts/validate-simulator.mjs"
+  ],
+  "untracked_files": [
+    ".loom/job-runs/job-run-20260829-100448-job-20260829-100434-cli-4119a109-9aabdc16/",
+    ".loom/jobs/job-20260829-100434-cli-4119a109/",
+    ".loom/task-definitions/task-def-20260829-100442-codex-cli-launcher-2738d8be/",
+    ".loom/task-runs/task-run-20260829-100448-task-def-20260829-100442-codex-cli-launcher-2738-43bd61f6/",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/",
+    "site/scripts/demo-launcher.mjs"
+  ],
+  "snapshot_captured_at": "2026-08-29T10:14:33+00:00",
+  "rollback_strategy": "revert-or-branch"
+}

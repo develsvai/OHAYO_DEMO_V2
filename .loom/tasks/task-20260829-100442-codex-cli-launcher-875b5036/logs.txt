@@ -1,0 +1,4 @@
+[2026-08-29T10:04:48+00:00] agent=codex task=task-20260829-100442-codex-cli-launcher-875b5036 Foreground task session started.
+[2026-08-29T10:13:47+00:00] agent=codex task=task-20260829-100442-codex-cli-launcher-875b5036 Codex 시작 화면, 최소 Launcher, 노출 문구 제거와 입력 Cursor 수정 완료.
+[2026-08-29T10:13:47+00:00] agent=codex task=task-20260829-100442-codex-cli-launcher-875b5036 Shell 문법, 실제 TTY 완주, HTTP, lint, Scenario validation, production build와 owner-only 배포 검증 완료.
+[2026-08-29T10:14:33+00:00] agent=codex task=task-20260829-100442-codex-cli-launcher-875b5036 Codex CLI 시작 화면, Launcher 안정화, 입력 Cursor와 노출 문구 수정 및 배포 검증 완료

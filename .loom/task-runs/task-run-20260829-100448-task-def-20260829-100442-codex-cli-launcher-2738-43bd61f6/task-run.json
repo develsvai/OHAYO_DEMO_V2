@@ -1,0 +1,40 @@
+{
+  "id": "task-run-20260829-100448-task-def-20260829-100442-codex-cli-launcher-2738-43bd61f6",
+  "job_run_id": "job-run-20260829-100448-job-20260829-100434-cli-4119a109-9aabdc16",
+  "task_definition_id": "task-def-20260829-100442-codex-cli-launcher-2738d8be",
+  "status": "DONE",
+  "created_at": "2026-08-29T10:04:48+00:00",
+  "updated_at": "2026-08-29T10:14:33+00:00",
+  "legacy_task_id": "task-20260829-100442-codex-cli-launcher-875b5036",
+  "attempt": 1,
+  "assigned_agent": "codex",
+  "worker_id": "",
+  "heartbeat_at": "",
+  "lease_expires_at": "",
+  "queued_at": "",
+  "started_at": "2026-08-29T10:04:48+00:00",
+  "completed_at": "2026-08-29T10:14:33+00:00",
+  "last_error": "",
+  "commit_refs": [
+    "189a6437fbf248e8ae202265c1e5206e034b9a2c"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-08-29T10:14:33+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/agent-events.jsonl",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/artifacts.json",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/context.md",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/decision.md",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/git-snapshot.json",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/logs.txt",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/previous-results.md",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/prompt.md",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/result.md",
+    ".loom/tasks/task-20260829-100442-codex-cli-launcher-875b5036/troubleshooting.md"
+  ],
+  "checkpoint_ids": [
+    "checkpoint-20260829-101433-task-completed-codex-cli-launcher-dab02362"
+  ],
+  "review_required_reason": ""
+}

@@ -448,7 +448,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
           <div className="product-prompt-heading">
             <span>새 제품 실행</span>
             <h1>Loom에 제품 목표를<br />전달하세요.</h1>
-            <p>무엇을 입력해도 화면에는 그대로 보존됩니다. 실제 의미 분석 없이 준비된 10개 OHAYO Task Scenario가 동일하게 실행됩니다.</p>
+            <p>제품 명세와 Context를 바탕으로 실행 가능한 Task Graph를 구성하고, 각 목표를 검증하며 배포까지 진행합니다.</p>
           </div>
           <div className="product-prompt-terminal">
             <div className="terminal-bar"><div className="traffic"><i /><i /><i /></div><span>auto-plan-loom — product run</span><kbd>준비됨</kbd></div>

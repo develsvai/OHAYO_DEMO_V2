@@ -68,7 +68,7 @@ export default function Home() {
           <h1>Production Harness</h1>
           <h2>Autonomous Product Engineering Harness</h2>
         </div>
-        <p className="viewer-description">Shell의 가짜 Codex CLI에서 5개 고정 지침을 모두 적용한 최종 Harness입니다. 이제 이 Loom에 제품 구현 목표를 전달할 수 있습니다.</p>
+        <p className="viewer-description">Shell에서 구성된 5개 Harness Layer가 하나의 Global Runtime Graph로 연결되었습니다. 이제 이 Loom에 제품 구현 목표를 전달할 수 있습니다.</p>
       </section>
 
       <section className="graph-canvas">
