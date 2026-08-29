@@ -1,10 +1,10 @@
 {
-  "status": "RUNNING",
+  "status": "DONE",
   "agent": "codex",
   "mode": "foreground",
   "execution_surface": "foreground",
   "task_run_id": "task-run-20260829-092035-task-def-20260829-092023-harness-build-75e47547-627f1631",
-  "generated_at": "2026-08-29T09:20:35+00:00",
+  "generated_at": "2026-08-29T09:23:34+00:00",
   "artifacts": [
     ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/prompt.md",
     ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/context.md",
@@ -15,9 +15,7 @@
     ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/troubleshooting.md",
     ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/logs.txt",
     ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/agent-events.jsonl",
-    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/artifacts.json",
-    "site/app/page.tsx",
-    "site/app/globals.css"
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/artifacts.json"
   ],
   "artifact_groups": {
     "user_outputs": [
@@ -36,10 +34,7 @@
       ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/agent-events.jsonl",
       ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/artifacts.json"
     ],
-    "work_products": [
-      "site/app/page.tsx",
-      "site/app/globals.css"
-    ]
+    "work_products": []
   },
   "contract_snapshot": {
     "schema_version": 1,

@@ -3,9 +3,9 @@
   "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
   "title": "Harness Build 단일 입력 자동 실행 흐름 교정",
   "description": "최초 자유 입력 한 번으로 hidden canonical prompt STEP 1~5를 각 약 1분씩 자동 순차 실행하고, 중간 입력·Viewer 없이 STEP 5 완료 후 통합 Mermaid Harness Viewer를 한 번만 표시하도록 Build State Machine을 교정한다.",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-08-29T09:20:23+00:00",
-  "updated_at": "2026-08-29T09:20:35+00:00",
+  "updated_at": "2026-08-29T09:23:34+00:00",
   "order_index": 4,
   "assigned_agent": "codex",
   "depends_on": [
@@ -23,12 +23,24 @@
   "run_attempts": 0,
   "last_error": "",
   "commit_refs": [
-    "bcbcfe71abaa5a6b9f185c2f20e1e72fe2886920"
+    "bcbcfe71abaa5a6b9f185c2f20e1e72fe2886920",
+    "326d8d7b7104c03e91e4262ab488f5450d2a5010"
   ],
   "branch_name": "develop",
   "git_dirty": true,
-  "git_snapshot_captured_at": "2026-08-29T09:20:35+00:00",
-  "artifacts": [],
+  "git_snapshot_captured_at": "2026-08-29T09:23:34+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/agent-events.jsonl",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/artifacts.json",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/context.md",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/decision.md",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/git-snapshot.json",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/logs.txt",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/previous-results.md",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/prompt.md",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/result.md",
+    ".loom/tasks/task-20260829-092023-harness-build-3ffbe25f/troubleshooting.md"
+  ],
   "source_proposal_id": "",
   "source_prompt": ""
 }

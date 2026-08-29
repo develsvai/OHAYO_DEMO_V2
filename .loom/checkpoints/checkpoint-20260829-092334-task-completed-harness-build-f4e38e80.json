@@ -1,0 +1,19 @@
+{
+  "id": "checkpoint-20260829-092334-task-completed-harness-build-f4e38e80",
+  "created_at": "2026-08-29T09:23:34+00:00",
+  "reason": "Task completed: Harness Build 단일 입력 자동 실행 흐름 교정",
+  "summary": "Harness Build 단일 입력 자동 실행 흐름 교정 -> DONE @ develop/326d8d7b7104",
+  "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
+  "task_id": "task-20260829-092023-harness-build-3ffbe25f",
+  "commit_sha": "326d8d7b7104c03e91e4262ab488f5450d2a5010",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/job-runs/job-run-20260829-090209-job-20260829-090057-ohayo-autonomous-harness-sim-cd0b43e8/job-run.json",
+    ".loom/task-definitions/task-def-20260829-092023-harness-build-75e47547/task-definition.json"
+  ],
+  "untracked_files": [],
+  "snapshot_captured_at": "2026-08-29T09:23:34+00:00",
+  "rollback_strategy": "revert-or-branch"
+}
