@@ -23,6 +23,7 @@
 - `npm run build`: 성공
 - `git diff --check`: 성공
 - Viewer, Run, Presenter Route: HTTP 200
+- 비공개 Web 배포: `https://flogi-ohayo-demo-v2.developsvai5096.chatgpt.site`
 
 다음 행동:
 
