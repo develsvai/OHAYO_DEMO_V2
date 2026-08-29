@@ -6,3 +6,5 @@
 [2026-08-29T09:37:00+00:00] npm run lint, npm run validate:scenario, npm run build, git diff --check를 통과했다.
 [2026-08-29T09:37:00+00:00] 관객 Route와 Presenter Route의 HTTP 200 응답을 확인했다.
 [2026-08-29T09:38:00+00:00] artifacts.json의 누락된 배열 쉼표를 수정하고 JSON 검증을 재실행했다.
+[2026-08-29T09:40:00+00:00] loom task finish의 미지원 --json 옵션을 제거하고 완료 명령을 재실행했다.
+[2026-08-29T09:39:30+00:00] agent=foreground task=task-20260829-090136-ohayo-simulator-c4c4afaa Foreground task session completed.

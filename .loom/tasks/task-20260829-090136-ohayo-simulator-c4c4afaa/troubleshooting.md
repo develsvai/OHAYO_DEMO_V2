@@ -22,3 +22,7 @@ Browser control skill을 확인했으나 실행 가능한 인앱 Browser가 없�
 ## Loom artifacts JSON 문법 오류
 
 작업 산출물 경로를 추가하면서 배열 항목 사이 쉼표가 한 번 누락되어 `python3 -m json.tool` 검증이 실패했다. 누락된 쉼표를 보완한 뒤 JSON과 Loom strict validation을 다시 실행했다.
+
+## Loom Task finish 옵션
+
+현재 설치된 Loom의 `task finish` 하위 명령은 `--json` 옵션을 지원하지 않아 첫 완료 명령이 인자 오류로 종료됐다. 동일 명령을 지원되는 형식인 `loom task finish <task-id>`로 다시 실행했다.
