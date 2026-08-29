@@ -1,0 +1,16 @@
+{
+  "id": "job-20260829-113237-github-b5de5c7c",
+  "title": "GitHub 원격 게시와 다른 노트북 실행 점검",
+  "goal": "GitHub 저장소를 origin으로 등록해 develop 브랜치의 최신 커밋을 게시하고, 새 노트북에서 데모 실행에 필요한 Node와 의존성 설치 조건을 로컬 설정 기준으로 확인한다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T11:32:37+00:00",
+  "updated_at": "2026-08-29T11:34:46+00:00",
+  "context_refs": [],
+  "task_ids": [
+    "task-20260829-113245-origin-push-6d145297"
+  ],
+  "branch_name": "develop",
+  "checkpoint_ids": [
+    "checkpoint-20260829-113446-task-completed-origin-push-e1d86117"
+  ]
+}

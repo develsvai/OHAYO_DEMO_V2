@@ -1,0 +1,38 @@
+{
+  "before": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "4dc644103ed6610c706324e2763a03ad7009eed4",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-113251-job-20260829-113237-github-b5de5c7c-5af1bc77/",
+      ".loom/jobs/job-20260829-113237-github-b5de5c7c/",
+      ".loom/task-definitions/task-def-20260829-113245-origin-push-d5f60efa/",
+      ".loom/task-runs/task-run-20260829-113251-task-def-20260829-113245-origin-push-d5f60efa-d416879d/",
+      ".loom/tasks/task-20260829-113245-origin-push-6d145297/"
+    ],
+    "captured_at": "2026-08-29T11:32:51+00:00"
+  },
+  "after": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "4dc644103ed6610c706324e2763a03ad7009eed4",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-113251-job-20260829-113237-github-b5de5c7c-5af1bc77/",
+      ".loom/jobs/job-20260829-113237-github-b5de5c7c/",
+      ".loom/task-definitions/task-def-20260829-113245-origin-push-d5f60efa/",
+      ".loom/task-runs/task-run-20260829-113251-task-def-20260829-113245-origin-push-d5f60efa-d416879d/",
+      ".loom/tasks/task-20260829-113245-origin-push-6d145297/"
+    ],
+    "captured_at": "2026-08-29T11:34:46+00:00"
+  }
+}
