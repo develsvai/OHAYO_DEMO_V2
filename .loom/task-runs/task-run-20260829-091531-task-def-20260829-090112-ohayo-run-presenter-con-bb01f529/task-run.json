@@ -2,9 +2,9 @@
   "id": "task-run-20260829-091531-task-def-20260829-090112-ohayo-run-presenter-con-bb01f529",
   "job_run_id": "job-run-20260829-090209-job-20260829-090057-ohayo-autonomous-harness-sim-cd0b43e8",
   "task_definition_id": "task-def-20260829-090112-ohayo-run-presenter-control-181a69a0",
-  "status": "REVIEW_REQUIRED",
+  "status": "DONE",
   "created_at": "2026-08-29T09:15:31+00:00",
-  "updated_at": "2026-08-29T09:20:07+00:00",
+  "updated_at": "2026-08-29T09:30:46+00:00",
   "legacy_task_id": "task-20260829-090112-ohayo-run-presenter-control-886a3df1",
   "attempt": 1,
   "assigned_agent": "codex",
@@ -13,15 +13,17 @@
   "lease_expires_at": "",
   "queued_at": "",
   "started_at": "2026-08-29T09:15:31+00:00",
-  "completed_at": "2026-08-29T09:20:07+00:00",
+  "completed_at": "2026-08-29T09:30:46+00:00",
   "last_error": "",
   "commit_refs": [
+    "0fe98b64ea6c639e2097472e2f08ccf965c4eae4",
     "3db287ae3ec6a40af5e729face8d0afa2dd72ea7",
+    "512a9c4085b72e8ae09cf20ec434fc1aaa99eaee",
     "d2426b14bd8a854c0d2cefffc15650b7591c0596"
   ],
   "branch_name": "develop",
   "git_dirty": true,
-  "git_snapshot_captured_at": "2026-08-29T09:20:07+00:00",
+  "git_snapshot_captured_at": "2026-08-29T09:30:46+00:00",
   "artifacts": [
     ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/agent-events.jsonl",
     ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/artifacts.json",
@@ -34,6 +36,8 @@
     ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/result.md",
     ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/troubleshooting.md"
   ],
-  "checkpoint_ids": [],
+  "checkpoint_ids": [
+    "checkpoint-20260829-093046-task-completed-ohayo-run-presenter-control-11b8169c"
+  ],
   "review_required_reason": ""
 }

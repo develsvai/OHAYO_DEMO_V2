@@ -1,0 +1,19 @@
+{
+  "id": "checkpoint-20260829-093046-task-completed-ohayo-run-presenter-control-11b8169c",
+  "created_at": "2026-08-29T09:30:46+00:00",
+  "reason": "Task completed: OHAYO Run과 Presenter Control 구현",
+  "summary": "OHAYO Run과 Presenter Control 구현 -> DONE @ develop/512a9c4085b7",
+  "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
+  "task_id": "task-20260829-090112-ohayo-run-presenter-control-886a3df1",
+  "commit_sha": "512a9c4085b72e8ae09cf20ec434fc1aaa99eaee",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/job-runs/job-run-20260829-090209-job-20260829-090057-ohayo-autonomous-harness-sim-cd0b43e8/job-run.json",
+    ".loom/task-definitions/task-def-20260829-090112-ohayo-run-presenter-control-181a69a0/task-definition.json"
+  ],
+  "untracked_files": [],
+  "snapshot_captured_at": "2026-08-29T09:30:46+00:00",
+  "rollback_strategy": "revert-or-branch"
+}
