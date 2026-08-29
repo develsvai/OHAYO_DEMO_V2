@@ -1,0 +1,25 @@
+{
+  "id": "checkpoint-20260829-113033-task-completed-readme-620cc119",
+  "created_at": "2026-08-29T11:30:33+00:00",
+  "reason": "Task completed: 루트 발표 사용법 README",
+  "summary": "루트 발표 사용법 README -> DONE @ develop/3a97a57a88c5",
+  "job_id": "job-20260829-112929-readme-ddb4fa5b",
+  "task_id": "task-20260829-112936-readme-d9dc1d22",
+  "commit_sha": "3a97a57a88c56737e06621de0769f9e1f559ef12",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/events.jsonl"
+  ],
+  "untracked_files": [
+    ".loom/job-runs/job-run-20260829-112940-job-20260829-112929-readme-ddb4fa5b-8a9c1af8/",
+    ".loom/jobs/job-20260829-112929-readme-ddb4fa5b/",
+    ".loom/task-definitions/task-def-20260829-112936-readme-69e451fc/",
+    ".loom/task-runs/task-run-20260829-112940-task-def-20260829-112936-readme-69e451fc-f450b774/",
+    ".loom/tasks/task-20260829-112936-readme-d9dc1d22/",
+    "README.md"
+  ],
+  "snapshot_captured_at": "2026-08-29T11:30:33+00:00",
+  "rollback_strategy": "revert-or-branch"
+}

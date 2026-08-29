@@ -1,0 +1,39 @@
+{
+  "before": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "3a97a57a88c56737e06621de0769f9e1f559ef12",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-112940-job-20260829-112929-readme-ddb4fa5b-8a9c1af8/",
+      ".loom/jobs/job-20260829-112929-readme-ddb4fa5b/",
+      ".loom/task-definitions/task-def-20260829-112936-readme-69e451fc/",
+      ".loom/task-runs/task-run-20260829-112940-task-def-20260829-112936-readme-69e451fc-f450b774/",
+      ".loom/tasks/task-20260829-112936-readme-d9dc1d22/"
+    ],
+    "captured_at": "2026-08-29T11:29:40+00:00"
+  },
+  "after": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "3a97a57a88c56737e06621de0769f9e1f559ef12",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-112940-job-20260829-112929-readme-ddb4fa5b-8a9c1af8/",
+      ".loom/jobs/job-20260829-112929-readme-ddb4fa5b/",
+      ".loom/task-definitions/task-def-20260829-112936-readme-69e451fc/",
+      ".loom/task-runs/task-run-20260829-112940-task-def-20260829-112936-readme-69e451fc-f450b774/",
+      ".loom/tasks/task-20260829-112936-readme-d9dc1d22/",
+      "README.md"
+    ],
+    "captured_at": "2026-08-29T11:30:33+00:00"
+  }
+}
