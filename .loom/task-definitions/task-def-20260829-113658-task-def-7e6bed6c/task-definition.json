@@ -1,0 +1,28 @@
+{
+  "id": "task-def-20260829-113658-task-def-7e6bed6c",
+  "job_definition_id": "job-20260829-113653-readme-c06b3e4b",
+  "title": "다른 노트북 최초 실행 명령 문서화",
+  "description": "루트 README에 Node.js 요구 버전, Git clone, site npm ci, 루트 demo-start 실행과 OS/포트 주의사항을 추가한다.",
+  "created_at": "2026-08-29T11:36:58+00:00",
+  "updated_at": "2026-08-29T11:38:13+00:00",
+  "order_index": 1,
+  "legacy_task_id": "task-20260829-113658-task-daac9b3b",
+  "depends_on": [],
+  "expected_output": "복사 실행 가능한 최초 설치 및 실행 명령이 포함된 README.md",
+  "done_condition": "README만 보고 새 노트북에서 develop clone, npm ci, demo-start 실행 순서를 알 수 있고 기존 발표 흐름과 RESET 안내가 유지되며 strict validation이 성공한다.",
+  "in_scope": "README.md 문서 수정과 검증",
+  "out_of_scope": "앱 코드, package 설정, 실행 로직 변경",
+  "validation_hint": "README 내용 확인, git diff --check, loom validate --strict",
+  "required_docs": [],
+  "memory_refs": [],
+  "document_outputs": [],
+  "document_output_exceptions": [
+    "README.md"
+  ],
+  "default_agent": "codex",
+  "context_policy_id": "",
+  "executor_policy_id": "",
+  "review_policy": "",
+  "source_proposal_id": "",
+  "source_prompt": ""
+}

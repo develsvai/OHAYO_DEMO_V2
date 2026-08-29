@@ -1,0 +1,16 @@
+{
+  "id": "job-20260829-113653-readme-c06b3e4b",
+  "title": "README 최초 실행 안내 보강",
+  "goal": "다른 노트북에서 저장소를 처음 받은 사용자가 Node 설치 조건, clone, npm ci, demo-start 실행까지 README만 보고 재현할 수 있게 한다.",
+  "status": "DONE",
+  "created_at": "2026-08-29T11:36:53+00:00",
+  "updated_at": "2026-08-29T11:38:13+00:00",
+  "context_refs": [],
+  "task_ids": [
+    "task-20260829-113658-task-daac9b3b"
+  ],
+  "branch_name": "develop",
+  "checkpoint_ids": [
+    "checkpoint-20260829-113813-task-completed-496f9719"
+  ]
+}

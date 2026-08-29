@@ -1,0 +1,25 @@
+{
+  "id": "checkpoint-20260829-113813-task-completed-496f9719",
+  "created_at": "2026-08-29T11:38:13+00:00",
+  "reason": "Task completed: 다른 노트북 최초 실행 명령 문서화",
+  "summary": "다른 노트북 최초 실행 명령 문서화 -> DONE @ develop/ad50c738a47f",
+  "job_id": "job-20260829-113653-readme-c06b3e4b",
+  "task_id": "task-20260829-113658-task-daac9b3b",
+  "commit_sha": "ad50c738a47fb2774944d6fec9038de2921b06aa",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/events.jsonl",
+    "README.md"
+  ],
+  "untracked_files": [
+    ".loom/job-runs/job-run-20260829-113701-job-20260829-113653-readme-c06b3e4b-ada27ccf/",
+    ".loom/jobs/job-20260829-113653-readme-c06b3e4b/",
+    ".loom/task-definitions/task-def-20260829-113658-task-def-7e6bed6c/",
+    ".loom/task-runs/task-run-20260829-113701-task-def-20260829-113658-task-def-7e6bed6c-7f9221be/",
+    ".loom/tasks/task-20260829-113658-task-daac9b3b/"
+  ],
+  "snapshot_captured_at": "2026-08-29T11:38:13+00:00",
+  "rollback_strategy": "revert-or-branch"
+}

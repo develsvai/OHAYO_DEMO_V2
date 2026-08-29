@@ -1,0 +1,14 @@
+{
+  "id": "job-run-20260829-113701-job-20260829-113653-readme-c06b3e4b-ada27ccf",
+  "job_definition_id": "job-20260829-113653-readme-c06b3e4b",
+  "status": "DONE",
+  "created_at": "2026-08-29T11:37:01+00:00",
+  "updated_at": "2026-08-29T11:38:13+00:00",
+  "legacy_job_id": "job-20260829-113653-readme-c06b3e4b",
+  "started_at": "2026-08-29T11:37:01+00:00",
+  "completed_at": "2026-08-29T11:38:13+00:00",
+  "trigger_mode": "manual",
+  "trigger_ref": "",
+  "worker_pool": "",
+  "last_error": ""
+}
