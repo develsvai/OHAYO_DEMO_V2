@@ -21,6 +21,9 @@ export type BuildStage = {
 
 const minute = 60_000;
 
+// 발표 문구와 타이밍의 단일 수정 지점입니다.
+// STEP 1~5의 canonicalPrompt는 writing-block.md를 따르며,
+// STEP 3만 최종 회의 결정에 따라 Test Orchestrator를 제외합니다.
 export const buildStages: BuildStage[] = [
   {
     id: 1,
@@ -44,8 +47,8 @@ export const buildStages: BuildStage[] = [
       { at: 25_000, type: 'success', text: '기획 Orchestrator 생성' },
       { at: 34_000, type: 'success', text: '리서치·개발·검증 Orchestrator 연결' },
       { at: 44_000, type: 'success', text: '실행 Graph 생성' },
-      { at: 52_000, type: 'work', text: 'Harness Viewer 패키징 중' },
-      { at: 57_000, type: 'success', text: 'Harness Viewer 생성 완료' },
+      { at: 52_000, type: 'work', text: 'Global architecture snapshot 준비 중' },
+      { at: 57_000, type: 'success', text: 'Harness Skeleton 반영 완료' },
     ],
     resources: ['Product specification', 'Data & API keys', 'Deployment context'],
     mermaid: `flowchart TD

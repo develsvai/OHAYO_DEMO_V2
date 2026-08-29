@@ -1,0 +1,19 @@
+{
+  "before": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "9e84a8a198bdf392e3361423837bd1bd86207807",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl",
+      ".loom/job-runs/job-run-20260829-090209-job-20260829-090057-ohayo-autonomous-harness-sim-cd0b43e8/job-run.json",
+      ".loom/task-definitions/task-def-20260829-090136-ohayo-simulator-ff61ffd3/task-definition.json"
+    ],
+    "untracked_files": [
+      ".loom/task-runs/task-run-20260829-093104-task-def-20260829-090136-ohayo-simulator-ff61ffd-ebcb32ae/"
+    ],
+    "captured_at": "2026-08-29T09:31:04+00:00"
+  },
+  "after": null
+}

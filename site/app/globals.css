@@ -111,6 +111,7 @@ button, textarea { font: inherit; }
 .thinking-line { display: flex; align-items: center; gap: 9px; margin-bottom: 4px; color: #dde1dc; font-size: 11px; }
 .thinking-line small { margin-left: auto; color: #626873; font-size: 9px; }
 .spinner { width: 11px; height: 11px; border: 1px solid #3c4148; border-top-color: var(--acid); border-radius: 50%; animation: spin .8s linear infinite; }
+.spinner.paused { animation: none; border-color: #ffcf75; }
 .log-line { display: grid; grid-template-columns: 16px 1fr; gap: 7px; color: #969ca5; font-size: 11px; animation: log-in .28s ease-out both; }
 .log-line span { color: #69707a; }
 .log-line p { margin: 0; }

@@ -3,12 +3,20 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FinalRunExperience } from '@/components/FinalRunExperience';
 import { MermaidChart } from '@/components/MermaidChart';
-import { buildStages, scenarioMeta } from '@/lib/scenario';
+import { buildStages, finalRun, scenarioMeta } from '@/lib/scenario';
+import {
+  buildRunStorageKey,
+  finalRunStorageKey,
+  PresenterCommand,
+  presenterChannelName,
+  presenterCommandKey,
+  StoredBuildRunState,
+  StoredFinalRunState,
+} from '@/lib/run-control';
 
 type BuildState = 'idle' | 'running' | 'complete';
 type Screen = 'cli' | 'viewer' | 'ready' | 'product';
 
-const storageKey = 'flogi-harness-build-state-v2';
 const totalDuration = buildStages.reduce((sum, stage) => sum + stage.duration, 0);
 
 export default function Home() {
@@ -19,6 +27,8 @@ export default function Home() {
   const [totalElapsed, setTotalElapsed] = useState(0);
   const [timeScale, setTimeScale] = useState(1);
   const [zoom, setZoom] = useState(1);
+  const [hydrated, setHydrated] = useState(false);
+  const [buildPaused, setBuildPaused] = useState(false);
   const lastTickAt = useRef(0);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
@@ -30,27 +40,38 @@ export default function Home() {
   const currentVisibleLogCount = currentStage.logs.filter((log) => log.at <= currentStageElapsed).length;
 
   useEffect(() => {
-    const speed = Number(new URLSearchParams(window.location.search).get('speed'));
-    if (Number.isFinite(speed) && speed >= 1 && speed <= 60) setTimeScale(speed);
-    const stored = window.localStorage.getItem(storageKey);
-    if (!stored) return;
-    try {
-      const state = JSON.parse(stored) as { screen?: Screen; buildState?: BuildState; submittedPrompt?: string; totalElapsed?: number };
-      if (state.screen === 'viewer' || state.screen === 'ready' || state.screen === 'product') setScreen(state.screen);
-      if (state.buildState === 'running' || state.buildState === 'complete') setBuildState(state.buildState);
-      if (typeof state.submittedPrompt === 'string') setSubmittedPrompt(state.submittedPrompt);
-      if (typeof state.totalElapsed === 'number') setTotalElapsed(Math.min(totalDuration, Math.max(0, state.totalElapsed)));
-    } catch {
-      window.localStorage.removeItem(storageKey);
-    }
+    const restore = window.setTimeout(() => {
+      const speed = Number(new URLSearchParams(window.location.search).get('speed'));
+      if (Number.isFinite(speed) && speed >= 1 && speed <= 60) setTimeScale(speed);
+      const stored = window.localStorage.getItem(buildRunStorageKey);
+      if (!stored) {
+        setHydrated(true);
+        return;
+      }
+      try {
+        const state = JSON.parse(stored) as StoredBuildRunState;
+        if (state.screen === 'viewer' || state.screen === 'ready' || state.screen === 'product') setScreen(state.screen);
+        if (state.buildState === 'running' || state.buildState === 'complete') setBuildState(state.buildState);
+        if (typeof state.submittedPrompt === 'string') setSubmittedPrompt(state.submittedPrompt);
+        if (typeof state.totalElapsed === 'number') setTotalElapsed(Math.min(totalDuration, Math.max(0, state.totalElapsed)));
+        if (typeof state.paused === 'boolean') setBuildPaused(state.paused);
+        if (!(Number.isFinite(speed) && speed >= 1 && speed <= 60) && typeof state.timeScale === 'number') setTimeScale(state.timeScale);
+      } catch {
+        window.localStorage.removeItem(buildRunStorageKey);
+      }
+      setHydrated(true);
+    }, 0);
+    return () => window.clearTimeout(restore);
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify({ screen, buildState, submittedPrompt, totalElapsed }));
-  }, [buildState, screen, submittedPrompt, totalElapsed]);
+    if (!hydrated) return;
+    const state: StoredBuildRunState = { screen, buildState, submittedPrompt, totalElapsed, paused: buildPaused, timeScale, updatedAt: Date.now() };
+    window.localStorage.setItem(buildRunStorageKey, JSON.stringify(state));
+  }, [buildPaused, buildState, hydrated, screen, submittedPrompt, timeScale, totalElapsed]);
 
   useEffect(() => {
-    if (buildState !== 'running') return;
+    if (buildState !== 'running' || buildPaused) return;
     lastTickAt.current = Date.now();
     const timer = window.setInterval(() => {
       const now = Date.now();
@@ -63,7 +84,7 @@ export default function Home() {
       });
     }, 120);
     return () => window.clearInterval(timer);
-  }, [buildState, timeScale]);
+  }, [buildPaused, buildState, timeScale]);
 
   useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -90,6 +111,10 @@ export default function Home() {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') {
+        event.preventDefault();
+        window.open('/presenter', 'flogi-presenter', 'width=520,height=820');
+      }
       if (event.key.toLowerCase() === 'r' && screen === 'viewer') replayBuild();
       if ((event.key === 'Escape' || event.key === 'ArrowRight') && screen === 'viewer') {
         setScreen('ready');
@@ -123,6 +148,7 @@ export default function Home() {
     setPrompt('');
     setTotalElapsed(0);
     setBuildState('running');
+    setBuildPaused(false);
   }
 
   const resetAll = useCallback(() => {
@@ -131,9 +157,64 @@ export default function Home() {
     setPrompt('');
     setSubmittedPrompt('');
     setTotalElapsed(0);
-    window.localStorage.removeItem(storageKey);
+    setBuildPaused(false);
+    window.localStorage.removeItem(buildRunStorageKey);
+    window.localStorage.removeItem(finalRunStorageKey);
     window.history.replaceState(null, '', '/');
   }, []);
+
+  const executeBuildCommand = useCallback((command: PresenterCommand) => {
+    if (screen === 'product') return;
+    if (command.type === 'pause' && buildState === 'running') setBuildPaused(true);
+    if (command.type === 'resume' && buildState === 'running') setBuildPaused(false);
+    if (command.type === 'next-event' && buildState === 'running') {
+      const next = currentStage.logs.find((log) => log.at > currentStageElapsed + 100);
+      const nextElapsed = currentStageIndex * currentStage.duration + (next?.at ?? currentStage.duration);
+      setTotalElapsed(Math.min(totalDuration, nextElapsed));
+      if (nextElapsed >= totalDuration) setBuildState('complete');
+    }
+    if ((command.type === 'next-task' || command.type === 'complete-current') && buildState === 'running') {
+      const nextElapsed = Math.min(totalDuration, (currentStageIndex + 1) * currentStage.duration);
+      setTotalElapsed(nextElapsed);
+      if (nextElapsed >= totalDuration) setBuildState('complete');
+    }
+    if (command.type === 'reset-run' || command.type === 'reset-all') resetAll();
+    if (command.type === 'show-result') {
+      const resultState: StoredFinalRunState = {
+        screen: 'result',
+        submittedPrompt: finalRun.canonicalPrompt,
+        currentTaskIndex: finalRun.tasks.length - 1,
+        taskElapsed: finalRun.taskDuration,
+        completedTaskIds: finalRun.tasks.map((task) => task.id),
+        paused: false,
+        speed: timeScale,
+        viewMode: 'web',
+        updatedAt: Date.now(),
+      };
+      window.localStorage.setItem(finalRunStorageKey, JSON.stringify(resultState));
+      setScreen('product');
+    }
+    if (command.type === 'set-speed') setTimeScale(Math.min(60, Math.max(1, command.value)));
+  }, [buildState, currentStage.duration, currentStage.logs, currentStageElapsed, currentStageIndex, resetAll, screen, timeScale]);
+
+  useEffect(() => {
+    const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(presenterChannelName) : null;
+    if (channel) channel.onmessage = (event: MessageEvent<PresenterCommand>) => executeBuildCommand(event.data);
+    function onStorage(event: StorageEvent) {
+      if (channel || event.key !== presenterCommandKey || !event.newValue) return;
+      try {
+        const payload = JSON.parse(event.newValue) as { command: PresenterCommand };
+        executeBuildCommand(payload.command);
+      } catch {
+        return;
+      }
+    }
+    window.addEventListener('storage', onStorage);
+    return () => {
+      channel?.close();
+      window.removeEventListener('storage', onStorage);
+    };
+  }, [executeBuildCommand]);
 
   if (screen === 'product') {
     return <FinalRunExperience onResetAll={resetAll} />;
@@ -233,7 +314,7 @@ export default function Home() {
         <section className="terminal-wrap">
           <div className="terminal-heading">
             <div><span>{buildState === 'idle' ? 'READY TO BUILD' : `STEP ${currentStage.id} / 5`}</span><h1>{buildState === 'idle' ? 'Auto Plan Loom' : currentStage.title}</h1><p>{buildState === 'idle' ? 'One prompt. Five hidden build stages. One final viewer.' : currentStage.eyebrow}</p></div>
-            <div className="terminal-status"><span className={buildState === 'running' ? 'spinning' : ''} />{buildState === 'idle' ? 'WAITING FOR INITIAL PROMPT' : buildState === 'running' ? 'AUTONOMOUS BUILD RUNNING' : 'BUILD COMPLETE'}</div>
+            <div className="terminal-status"><span className={buildState === 'running' && !buildPaused ? 'spinning' : ''} />{buildState === 'idle' ? 'WAITING FOR INITIAL PROMPT' : buildPaused ? 'BUILD PAUSED BY PRESENTER' : buildState === 'running' ? 'AUTONOMOUS BUILD RUNNING' : 'BUILD COMPLETE'}</div>
           </div>
 
           <div className="terminal build-terminal" aria-live="polite">
@@ -255,7 +336,7 @@ export default function Home() {
                         <div className="stage-output-header">
                           <span>0{stage.id}</span>
                           <div><strong>{stage.title}</strong><small>Applying hidden instruction {String(stage.id).padStart(2, '0')} / 05</small></div>
-                          {isComplete ? <i>✓</i> : <span className="spinner" />}
+                          {isComplete ? <i>✓</i> : <span className={`spinner ${buildPaused ? 'paused' : ''}`} />}
                         </div>
                         <div className="stage-log-list">
                           {logs.map((log) => <div className={`log-line ${log.type}`} key={`${stage.id}-${log.at}`}><span>{log.type === 'success' ? '✓' : log.type === 'work' ? '•' : '·'}</span><p>{log.text}</p></div>)}

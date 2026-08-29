@@ -1,0 +1,78 @@
+{
+  "status": "RUNNING",
+  "agent": "codex",
+  "mode": "foreground",
+  "execution_surface": "foreground",
+  "task_run_id": "task-run-20260829-093104-task-def-20260829-090136-ohayo-simulator-ff61ffd-ebcb32ae",
+  "generated_at": "2026-08-29T09:37:00+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/prompt.md",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/context.md",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/previous-results.md",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/git-snapshot.json",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/result.md",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/decision.md",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/troubleshooting.md",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/logs.txt",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/agent-events.jsonl",
+    ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/artifacts.json",
+    "site/app/page.tsx",
+    "site/app/presenter/page.tsx",
+    "site/components/FinalRunExperience.tsx",
+    "site/lib/run-control.ts",
+    "site/lib/scenario.ts",
+    "site/scripts/validate-simulator.mjs",
+    "site/README.md"
+  ],
+  "artifact_groups": {
+    "user_outputs": [
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/result.md",
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/decision.md",
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/troubleshooting.md"
+    ],
+    "execution_inputs": [
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/prompt.md",
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/context.md",
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/previous-results.md"
+    ],
+    "execution_audit": [
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/git-snapshot.json",
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/logs.txt",
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/agent-events.jsonl",
+      ".loom/tasks/task-20260829-090136-ohayo-simulator-c4c4afaa/artifacts.json"
+    ],
+    "work_products": [
+      "site/app/page.tsx",
+      "site/app/presenter/page.tsx",
+      "site/components/FinalRunExperience.tsx",
+      "site/lib/run-control.ts",
+      "site/lib/scenario.ts",
+      "site/scripts/validate-simulator.mjs",
+      "site/README.md"
+    ]
+  },
+  "contract_snapshot": {
+    "schema_version": 1,
+    "contract_ids": [
+      "task-execution",
+      "done-guardrail"
+    ],
+    "contracts": [
+      {
+        "id": "task-execution",
+        "title": "Task Execution Context Contract",
+        "source_paths": [
+          "loom/application/context_pack.py",
+          "loom/application/team_policy.py"
+        ]
+      },
+      {
+        "id": "done-guardrail",
+        "title": "Task Completion Guardrail Contract",
+        "source_paths": [
+          "loom/application/services.py"
+        ]
+      }
+    ]
+  }
+}

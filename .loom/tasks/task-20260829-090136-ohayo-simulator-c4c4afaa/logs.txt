@@ -1,0 +1,8 @@
+[2026-08-29T09:31:04+00:00] agent=codex task=task-20260829-090136-ohayo-simulator-c4c4afaa Foreground task session started.
+[2026-08-29T09:33:00+00:00] 회의본과 writing-block 원문을 다시 대조하고 최초 입력 1회, 5단계 자동 진행, 최종 Viewer 1회 계약을 확인했다.
+[2026-08-29T09:34:00+00:00] Build 구간의 Presenter 상태 저장, Pause/Resume, Event/Stage 이동, Reset, Show Result 경로를 구현했다.
+[2026-08-29T09:35:00+00:00] Presenter 화면이 Build와 Product Run 상태를 모두 추적하도록 수정하고 hydration guard를 적용했다.
+[2026-08-29T09:36:00+00:00] README와 Scenario 계약 검사를 보강하고 STEP 1의 중간 Viewer 오해 가능 로그를 수정했다.
+[2026-08-29T09:37:00+00:00] npm run lint, npm run validate:scenario, npm run build, git diff --check를 통과했다.
+[2026-08-29T09:37:00+00:00] 관객 Route와 Presenter Route의 HTTP 200 응답을 확인했다.
+[2026-08-29T09:38:00+00:00] artifacts.json의 누락된 배열 쉼표를 수정하고 JSON 검증을 재실행했다.

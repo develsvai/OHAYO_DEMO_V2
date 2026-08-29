@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { finalRun } from '@/lib/scenario';
+import { buildStages, finalRun } from '@/lib/scenario';
 import {
+  buildRunStorageKey,
   finalRunStorageKey,
   PresenterCommand,
   presenterChannelName,
   presenterCommandKey,
+  StoredBuildRunState,
   StoredFinalRunState,
 } from '@/lib/run-control';
 
@@ -22,8 +24,19 @@ const emptyState: StoredFinalRunState = {
   updatedAt: 0,
 };
 
+const emptyBuildState: StoredBuildRunState = {
+  screen: 'cli',
+  buildState: 'idle',
+  submittedPrompt: '',
+  totalElapsed: 0,
+  paused: false,
+  timeScale: 1,
+  updatedAt: 0,
+};
+
 export default function PresenterPage() {
   const [state, setState] = useState<StoredFinalRunState>(emptyState);
+  const [buildState, setBuildState] = useState<StoredBuildRunState>(emptyBuildState);
   const [lastCommand, setLastCommand] = useState('NONE');
   const channelRef = useRef<BroadcastChannel | null>(null);
 
@@ -31,8 +44,13 @@ export default function PresenterPage() {
     if (typeof BroadcastChannel !== 'undefined') channelRef.current = new BroadcastChannel(presenterChannelName);
     const readState = () => {
       const stored = window.localStorage.getItem(finalRunStorageKey);
-      if (!stored) return;
-      try { setState(JSON.parse(stored) as StoredFinalRunState); } catch { return; }
+      const storedBuild = window.localStorage.getItem(buildRunStorageKey);
+      if (stored) {
+        try { setState(JSON.parse(stored) as StoredFinalRunState); } catch { window.localStorage.removeItem(finalRunStorageKey); }
+      }
+      if (storedBuild) {
+        try { setBuildState(JSON.parse(storedBuild) as StoredBuildRunState); } catch { window.localStorage.removeItem(buildRunStorageKey); }
+      }
     };
     readState();
     const poll = window.setInterval(readState, 400);
@@ -51,6 +69,19 @@ export default function PresenterPage() {
 
   const task = finalRun.tasks[state.currentTaskIndex];
   const completion = state.completedTaskIds.length;
+  const inBuild = buildState.screen !== 'product';
+  const buildStageIndex = Math.min(4, Math.floor(buildState.totalElapsed / buildStages[0].duration));
+  const buildStage = buildStages[buildStageIndex];
+  const activePaused = inBuild ? buildState.paused : state.paused;
+  const activeSpeed = inBuild ? buildState.timeScale : state.speed;
+  const activeScreen = inBuild ? (buildState.buildState === 'idle' ? 'INITIAL PROMPT' : `BUILD STEP ${buildStage.id}`) : state.screen.toUpperCase();
+  const activeCount = inBuild ? Math.min(5, Math.floor(buildState.totalElapsed / buildStages[0].duration)) : completion;
+  const activeTotal = inBuild ? 5 : 10;
+  const activeTitle = inBuild ? buildStage.title : task?.title ?? 'Waiting for run';
+  const activeGoal = inBuild ? buildStage.description : task?.goal ?? 'Start the product run from the audience screen.';
+  const activeProgress = inBuild
+    ? Math.min(100, ((buildState.totalElapsed - buildStageIndex * buildStage.duration) / buildStage.duration) * 100)
+    : Math.min(100, (state.taskElapsed / finalRun.taskDuration) * 100);
 
   return (
     <main className="presenter-shell">
@@ -60,17 +91,17 @@ export default function PresenterPage() {
       </header>
 
       <section className="presenter-status">
-        <div><span>SCREEN</span><strong>{state.screen.toUpperCase()}</strong></div>
-        <div><span>STATUS</span><strong className={state.paused ? 'warning' : 'healthy'}>{state.paused ? 'PAUSED' : 'ACTIVE'}</strong></div>
-        <div><span>TASKS</span><strong>{String(completion).padStart(2, '0')} / 10</strong></div>
-        <div><span>SPEED</span><strong>{state.speed}×</strong></div>
+        <div><span>SCREEN</span><strong>{activeScreen}</strong></div>
+        <div><span>STATUS</span><strong className={activePaused ? 'warning' : 'healthy'}>{activePaused ? 'PAUSED' : 'ACTIVE'}</strong></div>
+        <div><span>{inBuild ? 'STAGES' : 'TASKS'}</span><strong>{String(activeCount).padStart(2, '0')} / {activeTotal}</strong></div>
+        <div><span>SPEED</span><strong>{activeSpeed}×</strong></div>
       </section>
 
       <section className="presenter-current">
         <span>CURRENT TASK</span>
-        <div><strong>{String((task?.id ?? 0)).padStart(2, '0')}</strong><h2>{task?.title ?? 'Waiting for run'}</h2></div>
-        <p>{task?.goal ?? 'Start the product run from the audience screen.'}</p>
-        <div className="presenter-progress"><i style={{ width: `${Math.min(100, (state.taskElapsed / finalRun.taskDuration) * 100)}%` }} /></div>
+        <div><strong>{String((inBuild ? buildStage.id : task?.id ?? 0)).padStart(2, '0')}</strong><h2>{activeTitle}</h2></div>
+        <p>{activeGoal}</p>
+        <div className="presenter-progress"><i style={{ width: `${activeProgress}%` }} /></div>
       </section>
 
       <section className="control-group primary-controls">
@@ -89,7 +120,7 @@ export default function PresenterPage() {
       <section className="control-group">
         <div className="control-heading"><span>RUNTIME SPEED</span><small>REHEARSAL</small></div>
         <div className="speed-grid">
-          {[1, 10, 30, 60].map((value) => <button className={state.speed === value ? 'active' : ''} key={value} onClick={() => send({ type: 'set-speed', value }, `SPEED ${value}×`)}>{value}×</button>)}
+          {[1, 10, 30, 60].map((value) => <button className={activeSpeed === value ? 'active' : ''} key={value} onClick={() => send({ type: 'set-speed', value }, `SPEED ${value}×`)}>{value}×</button>)}
         </div>
       </section>
 

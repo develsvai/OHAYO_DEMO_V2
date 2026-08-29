@@ -49,6 +49,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
   const [paused, setPaused] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('web');
+  const [hydrated, setHydrated] = useState(false);
   const lastTickAt = useRef(0);
 
   const currentTask = finalRun.tasks[currentTaskIndex];
@@ -62,26 +63,34 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
   const totalProgress = screen === 'result' || screen === 'complete' ? 100 : Math.min(100, (totalElapsed / totalDuration) * 100);
 
   useEffect(() => {
-    const querySpeed = Number(new URLSearchParams(window.location.search).get('speed'));
-    if (Number.isFinite(querySpeed) && querySpeed >= 1 && querySpeed <= 60) setSpeed(querySpeed);
-    const stored = window.localStorage.getItem(finalRunStorageKey);
-    if (!stored) return;
-    try {
-      const state = JSON.parse(stored) as StoredFinalRunState;
-      if (['prompt', 'running', 'complete', 'result'].includes(state.screen)) setScreen(state.screen);
-      if (typeof state.submittedPrompt === 'string') setSubmittedPrompt(state.submittedPrompt);
-      if (typeof state.currentTaskIndex === 'number') setCurrentTaskIndex(Math.min(9, Math.max(0, state.currentTaskIndex)));
-      if (typeof state.taskElapsed === 'number') setTaskElapsed(Math.min(finalRun.taskDuration, Math.max(0, state.taskElapsed)));
-      if (Array.isArray(state.completedTaskIds)) setCompletedTaskIds(state.completedTaskIds);
-      if (typeof state.paused === 'boolean') setPaused(state.paused);
-      if (typeof state.speed === 'number') setSpeed(state.speed);
-      if (state.viewMode === 'cli' || state.viewMode === 'web') setViewMode(state.viewMode);
-    } catch {
-      window.localStorage.removeItem(finalRunStorageKey);
-    }
+    const restore = window.setTimeout(() => {
+      const querySpeed = Number(new URLSearchParams(window.location.search).get('speed'));
+      if (Number.isFinite(querySpeed) && querySpeed >= 1 && querySpeed <= 60) setSpeed(querySpeed);
+      const stored = window.localStorage.getItem(finalRunStorageKey);
+      if (!stored) {
+        setHydrated(true);
+        return;
+      }
+      try {
+        const state = JSON.parse(stored) as StoredFinalRunState;
+        if (['prompt', 'running', 'complete', 'result'].includes(state.screen)) setScreen(state.screen);
+        if (typeof state.submittedPrompt === 'string') setSubmittedPrompt(state.submittedPrompt);
+        if (typeof state.currentTaskIndex === 'number') setCurrentTaskIndex(Math.min(9, Math.max(0, state.currentTaskIndex)));
+        if (typeof state.taskElapsed === 'number') setTaskElapsed(Math.min(finalRun.taskDuration, Math.max(0, state.taskElapsed)));
+        if (Array.isArray(state.completedTaskIds)) setCompletedTaskIds(state.completedTaskIds);
+        if (typeof state.paused === 'boolean') setPaused(state.paused);
+        if (typeof state.speed === 'number') setSpeed(state.speed);
+        if (state.viewMode === 'cli' || state.viewMode === 'web') setViewMode(state.viewMode);
+      } catch {
+        window.localStorage.removeItem(finalRunStorageKey);
+      }
+      setHydrated(true);
+    }, 0);
+    return () => window.clearTimeout(restore);
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     const stored: StoredFinalRunState = {
       screen,
       submittedPrompt,
@@ -94,7 +103,7 @@ export function FinalRunExperience({ onResetAll }: { onResetAll: () => void }) {
       updatedAt: Date.now(),
     };
     window.localStorage.setItem(finalRunStorageKey, JSON.stringify(stored));
-  }, [completedTaskIds, currentTaskIndex, paused, screen, speed, submittedPrompt, taskElapsed, viewMode]);
+  }, [completedTaskIds, currentTaskIndex, hydrated, paused, screen, speed, submittedPrompt, taskElapsed, viewMode]);
 
   const completeCurrentTask = useCallback(() => {
     const task = finalRun.tasks[currentTaskIndex];

@@ -1,3 +1,4 @@
+export const buildRunStorageKey = 'flogi-harness-build-state-v2';
 export const finalRunStorageKey = 'flogi-final-run-state-v1';
 export const presenterCommandKey = 'flogi-presenter-command-v1';
 export const presenterChannelName = 'flogi-ohayo-presenter-v1';
@@ -22,5 +23,15 @@ export type StoredFinalRunState = {
   paused: boolean;
   speed: number;
   viewMode: 'web' | 'cli';
+  updatedAt: number;
+};
+
+export type StoredBuildRunState = {
+  screen: 'cli' | 'viewer' | 'ready' | 'product';
+  buildState: 'idle' | 'running' | 'complete';
+  submittedPrompt: string;
+  totalElapsed: number;
+  paused: boolean;
+  timeScale: number;
   updatedAt: number;
 };
