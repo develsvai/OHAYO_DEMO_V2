@@ -1,0 +1,68 @@
+{
+  "status": "RUNNING",
+  "agent": "codex",
+  "mode": "foreground",
+  "execution_surface": "foreground",
+  "task_run_id": "task-run-20260829-091531-task-def-20260829-090112-ohayo-run-presenter-con-bb01f529",
+  "generated_at": "2026-08-29T09:15:31+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/prompt.md",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/context.md",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/previous-results.md",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/git-snapshot.json",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/result.md",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/decision.md",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/troubleshooting.md",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/logs.txt",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/agent-events.jsonl",
+    ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/artifacts.json",
+    "site/package.json",
+    "site/package-lock.json"
+  ],
+  "artifact_groups": {
+    "user_outputs": [
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/result.md",
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/decision.md",
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/troubleshooting.md"
+    ],
+    "execution_inputs": [
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/prompt.md",
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/context.md",
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/previous-results.md"
+    ],
+    "execution_audit": [
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/git-snapshot.json",
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/logs.txt",
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/agent-events.jsonl",
+      ".loom/tasks/task-20260829-090112-ohayo-run-presenter-control-886a3df1/artifacts.json"
+    ],
+    "work_products": [
+      "site/package.json",
+      "site/package-lock.json"
+    ]
+  },
+  "contract_snapshot": {
+    "schema_version": 1,
+    "contract_ids": [
+      "task-execution",
+      "done-guardrail"
+    ],
+    "contracts": [
+      {
+        "id": "task-execution",
+        "title": "Task Execution Context Contract",
+        "source_paths": [
+          "loom/application/context_pack.py",
+          "loom/application/team_policy.py"
+        ]
+      },
+      {
+        "id": "done-guardrail",
+        "title": "Task Completion Guardrail Contract",
+        "source_paths": [
+          "loom/application/services.py"
+        ]
+      }
+    ]
+  }
+}
