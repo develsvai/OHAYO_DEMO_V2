@@ -1,0 +1,32 @@
+{
+  "id": "task-20260829-090112-ohayo-run-presenter-control-886a3df1",
+  "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
+  "title": "OHAYO Run과 Presenter Control 구현",
+  "description": "Harness Ready 이후에만 노출되는 OHAYO Prompt, 10개 Task의 약 20분 자동 실행, Validation·Repair·Retry 이벤트, Web Run UI와 CLI Fallback, 숨겨진 Presenter Control, 최종 URL·QR 결과 화면을 구현한다.",
+  "status": "PENDING",
+  "created_at": "2026-08-29T09:01:12+00:00",
+  "updated_at": "2026-08-29T09:01:36+00:00",
+  "order_index": 2,
+  "assigned_agent": "",
+  "depends_on": [
+    "task-20260829-090106-scenario-harness-building-2cd8be8f"
+  ],
+  "expected_output": "OHAYO_PROMPT부터 RESULT까지의 고정 State Machine과 완전한 자동 진행, Pause/Resume/Skip/Complete/Reset/Jump controls, 10개 Task 및 결과 화면",
+  "done_condition": "한 번 시작하면 10개 Task가 독립적으로 진행되고 presenter 명령으로 복구 가능하며 완료 시 검증·패키징·배포 상태와 OHAYO URL·QR이 표시된다.",
+  "in_scope": "Build/Run mode 전환, 10개 Task 이벤트, 시간 가속 옵션, CLI fallback, presenter route 또는 overlay, 결과 화면",
+  "out_of_scope": "실제 OHAYO 개발·배포, 실제 Agent·Network·API 의존, 실제 검증 작업",
+  "validation_hint": "가속된 리허설 모드에서 정상 완료, retry Task, pause/resume, skip, force result, reload 복원을 확인한다.",
+  "required_docs": [],
+  "memory_refs": [],
+  "document_outputs": [],
+  "document_output_exceptions": [],
+  "run_attempts": 0,
+  "last_error": "",
+  "commit_refs": [],
+  "branch_name": "",
+  "git_dirty": false,
+  "git_snapshot_captured_at": "",
+  "artifacts": [],
+  "source_proposal_id": "",
+  "source_prompt": ""
+}
