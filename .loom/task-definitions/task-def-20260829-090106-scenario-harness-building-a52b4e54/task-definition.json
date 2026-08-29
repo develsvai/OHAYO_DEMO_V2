@@ -4,7 +4,7 @@
   "title": "Scenario 기반 Harness Building 경험 구현",
   "description": "writing-block.md의 canonical prompt와 Mermaid를 Source of Truth로 옮기고, 자유 입력과 무관하게 STEP 1~5가 순서대로 실행되는 Codex 스타일 CLI, 약 1분 Timeline, 정적 Viewer 자동 전환, Harness Ready 상태를 구현한다.",
   "created_at": "2026-08-29T09:01:06+00:00",
-  "updated_at": "2026-08-29T09:01:36+00:00",
+  "updated_at": "2026-08-29T09:02:09+00:00",
   "order_index": 1,
   "legacy_task_id": "task-20260829-090106-scenario-harness-building-2cd8be8f",
   "depends_on": [],

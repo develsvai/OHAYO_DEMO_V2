@@ -1,0 +1,19 @@
+{
+  "before": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "c419ff9d457ffbd6636bf15d57090f1d185198b9",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl",
+      ".loom/task-definitions/task-def-20260829-090106-scenario-harness-building-a52b4e54/task-definition.json"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/",
+      ".loom/task-runs/"
+    ],
+    "captured_at": "2026-08-29T09:02:09+00:00"
+  },
+  "after": null
+}

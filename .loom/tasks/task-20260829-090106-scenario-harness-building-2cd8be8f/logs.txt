@@ -1,0 +1,5 @@
+[2026-08-29T09:02:10+00:00] agent=codex task=task-20260829-090106-scenario-harness-building-2cd8be8f Foreground task session started.
+[2026-08-29T09:03:00+00:00] 공식 Sites 프로젝트를 site/ 하위에 초기화하고 의존성을 설치했다.
+[2026-08-29T09:08:46+00:00] 첫 Build CLI 화면을 구현하고 로컬 HTTP 200 응답을 확인했다.
+[2026-08-29T09:13:00+00:00] STEP 1~5 Scenario, 고정 State Machine, Mermaid Viewer, Harness Ready 화면을 구현했다.
+[2026-08-29T09:14:00+00:00] npm run build 성공 및 STEP 1~5 OHAYO 문자열 미노출을 검증했다.
