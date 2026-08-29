@@ -1,0 +1,32 @@
+{
+  "id": "task-20260829-094355-loom-task-graph-ba4de449",
+  "job_id": "job-20260829-094347-ohayo-task-graph-b9452b22",
+  "title": "Loom Task Graph 계획·실행 화면 구현",
+  "description": "최종 Mermaid Viewer Continue 이후 Loom 제품 Prompt를 받고, harness_viewer_demo.gif의 어두운 Node Graph 시각 문법으로 10개 Task를 20초마다 하나씩 구성한 뒤 동일 Graph에서 Task를 순차 실행하고 지정된 OHAYO URL과 QR을 표시한다. 주요 UI 문구는 한국어로 정리한다.",
+  "status": "RUNNING",
+  "created_at": "2026-08-29T09:43:55+00:00",
+  "updated_at": "2026-08-29T09:43:59+00:00",
+  "order_index": 1,
+  "assigned_agent": "codex",
+  "depends_on": [],
+  "expected_output": "CLI Build, 최종 Mermaid Viewer, Loom Prompt, 200초 Task 구성 Graph, 10 Task 실행 Graph, OHAYO QR이 연결된 발표용 웹앱",
+  "done_condition": "Task 구성 단계가 정확히 10개×20초로 동작하고 구성 완료 후 실행 단계로 전환되며 최종 URL이 https://ohayo.tail2dac17.ts.net/ 로 표시되고 Presenter 복구와 빠른 리허설이 정상 작동한다.",
+  "in_scope": "Scenario State Machine, Node Graph UI, Task 계획 Timeline, 실행 Timeline, 한국어 UI, Presenter Control, URL과 QR, 상태 복원, 검증과 배포",
+  "out_of_scope": "실제 Agent, 실제 Loom Task 생성, 실제 OHAYO 구현, 실시간 외부 API",
+  "validation_hint": "가속 모드에서 Build 5단계, Viewer 1회, Task 구성 10개, 실행 10개, 결과 QR까지 완주하고 lint, scenario contract, production build를 통과한다.",
+  "required_docs": [],
+  "memory_refs": [],
+  "document_outputs": [],
+  "document_output_exceptions": [],
+  "run_attempts": 0,
+  "last_error": "",
+  "commit_refs": [
+    "7a0bd27ace26c941e612650c2873eca9e659a753"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-08-29T09:43:59+00:00",
+  "artifacts": [],
+  "source_proposal_id": "",
+  "source_prompt": ""
+}

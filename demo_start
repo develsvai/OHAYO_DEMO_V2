@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DEMO_ROOT="$(cd -- "$(dirname -- "$0")" && pwd)"
+DEMO_SITE="$DEMO_ROOT/site"
+DEMO_PORT="${DEMO_PORT:-3000}"
+DEMO_SPEED="${DEMO_SPEED:-1}"
+DEMO_LOG="${TMPDIR:-/tmp}/flogi-ohayo-demo-v2.log"
+VIEWER_URL="http://localhost:${DEMO_PORT}/?screen=viewer&reset=1&speed=${DEMO_SPEED}"
+
+if [[ ! -d "$DEMO_SITE/node_modules" ]]; then
+  echo "[오류] site 의존성이 없습니다. 먼저 site 폴더에서 npm install을 실행하세요."
+  exit 1
+fi
+
+if ! curl -fsS "http://localhost:${DEMO_PORT}/" >/dev/null 2>&1; then
+  (
+    cd "$DEMO_SITE"
+    nohup npm run dev -- --port "$DEMO_PORT" >"$DEMO_LOG" 2>&1 &
+  )
+
+  for _ in {1..120}; do
+    if curl -fsS "http://localhost:${DEMO_PORT}/" >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.25
+  done
+fi
+
+if ! curl -fsS "http://localhost:${DEMO_PORT}/" >/dev/null 2>&1; then
+  echo "[오류] Web Viewer를 시작하지 못했습니다. 로그: $DEMO_LOG"
+  exit 1
+fi
+
+export OHAYO_DEMO_SPEED="$DEMO_SPEED"
+export OHAYO_VIEWER_URL="$VIEWER_URL"
+node --no-warnings --experimental-strip-types "$DEMO_SITE/scripts/demo-cli.mjs"
+
+if [[ "${DEMO_NO_OPEN:-0}" == "1" ]]; then
+  echo "Viewer: $VIEWER_URL"
+elif command -v open >/dev/null 2>&1; then
+  open "$VIEWER_URL"
+else
+  echo "브라우저에서 다음 주소를 열어주세요: $VIEWER_URL"
+fi

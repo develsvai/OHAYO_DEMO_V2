@@ -1,0 +1,22 @@
+{
+  "before": {
+    "available": true,
+    "branch_name": "develop",
+    "commit_sha": "7a0bd27ace26c941e612650c2873eca9e659a753",
+    "dirty": true,
+    "staged_files": [],
+    "modified_files": [
+      ".loom/events.jsonl",
+      "site/.openai/hosting.json"
+    ],
+    "untracked_files": [
+      ".loom/job-runs/job-run-20260829-094359-job-20260829-094347-ohayo-task-graph-b9452b22-beec81cc/",
+      ".loom/jobs/job-20260829-094347-ohayo-task-graph-b9452b22/",
+      ".loom/task-definitions/task-def-20260829-094355-loom-task-graph-dcc3b9d2/",
+      ".loom/task-runs/task-run-20260829-094359-task-def-20260829-094355-loom-task-graph-dcc3b9d-0905f98f/",
+      ".loom/tasks/task-20260829-094355-loom-task-graph-ba4de449/"
+    ],
+    "captured_at": "2026-08-29T09:43:59+00:00"
+  },
+  "after": null
+}

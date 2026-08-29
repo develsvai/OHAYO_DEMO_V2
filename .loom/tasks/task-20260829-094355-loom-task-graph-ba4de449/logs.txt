@@ -1,0 +1,8 @@
+[2026-08-29T09:43:59+00:00] agent=codex task=task-20260829-094355-loom-task-graph-ba4de449 Foreground task session started.
+[2026-08-29T09:44:00+00:00] harness_viewer_demo.gif와 4초 간격 Contact Sheet를 확인해 Node Graph 시각 문법을 분석했다.
+[2026-08-29T09:46:00+00:00] 사용자 설명에 따라 CLI 경계를 브라우저에서 실제 Shell Launcher로 교정했다.
+[2026-08-29T09:50:00+00:00] demo_start와 demo-cli.mjs를 구현하고 scenario.ts의 STEP 1~5를 Shell에서 재사용하도록 연결했다.
+[2026-08-29T09:53:00+00:00] Web Build CLI와 Ready 화면을 제거하고 최종 Mermaid Viewer부터 시작하도록 State Machine을 변경했다.
+[2026-08-29T09:54:00+00:00] 10개 Task Node를 20초마다 구성하는 planning 상태와 Graph 기반 실행 UI를 구현했다.
+[2026-08-29T09:55:00+00:00] Presenter Control, 상태 복원, 한국어 UI, 새 OHAYO URL과 QR을 연결했다.
+[2026-08-29T09:56:00+00:00] Shell Launcher 빠른 완주, lint, Scenario contract, build, diff, HTTP Route 검증을 통과했다.

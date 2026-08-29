@@ -1,0 +1,14 @@
+{
+  "id": "job-20260829-094347-ohayo-task-graph-b9452b22",
+  "title": "OHAYO Task Graph 구성·실행 흐름 개편",
+  "goal": "CLI 5단계 완료 뒤 최종 Mermaid Viewer를 거쳐 OHAYO Prompt 입력, 200초 Task Node 구성, 10개 Task 순차 실행, 새 URL과 QR까지 이어지는 한국어 중심 발표 흐름을 완성한다.",
+  "status": "RUNNING",
+  "created_at": "2026-08-29T09:43:47+00:00",
+  "updated_at": "2026-08-29T09:43:59+00:00",
+  "context_refs": [],
+  "task_ids": [
+    "task-20260829-094355-loom-task-graph-ba4de449"
+  ],
+  "branch_name": "develop",
+  "checkpoint_ids": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "job-run-20260829-094359-job-20260829-094347-ohayo-task-graph-b9452b22-beec81cc",
+  "job_definition_id": "job-20260829-094347-ohayo-task-graph-b9452b22",
+  "status": "RUNNING",
+  "created_at": "2026-08-29T09:43:59+00:00",
+  "updated_at": "2026-08-29T09:43:59+00:00",
+  "legacy_job_id": "job-20260829-094347-ohayo-task-graph-b9452b22",
+  "started_at": "2026-08-29T09:43:59+00:00",
+  "completed_at": "",
+  "trigger_mode": "manual",
+  "trigger_ref": "",
+  "worker_pool": "",
+  "last_error": ""
+}
