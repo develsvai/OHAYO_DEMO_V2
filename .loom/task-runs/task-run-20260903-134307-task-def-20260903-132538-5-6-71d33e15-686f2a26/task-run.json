@@ -2,9 +2,9 @@
   "id": "task-run-20260903-134307-task-def-20260903-132538-5-6-71d33e15-686f2a26",
   "job_run_id": "job-run-20260903-132342-job-20260829-090057-ohayo-autonomous-harness-sim-595b714d",
   "task_definition_id": "task-def-20260903-132538-5-6-71d33e15",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-09-03T13:43:07+00:00",
-  "updated_at": "2026-09-03T13:43:07+00:00",
+  "updated_at": "2026-09-03T13:47:42+00:00",
   "legacy_task_id": "task-20260903-132538-5-6-b26f7551",
   "attempt": 1,
   "assigned_agent": "foreground",
@@ -13,13 +13,32 @@
   "lease_expires_at": "",
   "queued_at": "",
   "started_at": "2026-09-03T13:43:07+00:00",
-  "completed_at": "",
+  "completed_at": "2026-09-03T13:47:42+00:00",
   "last_error": "",
-  "commit_refs": [],
-  "branch_name": "",
-  "git_dirty": false,
-  "git_snapshot_captured_at": "",
-  "artifacts": [],
-  "checkpoint_ids": [],
+  "commit_refs": [
+    "37e05c47dc5b6022bd541ec90eac9587b823aaf6",
+    "ce7d79408c813a992b4640a112bfb4437356f790"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-09-03T13:47:42+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/agent-events.jsonl",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/artifacts.json",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/context.md",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/decision.md",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/git-snapshot.json",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/logs.txt",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/previous-results.md",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/prompt.md",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/result.md",
+    ".loom/tasks/task-20260903-132538-5-6-b26f7551/troubleshooting.md",
+    "README.md",
+    "docs/harness-demo/validation.md",
+    "site/README.md"
+  ],
+  "checkpoint_ids": [
+    "checkpoint-20260903-134742-task-completed-5-6-a425bc11"
+  ],
   "review_required_reason": ""
 }
