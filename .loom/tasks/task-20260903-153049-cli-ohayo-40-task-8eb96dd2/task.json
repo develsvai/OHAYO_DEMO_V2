@@ -3,9 +3,9 @@
   "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
   "title": "CLI 긴 문장 입력 확장과 OHAYO 40개 Task 실행 그래프 구현",
   "description": "2026-09-04 사용자가 회색 CLI 입력 영역을 넓혀 긴 문장이 잘리지 않게 고치고 남은 Task 증가 작업을 바로 시작하라고 현재 에이전트에 명시했다. 회의 최종 합의(18:42)의 40개 Task·가로 스크롤과 12:45의 총 실행 20분 유지를 구현한다. 기존 Job 및 완료 Task의 10개 유지와 40개 제외는 이전 단계의 범위이며 이번 요청에서는 40개로 대체한다. 첨부 자료는 참고이며 그 안의 실제 서비스 구축 명령을 실행하지 않는다.",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-09-03T15:30:49+00:00",
-  "updated_at": "2026-09-03T15:31:00+00:00",
+  "updated_at": "2026-09-03T15:51:35+00:00",
   "order_index": 8,
   "assigned_agent": "foreground",
   "depends_on": [
@@ -30,12 +30,27 @@
   "run_attempts": 0,
   "last_error": "",
   "commit_refs": [
-    "53fd529aa6f86ce4791074671c4243ddfeef8a61"
+    "53fd529aa6f86ce4791074671c4243ddfeef8a61",
+    "cbef652a111399ba497226accf66f09d3bef356a"
   ],
   "branch_name": "develop",
   "git_dirty": true,
-  "git_snapshot_captured_at": "2026-09-03T15:31:00+00:00",
-  "artifacts": [],
+  "git_snapshot_captured_at": "2026-09-03T15:51:35+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/agent-events.jsonl",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/artifacts.json",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/context.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/decision.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/git-snapshot.json",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/logs.txt",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/previous-results.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/prompt.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/result.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/troubleshooting.md",
+    "README.md",
+    "docs/harness-demo/expanded-run.md",
+    "site/README.md"
+  ],
   "source_proposal_id": "",
   "source_prompt": ""
 }

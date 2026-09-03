@@ -2,9 +2,9 @@
   "id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
   "title": "OHAYO 발표용 Autonomous Harness Simulator 구현",
   "goal": "고정 Scenario Data가 통제하는 5단계 Auto Plan Loom 구축 시연과 10개 Task OHAYO 실행, Presenter Control, URL 및 QR 결과 화면을 갖춘 재현 가능한 발표용 웹앱을 완성한다.",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-08-29T09:00:57+00:00",
-  "updated_at": "2026-09-03T15:31:00+00:00",
+  "updated_at": "2026-09-03T15:51:35+00:00",
   "context_refs": [],
   "task_ids": [
     "task-20260829-090106-scenario-harness-building-2cd8be8f",
@@ -24,6 +24,7 @@
     "checkpoint-20260829-093930-task-completed-ohayo-simulator-96f137ea",
     "checkpoint-20260903-132752-task-completed-step-1-5-mermaid-8d6a37e7",
     "checkpoint-20260903-134256-task-completed-cli-6-loom-8013239e",
-    "checkpoint-20260903-134742-task-completed-5-6-a425bc11"
+    "checkpoint-20260903-134742-task-completed-5-6-a425bc11",
+    "checkpoint-20260903-155135-task-completed-cli-ohayo-40-task-0668ff74"
   ]
 }

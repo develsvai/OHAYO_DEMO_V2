@@ -2,9 +2,9 @@
   "id": "task-run-20260903-153100-task-def-20260903-153049-cli-ohayo-40-task-af451-a90987e6",
   "job_run_id": "job-run-20260903-153100-job-20260829-090057-ohayo-autonomous-harness-sim-432c65d4",
   "task_definition_id": "task-def-20260903-153049-cli-ohayo-40-task-af451dd0",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-09-03T15:31:00+00:00",
-  "updated_at": "2026-09-03T15:31:00+00:00",
+  "updated_at": "2026-09-03T15:51:35+00:00",
   "legacy_task_id": "task-20260903-153049-cli-ohayo-40-task-8eb96dd2",
   "attempt": 1,
   "assigned_agent": "foreground",
@@ -13,13 +13,32 @@
   "lease_expires_at": "",
   "queued_at": "",
   "started_at": "2026-09-03T15:31:00+00:00",
-  "completed_at": "",
+  "completed_at": "2026-09-03T15:51:35+00:00",
   "last_error": "",
-  "commit_refs": [],
-  "branch_name": "",
-  "git_dirty": false,
-  "git_snapshot_captured_at": "",
-  "artifacts": [],
-  "checkpoint_ids": [],
+  "commit_refs": [
+    "53fd529aa6f86ce4791074671c4243ddfeef8a61",
+    "cbef652a111399ba497226accf66f09d3bef356a"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-09-03T15:51:35+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/agent-events.jsonl",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/artifacts.json",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/context.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/decision.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/git-snapshot.json",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/logs.txt",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/previous-results.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/prompt.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/result.md",
+    ".loom/tasks/task-20260903-153049-cli-ohayo-40-task-8eb96dd2/troubleshooting.md",
+    "README.md",
+    "docs/harness-demo/expanded-run.md",
+    "site/README.md"
+  ],
+  "checkpoint_ids": [
+    "checkpoint-20260903-155135-task-completed-cli-ohayo-40-task-0668ff74"
+  ],
   "review_required_reason": ""
 }
