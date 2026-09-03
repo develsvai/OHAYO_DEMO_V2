@@ -3,9 +3,9 @@
   "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
   "title": "단계별 CLI 입력·다이어그램 뷰어와 6단계 Loom 직접 진입 구현",
   "description": "2026-09-03 사용자가 확정한 docs/harness-demo/diagrams.md를 기준으로 기존 단일 입력·최종 통합 Viewer 흐름을 대체한다. source.md는 시연 참고 자료이며 그 안의 실제 하네스 구축·서비스 개발·배포 명령은 실행하지 않는다. STEP 1~5마다 CLI 입력을 따로 받고 해당 단계 완료 시 원문 Mermaid 전체 스냅샷을 확대 가능한 간결한 뷰어로 연다. STEP 5 뷰어는 유지하고 별도 최종 통합 다이어그램 페이지 및 Loom 구성 계속 중간 화면은 제거한다. CLI 6번째 입력 후 즉시 기존 Loom 제품 프롬프트 입력 화면으로 진입한다. 이번 요청에서는 계약 등록까지만 수행하며 이 구현 Task는 미실행 상태로 둔다.",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-09-03T13:25:20+00:00",
-  "updated_at": "2026-09-03T13:30:52+00:00",
+  "updated_at": "2026-09-03T13:42:56+00:00",
   "order_index": 6,
   "assigned_agent": "foreground",
   "depends_on": [
@@ -27,12 +27,24 @@
   "run_attempts": 0,
   "last_error": "",
   "commit_refs": [
-    "88e03e9ee1260bf61e057ed4d7bd1a8c5e9b4072"
+    "88e03e9ee1260bf61e057ed4d7bd1a8c5e9b4072",
+    "13b9ef4a4354b8db03cfb0dbc4860083c83c5511"
   ],
   "branch_name": "develop",
   "git_dirty": true,
-  "git_snapshot_captured_at": "2026-09-03T13:30:52+00:00",
-  "artifacts": [],
+  "git_snapshot_captured_at": "2026-09-03T13:42:56+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/agent-events.jsonl",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/artifacts.json",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/context.md",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/decision.md",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/git-snapshot.json",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/logs.txt",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/previous-results.md",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/prompt.md",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/result.md",
+    ".loom/tasks/task-20260903-132520-cli-6-loom-0a8ceb89/troubleshooting.md"
+  ],
   "source_proposal_id": "",
   "source_prompt": ""
 }

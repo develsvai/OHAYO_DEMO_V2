@@ -1,0 +1,19 @@
+{
+  "id": "checkpoint-20260903-134256-task-completed-cli-6-loom-8013239e",
+  "created_at": "2026-09-03T13:42:56+00:00",
+  "reason": "Task completed: 단계별 CLI 입력·다이어그램 뷰어와 6단계 Loom 직접 진입 구현",
+  "summary": "단계별 CLI 입력·다이어그램 뷰어와 6단계 Loom 직접 진입 구현 -> DONE @ develop/13b9ef4a4354",
+  "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
+  "task_id": "task-20260903-132520-cli-6-loom-0a8ceb89",
+  "commit_sha": "13b9ef4a4354b8db03cfb0dbc4860083c83c5511",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/job-runs/job-run-20260903-132342-job-20260829-090057-ohayo-autonomous-harness-sim-595b714d/job-run.json",
+    ".loom/task-definitions/task-def-20260903-132520-cli-6-loom-4ee889bf/task-definition.json"
+  ],
+  "untracked_files": [],
+  "snapshot_captured_at": "2026-09-03T13:42:56+00:00",
+  "rollback_strategy": "revert-or-branch"
+}
