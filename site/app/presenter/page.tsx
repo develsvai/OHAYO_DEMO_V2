@@ -55,14 +55,14 @@ export default function PresenterPage() {
       <section className="presenter-status">
         <div><span>화면</span><strong>{state.screen.toUpperCase()}</strong></div>
         <div><span>상태</span><strong className={state.paused ? 'warning' : 'healthy'}>{state.paused ? '일시정지' : '활성'}</strong></div>
-        <div><span>{planning ? '구성 Task' : '완료 Task'}</span><strong>{String(activeCount).padStart(2, '0')} / 10</strong></div>
+        <div><span>{planning ? '구성 Task' : '완료 Task'}</span><strong>{String(activeCount).padStart(2, '0')} / {finalRun.tasks.length}</strong></div>
         <div><span>속도</span><strong>{state.speed}×</strong></div>
       </section>
 
       <section className="presenter-current">
         <span>{planning ? 'Task Graph 상태' : '현재 실행 대상'}</span>
         <div><strong>{planning ? String(plannedCount).padStart(2, '0') : String(task?.id ?? 0).padStart(2, '0')}</strong><h2>{planning ? 'OHAYO Task Graph' : task?.title ?? '제품 프롬프트 대기'}</h2></div>
-        <p>{planning ? plannedCount >= finalRun.tasks.length ? '10개 Task와 의존 관계 구성이 완료되었습니다.' : `${plannedCount}개 Task를 선별하고 Graph에 연결했습니다.` : task?.goal ?? '관객 화면에서 OHAYO 제품 목표를 입력하세요.'}</p>
+        <p>{planning ? plannedCount >= finalRun.tasks.length ? `${finalRun.tasks.length}개 Task와 의존 관계 구성이 완료되었습니다.` : `${plannedCount}개 Task를 선별하고 Graph에 연결했습니다.` : task?.goal ?? '관객 화면에서 OHAYO 제품 목표를 입력하세요.'}</p>
         <div className="presenter-progress"><i style={{ width: `${activeProgress}%` }} /></div>
       </section>
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T13:46:58+00:00",
+  "generated_at": "2026-09-03T15:48:00+00:00",
   "docs_paths": [
     "docs"
   ],
@@ -40,6 +40,15 @@
       "document_type": "docs",
       "updated_at": "2026-09-03T22:24:52+09:00",
       "size_bytes": 18456
+    },
+    {
+      "id": "docs/harness-demo/expanded-run.md",
+      "title": "긴 프롬프트 입력과 40개 Task 확장",
+      "path": "docs/harness-demo/expanded-run.md",
+      "source": "repository_docs",
+      "document_type": "docs",
+      "updated_at": "2026-09-04T00:47:18+09:00",
+      "size_bytes": 5733
     },
     {
       "id": "docs/harness-demo/manifest.json",

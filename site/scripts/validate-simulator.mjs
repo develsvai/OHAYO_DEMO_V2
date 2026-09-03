@@ -1,6 +1,8 @@
 import { readFileSync, statSync } from 'node:fs';
 import { buildStages, finalRun } from '../lib/scenario.ts';
 import { runDemoCli } from './demo-cli.mjs';
+import { createTaskGraph, graphHeight, taskNodeHeight, taskNodeWidth } from '../lib/task-graph.ts';
+import { layoutPrompt, cellWidth } from './prompt-layout.mjs';
 
 const scenario = readFileSync(new URL('../lib/scenario.ts', import.meta.url), 'utf8');
 const page = readFileSync(new URL('../app/page.tsx', import.meta.url), 'utf8');
@@ -9,6 +11,7 @@ const controls = readFileSync(new URL('../lib/run-control.ts', import.meta.url),
 const presenter = readFileSync(new URL('../app/presenter/page.tsx', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
 const demoCli = readFileSync(new URL('./demo-cli.mjs', import.meta.url), 'utf8');
+const promptRenderer = readFileSync(new URL('./prompt-layout.mjs', import.meta.url), 'utf8');
 const demoLauncher = readFileSync(new URL('./demo-launcher.mjs', import.meta.url), 'utf8');
 const demoStartUrl = new URL('../../demo_start', import.meta.url);
 const demoStart = readFileSync(demoStartUrl, 'utf8');
@@ -54,7 +57,7 @@ assert(demoLauncher.includes('const speed = mode.speed;') && !demoLauncher.inclu
 assert(demoCli.includes("url.searchParams.set('reset', '1')") && page.includes("params.get('reset') === '1'"), '새 발표의 STEP 6 진입 시 이전 제품 상태를 초기화해야 합니다.');
 assert(demoCli.includes("import { buildStages } from '../lib/scenario.ts'"), 'Shell CLI는 scenario.ts의 단일 Build Data를 사용해야 합니다.');
 assert(demoCli.includes('readTerminalPrompt') && demoCli.includes('200~') && demoCli.includes('201~'), '여러 줄 프롬프트 붙여넣기 경계 처리가 필요합니다.');
-assert(demoCli.includes('OpenAI Codex (v0.149.1)') && demoCli.includes('Ask Codex to do anything'), '첨부 스크린샷 기반 Codex 시작 화면이 누락됐습니다.');
+assert(demoCli.includes('OpenAI Codex (v0.149.1)') && promptRenderer.includes('Ask Codex to do anything'), '첨부 스크린샷 기반 Codex 시작 화면이 누락됐습니다.');
 assert(!/가짜|고정 시나리오|아무 문장|입력 내용은 표시만|실제 의미 분석/.test(`${demoCli}\n${page}\n${finalExperience}`), '발표 화면에 내부 연출 방식을 드러내는 문구가 남아 있습니다.');
 
 const stagePage = readFileSync(new URL('../app/harness/[step]/page.tsx', import.meta.url), 'utf8');
@@ -69,29 +72,55 @@ assert(finalExperience.includes('initialSpeed') && finalExperience.includes('use
 assert(finalExperience.includes("setScreen('prompt')") && finalExperience.includes('setPlanningElapsed(0)') && finalExperience.includes('setCompletedTaskIds([])'), 'Product Run 초기화 상태가 완전하지 않습니다.');
 assert(presenter.includes('제품 Prompt부터 재시작'), 'Presenter 전체 초기화 설명이 실제 동작과 일치하지 않습니다.');
 
-assert(matches(finalSource, /^      id: \d+,/gm) === 10, 'Final Run Task는 정확히 10개여야 합니다.');
-assert(finalSource.includes('taskGraphDuration: 200_000'), 'Task 선별·생성은 10개 × 20초로 총 200초여야 합니다.');
+assert(finalRun.tasks.length === 40, '제품 Task는 정확히 40개여야 합니다.');
+assert(finalSource.includes('taskGraphDuration: 200_000'), 'Task 선별·생성은 40개 × 5초로 총 200초여야 합니다.');
 assert(!finalSource.includes('taskPlanningInterval') && !finalExperience.includes('20초마다 Task Node'), '발표 화면에 내부 Task 생성 간격 설명이 노출되면 안 됩니다.');
 assert(finalExperience.includes("setScreen('planning')") && finalExperience.includes("screen === 'planning'"), '제품 Prompt 뒤 Task 구성 단계가 누락됐습니다.');
-assert(finalExperience.includes('const nodeRevealDuration = planningDuration / finalRun.tasks.length') && finalExperience.includes('Math.floor(planningElapsed / nodeRevealDuration)'), 'Task 구성 화면은 0/10부터 Node를 순차 생성해야 합니다.');
-assert(finalExperience.includes("plannedCount === 0") && finalExperience.includes('Task 선별·생성 중'), 'Task 0/10 선별·생성 시작 상태가 누락됐습니다.');
-assert(matches(finalExperience, /\[\d+, \d+\]/g) >= 14 && finalExperience.includes('task-node'), '10개 Task 의존성 Graph가 누락됐습니다.');
+assert(finalExperience.includes('const nodeRevealDuration = planningDuration / finalRun.tasks.length') && finalExperience.includes('Math.floor(planningElapsed / nodeRevealDuration)'), 'Task 구성 화면은 0/40부터 Node를 순차 생성해야 합니다.');
+assert(finalExperience.includes("plannedCount === 0") && finalExperience.includes('Task 선별·생성 중'), 'Task 0/40 선별·생성 시작 상태가 누락됐습니다.');
+assert(finalExperience.includes('createTaskGraph(finalRun.tasks)') && finalExperience.includes('task-node'), '40개 Task 데이터와 Graph가 연결되어야 합니다.');
 assert(finalExperience.includes('task-node-spinner') && finalExperience.includes("aria-label=\"실행 중\""), '실행 중인 Task Node Spinner가 누락됐습니다.');
 assert(finalExperience.includes('ResizeObserver') && finalExperience.includes('graphScale'), 'Task Graph의 화면 자동 맞춤이 누락됐습니다.');
 assert(styles.includes('grid-template-columns: 224px minmax(0, 1fr)') && styles.includes('.task-graph-fit'), '축소된 Inspector와 전체 Graph Fit Layout이 누락됐습니다.');
 assert(styles.includes('.task-node-spinner') && styles.includes('animation: spin .72s linear infinite'), '실행 Node Spinner Animation이 누락됐습니다.');
-assert(/\.task-graph-viewport \{[^}]*overflow: hidden/.test(styles), '기존 제품 Task Graph의 화면 맞춤을 유지해야 합니다.');
+assert(/\.task-graph-viewport \{[^}]*overflow: auto/.test(styles), '제품 Task Graph는 끝까지 스크롤할 수 있어야 합니다.');
 assert(/\.mermaid-viewport \{[^}]*overflow: auto/.test(styles), '확대한 단계 다이어그램 전체를 스크롤할 수 있어야 합니다.');
 assert(styles.includes('height: 100dvh') && styles.includes('html, body') && styles.includes('overflow: hidden'), 'Web 화면의 Viewport 고정 규칙이 누락됐습니다.');
-for (const [viewportWidth, viewportHeight] of [[1440, 900], [1920, 1080]]) {
-  const graphViewportWidth = viewportWidth - 224;
-  const graphViewportHeight = viewportHeight - 68 - 46 - 46;
-  const scale = Math.max(.42, Math.min(1, (graphViewportWidth - 28) / 1270, (graphViewportHeight - 28) / 620));
-  assert(1270 * scale <= graphViewportWidth && 620 * scale <= graphViewportHeight, `${viewportWidth}×${viewportHeight}에서 Task Graph가 화면을 넘습니다.`);
+const { graphLayout, graphWidth, graphEdges, edgePath, graphGroups } = createTaskGraph(finalRun.tasks);
+assert(graphLayout.length === 41 && graphGroups.length === 10, '40개 Task와 입력 노드를 10개 기능 묶음으로 배치해야 합니다.');
+for (const [index, task] of finalRun.tasks.entries()) {
+  assert(task.id === index + 1 && task.title && task.owner && task.goal, '모든 Task에 고유 순서와 설명이 필요합니다.');
+  assert(task.dependsOn.length && task.dependsOn.every((id) => Number.isInteger(id) && id >= 0 && id < task.id), '의존성은 존재하는 앞선 Task 또는 제품 입력을 가리켜야 합니다.');
+  assert(task.events[0].at === 0 && task.events.at(-1).at === finalRun.taskDuration && task.events.at(-1).state === 'done', 'Task 이벤트가 시작과 완료 시간을 포함해야 합니다.');
+  assert(task.events.every((event, n) => event.at >= 0 && event.at <= finalRun.taskDuration && (n === 0 || event.at > task.events[n - 1].at)), '이벤트 순서와 시간이 Task 실행 범위 안에 있어야 합니다.');
+  const node = graphLayout[task.id];
+  assert(node && node.x + taskNodeWidth < graphWidth && node.y + taskNodeHeight < graphHeight, '모든 노드는 스크롤 가능한 Graph 안에 있어야 합니다.');
 }
-assert(matches(finalSource, /events: (?:standardEvents|retryEvents)\(/g) === 10, '모든 실행 Task에 Event Timeline이 있어야 합니다.');
-assert(matches(finalSource, /events: retryEvents\(/g) === 2, 'Repair/Retry Task는 정확히 2개여야 합니다.');
-assert(finalSource.includes('taskDuration: 120_000'), 'Task 실행 시간은 120초여야 합니다.');
+assert(new Set(finalRun.tasks.map((task) => task.title)).size === 40, '40개 Task는 서로 구분되는 작업이어야 합니다.');
+assert(graphEdges.length === finalRun.tasks.reduce((sum, task) => sum + task.dependsOn.length, 0) && graphEdges.every(([a, b]) => !edgePath(a, b).includes('undefined')), '모든 의존성 경로가 렌더 가능해야 합니다.');
+for (let i = 0; i < graphLayout.length; i += 1) for (let j = i + 1; j < graphLayout.length; j += 1) {
+  const a = graphLayout[i], b = graphLayout[j];
+  assert(Math.abs(a.x - b.x) >= taskNodeWidth || Math.abs(a.y - b.y) >= taskNodeHeight, 'Task 노드가 겹치면 안 됩니다.');
+}
+for (const [width, height] of [[1440, 900], [1920, 1080]]) {
+  const scale = Math.max(.75, Math.min(1, (height - 202) / graphHeight));
+  assert(graphWidth * scale > width - 224 && taskNodeWidth * scale >= 142, '노드를 작게 뭉개지 않고 가로 스크롤로 보여야 합니다.');
+}
+const retryTasks = finalRun.tasks.filter((task) => task.events.some((event) => event.state === 'failed'));
+assert(retryTasks.map((task) => task.id).join(',') === '20,36', '매칭과 복구 검증 Task에 실패/복구 시퀀스가 필요합니다.');
+for (const task of retryTasks) assert(['failed', 'repairing', 'retrying', 'done'].every((state) => task.events.some((event) => event.state === state)), '복구 이벤트가 누락됐습니다.');
+assert(finalRun.taskDuration === 30_000 && finalRun.tasks.length * finalRun.taskDuration === 1_200_000, '40개 × 30초로 총 실행 20분을 유지해야 합니다.');
+assert(!/\/ 10(?:<| Task)|\/10\]|Math\.min\(9,/.test(finalExperience + presenter), '10개 기준 카운트나 복원 상한이 남아 있으면 안 됩니다.');
+assert(controls.includes('flogi-final-run-state-v3'), '10개 Task 저장 상태와 새 실행 저장 상태를 구분해야 합니다.');
+assert(styles.includes('.fallback-task-list') && styles.includes('overflow-y: auto'), '40개 fallback Task를 스크롤할 수 있어야 합니다.');
+const longPrompt = '긴 문장을 앞뒤 손실 없이 표시합니다. English text 👩‍💻 é '.repeat(30);
+for (const width of [16, 40, 80, 160]) {
+  const layout = layoutPrompt(longPrompt, width);
+  assert(layout.lines.join('') === longPrompt && layout.widths.every((value) => value <= width), '긴 프롬프트를 폭에 맞춰 손실 없이 줄바꿈해야 합니다.');
+  assert(layout.positions.at(-1).offset === longPrompt.length, '커서가 긴 문장 끝까지 도달해야 합니다.');
+}
+assert(cellWidth('한') === 2 && cellWidth('é') === 1 && cellWidth('👩‍💻') === 2, '한글·영문·이모지 셀 너비가 맞아야 합니다.');
+assert(layoutPrompt('첫 줄\n둘째 줄\n', 40).lines.length === 3, '붙여넣은 줄바꿈을 보존해야 합니다.');
 assert(finalSource.includes("finalUrl: 'https://ohayo.tail2dac17.ts.net/'"), '최종 OHAYO URL이 정확하지 않습니다.');
 
 const timedFlowDuration = (buildStages.reduce((sum, stage) => sum + stage.duration, 0) + finalRun.taskGraphDuration + finalRun.tasks.length * finalRun.taskDuration + 8_000) / 7;
@@ -148,4 +177,5 @@ console.log('- Mermaid + canonical prompts: 5 original snapshots match exactly')
 console.log('- CLI: 5 separate stage inputs + 1 launch input; blank input holds');
 console.log('- Viewer: /harness/1~5; STEP 6 opens Loom prompt directly');
 console.log(`- Test mode: ${Math.round(timedFlowDuration / 1_000)}s timed flow`);
-console.log('- Product Run preserved: 10 tasks, 200s planning, 20min execution, Presenter + RESET + URL/QR');
+console.log('- Product Run: 40 tasks × 30s = 20min; 200s planning, scroll graph, Presenter + RESET + URL/QR');
+console.log('- Terminal: long Korean/English/emoji input wraps without cropping');

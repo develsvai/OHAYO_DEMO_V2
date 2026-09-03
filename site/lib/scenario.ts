@@ -594,107 +594,304 @@ export type ProductTask = {
   title: string;
   owner: string;
   goal: string;
+  group: string;
+  dependsOn: number[];
   events: ProductTaskEvent[];
 };
 
 const standardEvents = (context: string, implementation: string, validation: string): ProductTaskEvent[] => [
   { at: 0, state: 'running', label: '실행 중', detail: 'Task 실행을 시작했습니다.' },
-  { at: 8_000, state: 'context', label: 'Context 로드', detail: context },
-  { at: 32_000, state: 'implementing', label: '구현 중', detail: implementation },
-  { at: 92_000, state: 'validating', label: '검증 중', detail: validation },
-  { at: 120_000, state: 'done', label: '완료', detail: '목표 조건을 만족했습니다.' },
+  { at: 2_000, state: 'context', label: 'Context 로드', detail: context },
+  { at: 8_000, state: 'implementing', label: '구현 중', detail: implementation },
+  { at: 23_000, state: 'validating', label: '검증 중', detail: validation },
+  { at: 30_000, state: 'done', label: '완료', detail: '목표 조건을 만족했습니다.' },
 ];
 
 const retryEvents = (context: string, implementation: string, validation: string, repair: string): ProductTaskEvent[] => [
   { at: 0, state: 'running', label: '실행 중', detail: 'Task 실행을 시작했습니다.' },
-  { at: 8_000, state: 'context', label: 'Context 로드', detail: context },
-  { at: 30_000, state: 'implementing', label: '구현 중', detail: implementation },
-  { at: 78_000, state: 'validating', label: '검증 중', detail: validation },
-  { at: 91_000, state: 'failed', label: '검증 실패', detail: 'Acceptance condition 한 개를 만족하지 못했습니다.' },
-  { at: 97_000, state: 'repairing', label: '복구 중', detail: repair },
-  { at: 108_000, state: 'retrying', label: '재시도', detail: 'Validation Loop를 다시 실행합니다.' },
-  { at: 114_000, state: 'validating', label: '재검증 중', detail: 'Acceptance condition을 다시 평가합니다.' },
-  { at: 120_000, state: 'done', label: '완료', detail: '복구 후 목표 조건을 만족했습니다.' },
+  { at: 2_000, state: 'context', label: 'Context 로드', detail: context },
+  { at: 7_500, state: 'implementing', label: '구현 중', detail: implementation },
+  { at: 19_500, state: 'validating', label: '검증 중', detail: validation },
+  { at: 22_750, state: 'failed', label: '검증 실패', detail: 'Acceptance condition 한 개를 만족하지 못했습니다.' },
+  { at: 24_250, state: 'repairing', label: '복구 중', detail: repair },
+  { at: 27_000, state: 'retrying', label: '재시도', detail: 'Validation Loop를 다시 실행합니다.' },
+  { at: 28_500, state: 'validating', label: '재검증 중', detail: 'Acceptance condition을 다시 평가합니다.' },
+  { at: 30_000, state: 'done', label: '완료', detail: '복구 후 목표 조건을 만족했습니다.' },
 ];
+
+const productTaskGroups = [
+  {
+    "title": "Product Planning",
+    "tasks": [
+      [
+        "Product Brief",
+        "Planning",
+        "제품 목표와 제약 조건 정리"
+      ],
+      [
+        "User Journeys",
+        "Planning",
+        "점심 모임의 핵심 사용자 여정 정의"
+      ],
+      [
+        "System Architecture",
+        "Engineering",
+        "서비스 경계와 데이터 흐름 설계"
+      ],
+      [
+        "Acceptance Plan",
+        "Validation",
+        "기능별 완료 조건과 검증 계획 구성"
+      ]
+    ]
+  },
+  {
+    "title": "Design & App Shell",
+    "tasks": [
+      [
+        "Design Tokens",
+        "Design",
+        "색상·서체·간격의 공통 토큰 구성"
+      ],
+      [
+        "App Navigation",
+        "Design",
+        "주요 화면과 탐색 경로 설계"
+      ],
+      [
+        "Core Components",
+        "Frontend",
+        "입력·카드·피드백 컴포넌트 구현"
+      ],
+      [
+        "Responsive Shell",
+        "Frontend",
+        "기기별 반응형 앱 화면 구성"
+      ]
+    ]
+  },
+  {
+    "title": "Identity & Profile",
+    "tasks": [
+      [
+        "User Schema",
+        "Backend",
+        "사용자와 프로필 데이터 모델 정의"
+      ],
+      [
+        "Session Authentication",
+        "Backend",
+        "로그인과 세션 갱신 흐름 구현"
+      ],
+      [
+        "Profile Editor",
+        "Frontend",
+        "프로필 조회와 수정 경험 구현"
+      ],
+      [
+        "Access Policies",
+        "Validation",
+        "사용자별 데이터 접근 경계 검증"
+      ]
+    ]
+  },
+  {
+    "title": "Preference Onboarding",
+    "tasks": [
+      [
+        "Preference Taxonomy",
+        "Research",
+        "메뉴와 취향 분류 체계 구성"
+      ],
+      [
+        "Dietary Constraints",
+        "Backend",
+        "알레르기·식단 제한 데이터 구성"
+      ],
+      [
+        "Onboarding Forms",
+        "Frontend",
+        "취향 수집과 입력 검증 화면 구현"
+      ],
+      [
+        "Preference Persistence",
+        "Engineering",
+        "취향 저장과 재진입 상태 복원 구현"
+      ]
+    ]
+  },
+  {
+    "title": "Lunch Matching",
+    "tasks": [
+      [
+        "Candidate Pool",
+        "Engineering",
+        "참여 가능한 점심 그룹 후보 구성"
+      ],
+      [
+        "Preference Scoring",
+        "Engineering",
+        "취향 적합도와 식당 점수 계산"
+      ],
+      [
+        "Group Constraints",
+        "Engineering",
+        "위치·시간·식단 충돌 해결 구현"
+      ],
+      [
+        "Matching Validation",
+        "Validation",
+        "매칭 품질과 점수 편향 검증"
+      ]
+    ]
+  },
+  {
+    "title": "Restaurant Discovery",
+    "tasks": [
+      [
+        "Restaurant Dataset",
+        "Research",
+        "식당·메뉴·영업 정보 정규화"
+      ],
+      [
+        "Location Search",
+        "Backend",
+        "모임 위치 기준 주변 식당 탐색"
+      ],
+      [
+        "Menu Filters",
+        "Frontend",
+        "메뉴·예산·식단 필터 구현"
+      ],
+      [
+        "Recommendation Cards",
+        "Frontend",
+        "추천 결과와 빈 상태 화면 연결"
+      ]
+    ]
+  },
+  {
+    "title": "Group Coordination",
+    "tasks": [
+      [
+        "Group Rooms",
+        "Backend",
+        "점심 모임 생성과 참여 상태 구현"
+      ],
+      [
+        "Invite Links",
+        "Engineering",
+        "초대 링크와 만료 규칙 구현"
+      ],
+      [
+        "Shared Voting",
+        "Frontend",
+        "후보 투표와 집계 화면 구현"
+      ],
+      [
+        "Decision Sync",
+        "Engineering",
+        "최종 선택과 그룹 상태 동기화"
+      ]
+    ]
+  },
+  {
+    "title": "Notifications",
+    "tasks": [
+      [
+        "Notification Events",
+        "Infrastructure",
+        "모임과 투표 알림 이벤트 정의"
+      ],
+      [
+        "Delivery Queue",
+        "Infrastructure",
+        "알림 큐와 실패 재전송 구성"
+      ],
+      [
+        "Lunch Reminders",
+        "Engineering",
+        "시간대별 점심 약속 리마인더 구현"
+      ],
+      [
+        "Preference Controls",
+        "Frontend",
+        "알림 설정과 수신 거부 경험 구현"
+      ]
+    ]
+  },
+  {
+    "title": "Release Validation",
+    "tasks": [
+      [
+        "Journey Fixtures",
+        "Validation",
+        "핵심 사용자 여정의 테스트 데이터 구성"
+      ],
+      [
+        "Integration Suite",
+        "Validation",
+        "인증·취향·매칭·협업 통합 검증"
+      ],
+      [
+        "Device Checks",
+        "Validation",
+        "기기별 화면과 접근성 검증"
+      ],
+      [
+        "Recovery Validation",
+        "Validation",
+        "실패 복구와 재접속 여정 검증"
+      ]
+    ]
+  },
+  {
+    "title": "Production Release",
+    "tasks": [
+      [
+        "Release Artifact",
+        "Deployment",
+        "버전과 의존성을 고정한 배포 패키징"
+      ],
+      [
+        "Runtime Config",
+        "Infrastructure",
+        "배포 환경과 런타임 설정 검증"
+      ],
+      [
+        "Deployment Pipeline",
+        "Deployment",
+        "릴리즈 전환과 롤백 경로 구성"
+      ],
+      [
+        "Production Health",
+        "Deployment",
+        "Health Check와 모니터링 인계 완료"
+      ]
+    ]
+  }
+] satisfies { title: string; tasks: [string, string, string][] }[];
 
 export const finalRun = {
   canonicalPrompt: `지정된 폴더의 명세와 Context를 사용해서
 OHAYO를 처음부터 끝까지 완성하고
 배포까지 진행해줘.`,
   taskGraphDuration: 200_000,
-  taskDuration: 120_000,
+  taskDuration: 30_000,
   finalUrl: 'https://ohayo.tail2dac17.ts.net/',
-  tasks: [
-    {
-      id: 1,
-      title: 'Product Scope & Architecture',
-      owner: 'Planning',
-      goal: '제품 명세를 실행 가능한 구조와 acceptance criteria로 변환',
-      events: standardEvents('제품 명세 · 이해관계자 메모 · 제약 조건', '제품 구조와 실행 경계를 정의하고 있습니다.', '범위와 의존성 Graph를 검토하고 있습니다.'),
-    },
-    {
-      id: 2,
-      title: 'Design System & App Shell',
-      owner: 'Design',
-      goal: '일관된 UI 토큰과 핵심 화면 구조 구성',
-      events: standardEvents('브랜드 Reference · UI 원칙 · 대상 기기', 'Visual System과 반응형 App Shell을 구성하고 있습니다.', '레이아웃 일관성과 접근성을 확인하고 있습니다.'),
-    },
-    {
-      id: 3,
-      title: 'Authentication & Profile',
-      owner: 'Backend',
-      goal: '사용자 인증과 프로필 데이터 흐름 구현',
-      events: standardEvents('인증 계약 · Profile Schema · 보안 규칙', 'Session과 Profile Workflow를 구현하고 있습니다.', '접근 경계와 데이터 무결성을 검증하고 있습니다.'),
-    },
-    {
-      id: 4,
-      title: 'Lunch Preference Onboarding',
-      owner: 'Frontend',
-      goal: '점심 취향과 제약을 수집하는 온보딩 경험 구현',
-      events: standardEvents('취향 분류 · UX 문구 · 검증 규칙', '취향 수집과 상태 전이를 구현하고 있습니다.', 'Form 상태와 예외 조건을 시험하고 있습니다.'),
-    },
-    {
-      id: 5,
-      title: 'Lunch Matching Engine',
-      owner: 'Engineering',
-      goal: '그룹 조건을 반영한 점심 매칭 로직 구현',
-      events: retryEvents('Matching 규칙 · 취향 Vector · Sample Group', 'Matching과 Ranking Pipeline을 구현하고 있습니다.', 'Fixture 기준으로 Matching 품질을 평가하고 있습니다.', 'Score 가중치와 충돌 해결 규칙을 조정하고 있습니다.'),
-    },
-    {
-      id: 6,
-      title: 'Restaurant Discovery',
-      owner: 'Research',
-      goal: '후보 식당 데이터와 추천 결과 연결',
-      events: standardEvents('식당 Dataset · 위치 제약 · Filter', '추천 식당을 Discovery 화면에 연결하고 있습니다.', 'Filter, 빈 상태, 결과 품질을 검증하고 있습니다.'),
-    },
-    {
-      id: 7,
-      title: 'Group Coordination',
-      owner: 'Engineering',
-      goal: '초대·투표·최종 선택의 그룹 협업 흐름 구현',
-      events: standardEvents('Group Lifecycle · 초대 규칙 · 투표 정책', 'Room 협업과 동기화된 결정을 구현하고 있습니다.', '다중 사용자 상태 전이를 검증하고 있습니다.'),
-    },
-    {
-      id: 8,
-      title: 'Notifications & Reminders',
-      owner: 'Infrastructure',
-      goal: '선택 완료와 약속 리마인더 흐름 구성',
-      events: standardEvents('알림 Matrix · Timing 규칙 · 수신 거부 정책', 'Event 기반 Reminder와 전달 상태를 구성하고 있습니다.', 'Timing, Fallback, 사용자 설정을 확인하고 있습니다.'),
-    },
-    {
-      id: 9,
-      title: 'End-to-End Validation',
-      owner: 'Validation',
-      goal: '핵심 사용자 여정과 실패 복구 시나리오 검증',
-      events: retryEvents('Acceptance Suite · 기기 Matrix · 실패 Scenario', 'End-to-End 제품 여정을 실행하고 있습니다.', 'Release Acceptance Suite를 실행하고 있습니다.', 'Mobile 협업 상태의 회귀 문제를 복구하고 있습니다.'),
-    },
-    {
-      id: 10,
-      title: 'Production Release',
-      owner: 'Deployment',
-      goal: '패키징·배포·Health Check·Monitoring 완료',
-      events: standardEvents('Release Manifest · 배포 대상 · Health 정책', 'Artifact를 Packaging하고 Release를 배포하고 있습니다.', 'Health Check와 Monitoring 인계를 실행하고 있습니다.'),
-    },
-  ] satisfies ProductTask[],
+  tasks: productTaskGroups.flatMap((group, groupIndex) => group.tasks.map(([title, owner, goal], taskIndex): ProductTask => {
+    const id = groupIndex * 4 + taskIndex + 1;
+    const previousGroup = groupIndex * 4;
+    const dependsOn = taskIndex < 2 ? [previousGroup]
+      : taskIndex === 2 ? [id - 2, id - 1] : [id - 1, id - 2];
+    const context = `${group.title} 명세 · ${title} 입력 데이터`;
+    const implementation = `${goal} 작업을 진행하고 있습니다.`;
+    const validation = `${title}의 완료 조건과 연결 상태를 검증하고 있습니다.`;
+    const repair = id === 20 ? 'Score 가중치와 충돌 해결 규칙을 조정하고 있습니다.'
+      : '모바일 협업 상태의 재접속 문제를 복구하고 있습니다.';
+    return { id, title, owner, goal, group: group.title, dependsOn,
+      events: id === 20 || id === 36 ? retryEvents(context, implementation, validation, repair)
+        : standardEvents(context, implementation, validation) };
+  })),
   completionChecks: ['검증', '패키징', '배포', 'Health Check', '모니터링'],
 };

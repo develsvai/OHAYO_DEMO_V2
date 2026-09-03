@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { finalRun, ProductTask, ProductTaskState } from '@/lib/scenario';
+import { createTaskGraph, graphHeight, taskNodeWidth } from '@/lib/task-graph';
 import {
   finalRunStorageKey,
   PresenterCommand,
@@ -17,27 +18,8 @@ type GraphPhase = 'planning' | 'running';
 
 const completionDuration = 8_000;
 const planningDuration = finalRun.taskGraphDuration;
-const graphWidth = 1270;
-const graphHeight = 620;
-
-const graphLayout = [
-  { id: 0, x: 34, y: 258 },
-  { id: 1, x: 190, y: 258 },
-  { id: 2, x: 360, y: 116 },
-  { id: 3, x: 360, y: 398 },
-  { id: 4, x: 548, y: 48 },
-  { id: 5, x: 548, y: 258 },
-  { id: 6, x: 548, y: 468 },
-  { id: 7, x: 748, y: 116 },
-  { id: 8, x: 748, y: 398 },
-  { id: 9, x: 948, y: 258 },
-  { id: 10, x: 1098, y: 258 },
-];
-
-const graphEdges = [
-  [0, 1], [1, 2], [1, 3], [2, 4], [2, 5], [3, 5], [3, 6],
-  [4, 7], [5, 7], [5, 8], [6, 8], [7, 9], [8, 9], [9, 10],
-];
+const taskCount = finalRun.tasks.length;
+const { graphWidth, graphGroups, graphLayout, graphEdges, groupPosition, edgePath } = createTaskGraph(finalRun.tasks);
 
 const nodeIcons: Record<string, string> = {
   Planning: '⌁', Design: '◇', Backend: '▣', Frontend: '◫', Engineering: '⌘',
@@ -86,9 +68,8 @@ function TaskGraphCanvas({
     const viewport = viewportRef.current;
     if (!viewport) return;
     const fitGraph = () => {
-      const widthScale = (viewport.clientWidth - 28) / graphWidth;
       const heightScale = (viewport.clientHeight - 28) / graphHeight;
-      setGraphScale(Math.max(.42, Math.min(1, widthScale, heightScale)));
+      setGraphScale(Math.max(.75, Math.min(1, heightScale)));
     };
     fitGraph();
     const observer = new ResizeObserver(fitGraph);
@@ -96,62 +77,57 @@ function TaskGraphCanvas({
     return () => observer.disconnect();
   }, []);
 
+  const revealTask = useCallback((id: number) => {
+    const viewport = viewportRef.current;
+    const position = graphLayout[id];
+    if (!viewport || !position) return;
+    viewport.scrollTo({ left: Math.max(0, (position.x + taskNodeWidth / 2) * graphScale - viewport.clientWidth / 2), behavior: 'smooth' });
+  }, [graphScale]);
+
+  useEffect(() => {
+    if (activeId > 0) revealTask(activeId);
+  }, [activeId, revealTask]);
+
   return (
-    <div ref={viewportRef} className="task-graph-viewport" aria-label={phase === 'planning' ? 'Task 구성 Graph' : 'Task 실행 Graph'}>
-      <div className="task-graph-grid" />
-      <div className="task-graph-fit" style={{ width: graphWidth * graphScale, height: graphHeight * graphScale }}>
-      <div className="task-graph-world" style={{ transform: `scale(${graphScale})` }}>
-        <svg className="task-graph-edges" viewBox="0 0 1270 620" aria-hidden="true">
-          {graphEdges.map(([sourceId, targetId]) => {
-            const source = graphLayout.find((node) => node.id === sourceId)!;
-            const target = graphLayout.find((node) => node.id === targetId)!;
-            const visible = visibleIds.has(sourceId) && visibleIds.has(targetId);
-            const active = targetId === activeId || completedTaskIds.includes(targetId);
-            const sourceX = source.x + 140;
-            const sourceY = source.y + 43;
-            const targetX = target.x;
-            const targetY = target.y + 43;
-            const middleX = sourceX + (targetX - sourceX) * .52;
-            return (
-              <path
-                key={`${sourceId}-${targetId}`}
-                className={`${visible ? 'visible' : ''} ${active ? 'active' : ''}`}
-                d={`M ${sourceX} ${sourceY} C ${middleX} ${sourceY}, ${middleX} ${targetY}, ${targetX} ${targetY}`}
-              />
-            );
-          })}
-        </svg>
-
-        <div className="task-node node-trigger visible" style={{ left: graphLayout[0].x, top: graphLayout[0].y }}>
-          <small>제품 입력</small><b>⌁</b><strong>OHAYO 명세</strong><span>제품 목표와 Context</span>
-        </div>
-
-        {finalRun.tasks.map((task, index) => {
-          const position = graphLayout[index + 1];
-          const visible = visibleIds.has(task.id);
-          const active = visible && task.id === activeId;
-          const done = completedTaskIds.includes(task.id);
-          const state = active && phase === 'running' ? currentState : done ? 'done' : 'pending';
-          return (
-            <div
-              key={task.id}
-              className={`task-node ${nodeClass(task.owner)} ${visible ? 'visible' : ''} ${active ? 'active' : ''} ${done ? 'done' : ''} ${state ?? ''}`}
-              style={{ left: position.x, top: position.y }}
-            >
-              <small>{task.owner}</small>
-              <b>{nodeIcons[task.owner] ?? '◆'}</b>
-              <strong><i>{String(task.id).padStart(2, '0')}</i>{task.title}</strong>
-              <span>{active && phase === 'running' ? stateLabel(state ?? 'pending') : visible ? 'Task 구성 완료' : '구성 대기'}</span>
-              {active && phase === 'running' && <i className="task-node-spinner" aria-label="실행 중" />}
+    <div className="task-graph-canvas">
+      <div ref={viewportRef} className="task-graph-viewport" tabIndex={0} aria-label={phase === 'planning' ? 'Task 구성 Graph' : 'Task 실행 Graph'}>
+        <div className="task-graph-fit" style={{ width: graphWidth * graphScale, height: graphHeight * graphScale }}>
+          <div className="task-graph-world" style={{ width: graphWidth, height: graphHeight, transform: `scale(${graphScale})` }}>
+            {graphGroups.map((group, index) => <div className="task-group-band" key={group} style={{ left: groupPosition(index) }}><span>{String(index + 1).padStart(2, '0')} / {group}</span></div>)}
+            <svg className="task-graph-edges" viewBox={`0 0 ${graphWidth} ${graphHeight}`} aria-hidden="true">
+              {graphEdges.map(([sourceId, targetId]) => {
+                const visible = visibleIds.has(sourceId) && visibleIds.has(targetId);
+                return <path key={`${sourceId}-${targetId}`} className={`${visible ? 'visible' : ''} ${targetId === activeId ? 'active' : ''}`} d={edgePath(sourceId, targetId)} />;
+              })}
+            </svg>
+            <div className="task-node node-trigger visible" style={{ left: graphLayout[0].x, top: graphLayout[0].y }}>
+              <small>제품 입력</small><b>⌁</b><strong>OHAYO 명세</strong><span>제품 목표와 Context</span>
             </div>
-          );
-        })}
-
-        <div className="graph-minimap" aria-hidden="true">
-          {graphLayout.map((node) => <i key={node.id} className={visibleIds.has(node.id) ? 'visible' : ''} style={{ left: `${node.x / 12.7}%`, top: `${node.y / 6.2}%` }} />)}
+            {finalRun.tasks.map((task) => {
+              const position = graphLayout[task.id];
+              const visible = visibleIds.has(task.id);
+              const active = visible && task.id === activeId;
+              const done = completedTaskIds.includes(task.id);
+              const state = active ? currentState : done ? 'done' : 'pending';
+              return <div key={task.id} data-task-id={task.id} title={`${task.title} · ${task.goal}`} aria-label={`Task ${task.id}: ${task.title}`} aria-current={active ? 'step' : undefined}
+                className={`task-node ${nodeClass(task.owner)} ${visible ? 'visible' : ''} ${active ? 'active' : ''} ${done ? 'done' : ''} ${state ?? ''}`}
+                style={{ left: position.x, top: position.y }}>
+                <small>{task.owner}</small><b>{nodeIcons[task.owner] ?? '◆'}</b>
+                <strong><i>{String(task.id).padStart(2, '0')}</i>{task.title}</strong>
+                <span>{active ? stateLabel(state ?? 'pending') : done ? '완료' : visible ? 'Task 구성 완료' : '구성 대기'}</span>
+                {active && <i className="task-node-spinner" aria-label="실행 중" />}
+              </div>;
+            })}
+          </div>
         </div>
-        <div className="graph-canvas-controls" aria-hidden="true"><span>＋</span><span>−</span><span>⌂</span></div>
       </div>
+      <div className="graph-navigation">
+        <span>가로 스크롤로 전체 Task 보기</span>
+        <div>
+          <button type="button" aria-label="이전 영역" onClick={() => viewportRef.current?.scrollBy({ left: -700, behavior: 'smooth' })}>←</button>
+          <button type="button" onClick={() => revealTask(activeId > 0 ? activeId : plannedCount)}>현재 Task 보기</button>
+          <button type="button" aria-label="다음 영역" onClick={() => viewportRef.current?.scrollBy({ left: 700, behavior: 'smooth' })}>→</button>
+        </div>
       </div>
     </div>
   );
@@ -207,31 +183,31 @@ function TaskGraphScreen({
       <section className="loom-graph-layout">
         <aside className="graph-inspector">
           <div className="graph-inspector-label">{planning ? 'TASK GRAPH 상태' : '현재 실행 대상'}</div>
-          <div className="graph-task-number">{planning ? '10' : String(currentTask.id).padStart(2, '0')}</div>
+          <div className="graph-task-number">{planning ? String(taskCount) : String(currentTask.id).padStart(2, '0')}</div>
           <span className="graph-owner">{displayOwner}</span>
           <h1>{displayTitle}</h1>
           <p>{displayGoal}</p>
 
           <div className={`graph-state-card ${currentEvent?.state ?? ''}`}>
             <span>{paused ? '일시정지' : planning ? planningComplete ? 'Task Graph 준비 완료' : 'Task 선별·생성 중' : currentEvent?.label}</span>
-            <p>{paused ? 'Presenter가 Timeline을 정지했습니다.' : planning ? planningComplete ? '전체 Task와 의존 관계가 실행 가능한 Graph로 준비되었습니다.' : `${String(plannedCount).padStart(2, '0')} / 10 Task를 Graph에 연결했습니다.` : currentEvent?.detail}</p>
+            <p>{paused ? 'Presenter가 Timeline을 정지했습니다.' : planning ? planningComplete ? '전체 Task와 의존 관계가 실행 가능한 Graph로 준비되었습니다.' : `${String(plannedCount).padStart(2, '0')} / ${taskCount} Task를 Graph에 연결했습니다.` : currentEvent?.detail}</p>
           </div>
 
           <div className="graph-prompt-card"><span>입력된 제품 목표</span><p>{prompt}</p></div>
 
           <div className="graph-inspector-metrics">
-            <div><span>{planning ? '구성된 Task' : '완료된 Task'}</span><strong>{String(graphCount).padStart(2, '0')} / 10</strong></div>
+            <div><span>{planning ? '구성된 Task' : '완료된 Task'}</span><strong>{String(graphCount).padStart(2, '0')} / {taskCount}</strong></div>
             <div><span>실행 속도</span><strong>{speed}×</strong></div>
             {planning
               ? <div><span>Graph 상태</span><strong>READY</strong></div>
-              : <div><span>현재 Task</span><strong>{formatClock(taskElapsed)} / 02:00</strong></div>}
+              : <div><span>현재 Task</span><strong>{formatClock(taskElapsed)} / {formatClock(finalRun.taskDuration)}</strong></div>}
           </div>
         </aside>
 
         <section className="graph-stage">
           <div className="graph-stage-heading">
             <div><span>{planning ? 'TASK DECOMPOSITION' : 'AUTONOMOUS EXECUTION'}</span><strong>{planning ? 'OHAYO Task Graph 구성' : 'OHAYO Task Graph 실행'}</strong></div>
-            <div><span>{planning ? 'NODE' : 'TASK'}</span><strong>{String(planning ? plannedCount : currentTaskIndex + 1).padStart(2, '0')} / 10</strong></div>
+            <div><span>{planning ? 'NODE' : 'TASK'}</span><strong>{String(planning ? plannedCount : currentTaskIndex + 1).padStart(2, '0')} / {taskCount}</strong></div>
           </div>
           <TaskGraphCanvas phase={phase} plannedCount={plannedCount} activeTaskIndex={currentTaskIndex} completedTaskIds={completedTaskIds} currentState={currentEvent?.state} />
         </section>
@@ -239,9 +215,9 @@ function TaskGraphScreen({
 
       <footer className="run-footer loom-graph-footer">
         <span>CTRL + SHIFT + P · PRESENTER</span>
-        <div>{planning ? planningComplete ? '10개 Task와 의존 관계 구성 완료' : `${String(plannedCount).padStart(2, '0')} / 10 Task 선별·생성 중` : 'Graph 경로를 따라 Task 순차 실행'}</div>
+        <div>{planning ? planningComplete ? `${taskCount}개 Task와 의존 관계 구성 완료` : `${String(plannedCount).padStart(2, '0')} / ${taskCount} Task 선별·생성 중` : 'Graph 경로를 따라 Task 순차 실행'}</div>
         {!planning && <button className="graph-cli-toggle" onClick={() => setViewMode('cli')}>CLI FALLBACK</button>}
-        <strong>{planning ? 'TASK GRAPH READY' : `${formatClock(runElapsed)} / 20:00`}</strong>
+        <strong>{planning ? 'TASK GRAPH READY' : `${formatClock(runElapsed)} / ${formatClock(taskCount * finalRun.taskDuration)}`}</strong>
       </footer>
       <div className="run-progress"><i style={{ width: `${planning ? Math.min(100, planningElapsed / planningDuration * 100) : Math.min(100, runElapsed / (finalRun.tasks.length * finalRun.taskDuration) * 100)}%` }} /></div>
     </main>
@@ -262,6 +238,7 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
   const [viewMode, setViewMode] = useState<ViewMode>('web');
   const [hydrated, setHydrated] = useState(false);
   const lastTickAt = useRef(0);
+  const fallbackRef = useRef<HTMLDivElement>(null);
 
   const nodeRevealDuration = planningDuration / finalRun.tasks.length;
   const plannedCount = Math.min(finalRun.tasks.length, Math.floor(planningElapsed / nodeRevealDuration));
@@ -285,7 +262,7 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
         if (['prompt', 'planning', 'running', 'complete', 'result'].includes(state.screen)) setScreen(state.screen);
         if (typeof state.submittedPrompt === 'string') setSubmittedPrompt(state.submittedPrompt);
         if (typeof state.planningElapsed === 'number') setPlanningElapsed(Math.min(planningDuration, Math.max(0, state.planningElapsed)));
-        if (typeof state.currentTaskIndex === 'number') setCurrentTaskIndex(Math.min(9, Math.max(0, state.currentTaskIndex)));
+        if (typeof state.currentTaskIndex === 'number') setCurrentTaskIndex(Math.min(taskCount - 1, Math.max(0, Math.floor(state.currentTaskIndex))));
         if (typeof state.taskElapsed === 'number') setTaskElapsed(Math.min(finalRun.taskDuration, Math.max(0, state.taskElapsed)));
         if (Array.isArray(state.completedTaskIds)) setCompletedTaskIds(state.completedTaskIds);
         if (typeof state.paused === 'boolean') setPaused(state.paused);
@@ -447,6 +424,10 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
     return () => window.clearInterval(timer);
   }, [screen, speed]);
 
+  useEffect(() => {
+    if (viewMode === 'cli') fallbackRef.current?.querySelector('[aria-current="step"]')?.scrollIntoView({ block: 'nearest' });
+  }, [currentTaskIndex, viewMode]);
+
   function submit(event: FormEvent) {
     event.preventDefault();
     if (!prompt.trim()) return;
@@ -506,7 +487,7 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
     const visibleChecks = Math.min(finalRun.completionChecks.length, Math.floor(completionElapsed / (completionDuration / finalRun.completionChecks.length)) + 1);
     return (
       <main className="completion-shell"><div className="ready-grid" /><section className="completion-card">
-        <div className="completion-ring"><span>10</span><small>/ 10</small></div><p>모든 제품 Task 완료</p><h1>Release 마무리 중</h1>
+        <div className="completion-ring"><span>{taskCount}</span><small>/ {taskCount}</small></div><p>모든 제품 Task 완료</p><h1>Release 마무리 중</h1>
         <div className="completion-checks">{finalRun.completionChecks.map((check, index) => <div key={check} className={index < visibleChecks ? 'visible' : ''}><span>{index < visibleChecks ? '✓' : '·'}</span><p>{check}</p><strong>{index < visibleChecks ? '완료' : '대기'}</strong></div>)}</div>
       </section></main>
     );
@@ -515,7 +496,7 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
   if (screen === 'result') {
     return (
       <main className="result-shell"><div className="result-grid" />
-        <header className="result-topbar"><div className="brand-lockup"><span className="brand-mark">F</span><div><strong>Auto Plan Loom</strong><span>실행 완료</span></div></div><span>10 / 10 TASKS</span></header>
+        <header className="result-topbar"><div className="brand-lockup"><span className="brand-mark">F</span><div><strong>Auto Plan Loom</strong><span>실행 완료</span></div></div><span>{taskCount} / {taskCount} TASKS</span></header>
         <section className="result-content"><div className="result-copy"><div className="result-kicker"><span /> 배포 상태 정상</div><p>제품 준비 완료</p><h1>OHAYO<br />READY</h1><a href={finalRun.finalUrl} target="_blank" rel="noreferrer">{finalRun.finalUrl}<span>↗</span></a><div className="result-checks">{finalRun.completionChecks.map((check) => <span key={check}>✓ {check}</span>)}</div></div>
           <div className="qr-card"><div className="qr-frame"><QRCodeSVG value={finalRun.finalUrl} size={240} bgColor="#f4f5ef" fgColor="#0a0b0d" level="H" /></div><strong>QR을 스캔해 OHAYO 열기</strong><p>Production 배포 · Health Check 통과</p></div>
         </section>
@@ -529,12 +510,12 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
       <main className="run-shell cli-fallback-shell">
         <header className="run-topbar"><div className="brand-lockup"><span className="brand-mark">F</span><div><strong>OHAYO Build</strong><span>CLI FALLBACK</span></div></div><div className={`run-status ${paused ? 'paused' : ''}`}><span />{paused ? '일시정지' : '실행 중'}</div><button className="graph-cli-toggle" onClick={() => setViewMode('web')}>GRAPH 보기</button></header>
         <section className="fallback-terminal"><div className="terminal-bar"><div className="traffic"><i /><i /><i /></div><span>auto-plan-loom — run --fallback</span><kbd>C · GRAPH 보기</kbd></div><div className="fallback-body"><div className="fallback-prompt"><span>›</span><p>{submittedPrompt}</p></div>
-          {finalRun.tasks.map((task, index) => { const done = completedTaskIds.includes(task.id); const active = index === currentTaskIndex && !done; const state = active ? currentEvent?.state ?? 'running' : done ? 'done' : 'pending'; return <div className={`fallback-task ${state}`} key={task.id}><span>[{String(task.id).padStart(2, '0')}/10]</span><strong>{task.title}</strong><i>{done ? '✓ 완료' : active ? `▶ ${stateLabel(state)}` : '⏳ 대기'}</i></div>; })}
-          {currentTask && <div className="fallback-current"><span className={currentEvent?.state === 'failed' ? 'error' : ''}>• {currentEvent?.label}</span><p>{currentEvent?.detail}</p><small>{formatClock(taskElapsed)} / 02:00</small></div>}
+          <div className="fallback-task-list" ref={fallbackRef}>{finalRun.tasks.map((task, index) => { const done = completedTaskIds.includes(task.id); const active = index === currentTaskIndex && !done; const state = active ? currentEvent?.state ?? 'running' : done ? 'done' : 'pending'; return <div className={`fallback-task ${state}`} key={task.id} aria-current={active ? 'step' : undefined}><span>[{String(task.id).padStart(2, '0')}/{taskCount}]</span><strong>{task.title}</strong><i>{done ? '✓ 완료' : active ? `▶ ${stateLabel(state)}` : '⏳ 대기'}</i></div>; })}</div>
+          {currentTask && <div className="fallback-current"><span className={currentEvent?.state === 'failed' ? 'error' : ''}>• {currentEvent?.label}</span><p>{currentEvent?.detail}</p><small>{formatClock(taskElapsed)} / {formatClock(finalRun.taskDuration)}</small></div>}
         </div></section><div className="run-progress"><i style={{ width: `${totalProgress}%` }} /></div>
       </main>
     );
   }
 
-  return <TaskGraphScreen phase="running" prompt={submittedPrompt} planningElapsed={planningElapsed} plannedCount={10} currentTaskIndex={currentTaskIndex} taskElapsed={taskElapsed} completedTaskIds={completedTaskIds} currentTask={currentTask} currentEvent={currentEvent} paused={paused} speed={speed} setViewMode={setViewMode} />;
+  return <TaskGraphScreen phase="running" prompt={submittedPrompt} planningElapsed={planningElapsed} plannedCount={taskCount} currentTaskIndex={currentTaskIndex} taskElapsed={taskElapsed} completedTaskIds={completedTaskIds} currentTask={currentTask} currentEvent={currentEvent} paused={paused} speed={speed} setViewMode={setViewMode} />;
 }

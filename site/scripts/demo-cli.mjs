@@ -4,6 +4,7 @@ import { createInterface } from 'node:readline/promises';
 import process from 'node:process';
 import { StringDecoder } from 'node:string_decoder';
 import { buildStages } from '../lib/scenario.ts';
+import { createPromptRenderer, graphemes, layoutPrompt } from './prompt-layout.mjs';
 
 const speed = Math.max(1, Number(process.env.OHAYO_DEMO_SPEED) || 1);
 const tty = Boolean(process.stdin.isTTY && process.stdout.isTTY);
@@ -65,42 +66,29 @@ function printBanner() {
   console.log();
 }
 
-function renderPromptBar(value = '') {
-  const width = Math.max(20, process.stdout.columns || 100);
-  const placeholder = 'Ask Codex to do anything';
-  const characters = [...value.replace(/\r\n?/g, '\n').replaceAll('\n', ' ↵ ')];
-  let displayWidth = visibleWidth(characters.join(''));
-  while (displayWidth > width - 5 && characters.length) {
-    displayWidth -= visibleWidth(characters.shift());
-  }
-  const display = characters.join('');
-  const content = value ? `${colors.white}› ${display}` : `${colors.white}› ${colors.gray}${placeholder}`;
-  process.stdout.write(`\r\x1b[2K${colors.panel}${content}${colors.reset}`);
-  process.stdout.write(`\r\x1b[${2 + visibleWidth(display)}C`);
-}
-
-function printStatusLine() {
-  console.log(`${color('  gpt-5.6-sol xhigh fast', 'cream')}  ${color('·', 'gray')}  ${color('~/Desktop/Flogy/OHAYO_DEMO_V2', 'green')}`);
-}
-
 export async function readTerminalPrompt() {
   return new Promise((resolvePromise, rejectPromise) => {
     const decoder = new StringDecoder('utf8');
     let value = '';
+    let cursor = 0;
+    const renderer = createPromptRenderer(process.stdout, colors);
+    const insert = (text) => { value = value.slice(0, cursor) + text + value.slice(cursor); cursor += text.length; };
+    const redraw = () => renderer.render(value, cursor);
+    const resize = () => renderer.resize(value, cursor);
     let pending = '';
     let pasting = false;
+    let pasteCarriageReturn = false;
     const pasteStart = '\x1b[200~';
     const pasteEnd = '\x1b[201~';
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdout.write('\x1b[?2004h');
-    renderPromptBar();
-    process.stdout.write('\n');
-    printStatusLine();
-    process.stdout.write('\x1b[2A\r\x1b[2C');
+    redraw();
+    process.stdout.on('resize', resize);
 
     const cleanup = () => {
       process.stdin.off('data', onData);
+      process.stdout.off('resize', resize);
       process.stdin.off('end', onEnd);
       process.stdin.setRawMode(false);
       process.stdin.pause();
@@ -111,8 +99,7 @@ export async function readTerminalPrompt() {
       rejectPromise(new Error('프롬프트 입력이 종료되었습니다.'));
     };
     const finish = () => {
-      renderPromptBar(value);
-      process.stdout.write('\x1b[1B\r\n');
+      renderer.finish(value, cursor);
       cleanup();
       resolvePromise(value.replace(/\r\n?/g, '\n'));
     };
@@ -121,18 +108,38 @@ export async function readTerminalPrompt() {
       // Terminals without bracketed paste may deliver several lines together.
       // Keep them as one prompt; only a subsequent Enter submits it.
       if (!pasting && !pending && !input.includes('\x1b') && /[\r\n]/.test(input) && /[^\r\n]/.test(input) && !input.includes('\x03')) {
-        value += input.replace(/\r\n?/g, '\n').replace(/[\x00-\x08\x0b-\x1f\x7f]/g, '');
-        renderPromptBar(value);
+        insert(input.replace(/\r\n?/g, '\n').replace(/[\x00-\x08\x0b-\x1f\x7f]/g, ''));
+        redraw();
         return;
       }
       pending += input;
       while (pending) {
         if (pending.startsWith('\x1b')) {
+          if (pending === '\x1b') break;
+          if (!pasting && (pending.startsWith('\x1b\r') || pending.startsWith('\x1b\n'))) { insert('\n'); pending = pending.slice(2); continue; }
           if (pending.length < pasteStart.length && (pasteStart.startsWith(pending) || pasteEnd.startsWith(pending))) break;
           const escape = pending.match(/^\x1b\[[0-?]*[ -/]*[@-~]/)?.[0];
           if (escape) {
-            if (escape === pasteStart) pasting = true;
+            if (escape === pasteStart) { pasting = true; pasteCarriageReturn = false; }
             if (escape === pasteEnd) pasting = false;
+            if (!pasting && escape !== pasteEnd) {
+              const layout = layoutPrompt(value, Math.max(8, (process.stdout.columns || 100) - 4));
+              const position = layout.positions.findIndex((point) => point.offset >= cursor);
+              const caret = layout.positions[position];
+              if (escape === '\x1b[D') cursor = layout.positions[Math.max(0, position - 1)].offset;
+              if (escape === '\x1b[C') cursor = layout.positions[Math.min(layout.positions.length - 1, position + 1)].offset;
+              if (escape === '\x1b[H' || escape === '\x1b[1~') cursor = 0;
+              if (escape === '\x1b[F' || escape === '\x1b[4~') cursor = value.length;
+              if (escape === '\x1b[A' || escape === '\x1b[B') {
+                const targetRow = caret.row + (escape === '\x1b[A' ? -1 : 1);
+                const candidates = layout.positions.filter((point) => point.row === targetRow);
+                if (candidates.length) cursor = candidates.reduce((best, point) => Math.abs(point.column - caret.column) < Math.abs(best.column - caret.column) ? point : best).offset;
+              }
+              if (escape === '\x1b[3~') {
+                const end = layout.positions[Math.min(layout.positions.length - 1, position + 1)].offset;
+                value = value.slice(0, cursor) + value.slice(end);
+              }
+            }
             pending = pending.slice(escape.length);
           } else {
             pending = pending.slice(1);
@@ -147,17 +154,23 @@ export async function readTerminalPrompt() {
           return;
         }
         if (pasting) {
-          if (!/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(character)) value += character;
+          if (character === '\r') insert('\n');
+          else if (character !== '\n' || !pasteCarriageReturn) {
+            if (!/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(character)) insert(character);
+          }
+          pasteCarriageReturn = character === '\r';
         } else if (character === '\r' || character === '\n') {
           finish();
           return;
         } else if (character === '\x7f' || character === '\b') {
-          value = [...value].slice(0, -1).join('');
+          const previous = graphemes(value).filter((part) => part.offset < cursor).at(-1)?.offset ?? 0;
+          value = value.slice(0, previous) + value.slice(cursor);
+          cursor = previous;
         } else if (!/[\x00-\x1f\x7f]/.test(character)) {
-          value += character;
+          insert(character);
         }
       }
-      renderPromptBar(value);
+      redraw();
     };
     process.stdin.on('data', onData);
     process.stdin.once('end', onEnd);

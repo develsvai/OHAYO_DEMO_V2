@@ -357,15 +357,22 @@ button, textarea { font: inherit; }
 .graph-stage-heading > div { display: flex; align-items: baseline; gap: 12px; }
 .graph-stage-heading span { color: #565e68; font: 7px/1 var(--mono); letter-spacing: .12em; }
 .graph-stage-heading strong { color: #a8afb6; font: 11px/1 var(--mono); font-weight: 500; }
-.task-graph-viewport { position: relative; min-height: 0; overflow: hidden; display: grid; place-items: center; background: #0a0b0d; }
-.task-graph-grid { position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(rgba(255,255,255,.09) .65px, transparent .65px); background-size: 22px 22px; opacity: .38; }
-.task-graph-fit { position: relative; flex: none; }
-.task-graph-world { position: absolute; left: 0; top: 0; width: 1270px; height: 620px; transform-origin: top left; }
-.task-graph-edges { position: absolute; inset: 0; width: 1270px; height: 620px; overflow: visible; }
+.task-graph-canvas { min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) 42px; }
+.task-graph-viewport { position: relative; min-height: 0; overflow: auto; overscroll-behavior: contain; background-color: #0a0b0d; background-image: radial-gradient(rgba(255,255,255,.09) .65px, transparent .65px); background-size: 22px 22px; scrollbar-color: #45525f #101419; scrollbar-width: auto; }
+.task-graph-fit { position: relative; margin: 12px 14px; }
+.task-graph-world { position: absolute; left: 0; top: 0; transform-origin: top left; }
+.task-group-band { position: absolute; top: 58px; width: 450px; height: 460px; border: 1px solid #20272f; border-radius: 12px; background: rgba(18,22,28,.48); }
+.task-group-band > span { position: absolute; top: 20px; left: 20px; color: #858e9b; font: 10px/1 var(--mono); letter-spacing: .06em; }
+.task-graph-edges { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.graph-navigation { display: flex; justify-content: space-between; align-items: center; padding: 0 14px; border-top: 1px solid #242b34; background: #0d1014; }
+.graph-navigation > span { color: #808b98; font: 10px/1 var(--sans); }
+.graph-navigation > div { display: flex; gap: 6px; }
+.graph-navigation button { min-width: 30px; height: 27px; padding: 0 9px; border: 1px solid #35414d; border-radius: 4px; background: #141b23; color: #b0c0d0; font: 10px/1 var(--sans); cursor: pointer; }
+.graph-navigation button:hover { border-color: var(--cyan); color: var(--cyan); }
 .task-graph-edges path { fill: none; stroke: #252a30; stroke-width: 1.15; opacity: .5; transition: opacity .45s ease, stroke .45s ease, filter .45s ease; }
 .task-graph-edges path.visible { stroke: #4b5963; opacity: .8; }
 .task-graph-edges path.active { stroke: #5ba8d9; opacity: 1; filter: drop-shadow(0 0 4px rgba(74,164,227,.48)); stroke-dasharray: 7 4; animation: graph-flow .9s linear infinite; }
-.task-node { --node-color: #4e88d9; position: absolute; z-index: 2; width: 140px; height: 86px; padding: 8px 10px; display: grid; grid-template-columns: 27px 1fr; grid-template-rows: 15px 28px 16px; align-items: center; border: 1px solid #27303b; border-radius: 8px; background: rgba(14,17,21,.97); color: #626b77; opacity: .12; transform: scale(.88); filter: saturate(.25); transition: opacity .5s ease, transform .5s cubic-bezier(.18,.85,.25,1.22), border-color .4s ease, box-shadow .4s ease, filter .4s ease; }
+.task-node { --node-color: #4e88d9; position: absolute; z-index: 2; width: 190px; height: 104px; padding: 10px 12px; display: grid; grid-template-columns: 27px 1fr; grid-template-rows: 17px 43px 18px; align-items: center; border: 1px solid #27303b; border-radius: 8px; background: rgba(14,17,21,.97); color: #626b77; opacity: .12; transform: scale(.88); filter: saturate(.25); transition: opacity .5s ease, transform .5s cubic-bezier(.18,.85,.25,1.22), border-color .4s ease, box-shadow .4s ease, filter .4s ease; }
 .task-node::before { content: ''; position: absolute; left: -4px; top: 50%; width: 7px; height: 7px; margin-top: -4px; border-radius: 50%; border: 1px solid #333a43; background: #0a0b0d; }
 .task-node::after { content: ''; position: absolute; right: -4px; top: 50%; width: 7px; height: 7px; margin-top: -4px; border-radius: 50%; border: 1px solid #333a43; background: #0a0b0d; }
 .task-node.visible { opacity: 1; transform: scale(1); filter: none; border-color: color-mix(in srgb, var(--node-color) 68%, #313840); box-shadow: inset 0 0 20px color-mix(in srgb, var(--node-color) 7%, transparent); }
@@ -373,11 +380,11 @@ button, textarea { font: inherit; }
 .task-node.done { --node-color: #63c7ad; }
 .task-node.failed { --node-color: #ff756e; }
 .task-node.repairing, .task-node.retrying { --node-color: #e5aa47; }
-.task-node small { grid-column: 1 / 3; color: var(--node-color); font: 7px/1 var(--mono); letter-spacing: .11em; text-transform: uppercase; }
+.task-node small { grid-column: 1 / 3; color: var(--node-color); font: 9px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
 .task-node b { width: 25px; height: 25px; display: grid; place-items: center; border: 1px solid color-mix(in srgb, var(--node-color) 55%, #252b32); border-radius: 5px; color: var(--node-color); font: 13px/1 var(--mono); }
-.task-node strong { min-width: 0; overflow: hidden; color: #d3d7d8; font-size: 9px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
-.task-node strong i { margin-right: 6px; color: var(--node-color); font: normal 7px/1 var(--mono); }
-.task-node > span { grid-column: 1 / 3; overflow: hidden; color: #636c76; font: 7px/1 var(--mono); letter-spacing: .04em; text-overflow: ellipsis; white-space: nowrap; }
+.task-node strong { min-width: 0; padding-left: 5px; color: #d3d7d8; font-size: 12px; line-height: 1.35; font-weight: 550; overflow-wrap: anywhere; }
+.task-node strong i { margin-right: 6px; color: var(--node-color); font: normal 9px/1 var(--mono); }
+.task-node > span { grid-column: 1 / 3; overflow: hidden; color: #808c99; font: 9px/1 var(--mono); letter-spacing: .04em; text-overflow: ellipsis; white-space: nowrap; }
 .task-node.active > span { color: var(--node-color); font-weight: 700; }
 .task-node.active > small { padding-right: 18px; }
 .task-node-spinner { position: absolute; z-index: 4; top: 6px; right: 7px; width: 14px; height: 14px; border: 2px solid color-mix(in srgb, var(--node-color) 28%, transparent); border-top-color: var(--node-color); border-right-color: var(--node-color); border-radius: 50%; animation: spin .72s linear infinite; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--node-color) 70%, transparent)); }
@@ -387,20 +394,16 @@ button, textarea { font: inherit; }
 .node-frontend, .node-deployment { --node-color: #408bea; }
 .node-planning, .node-engineering { --node-color: #8761e8; }
 .node-validation { --node-color: #72c96b; }
-.graph-minimap { position: absolute; right: 18px; bottom: 15px; width: 142px; height: 75px; border: 7px solid #20242a; background: #07101c; opacity: .88; }
-.graph-minimap i { position: absolute; width: 4px; height: 4px; background: #2f3a49; opacity: .3; }
-.graph-minimap i.visible { background: #648db4; opacity: .9; }
-.graph-canvas-controls { position: absolute; left: 16px; bottom: 17px; display: flex; gap: 5px; }
-.graph-canvas-controls span { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid #2b3440; border-radius: 50%; background: #0d1218; color: #67809c; font: 11px/1 var(--mono); }
 .loom-graph-footer { grid-template-columns: 1fr auto auto auto; gap: 22px; }
 .graph-cli-toggle { height: 30px; padding: 0 11px; border: 1px solid #34413f; background: #111917; color: var(--cyan); cursor: pointer; font: 7px/1 var(--mono); letter-spacing: .08em; }
 
 .cli-fallback-shell { grid-template-rows: 68px minmax(0, 1fr); }
 .fallback-terminal { width: min(1040px, calc(100% - 56px)); height: calc(100dvh - 96px); margin: 14px auto; display: grid; grid-template-rows: 40px minmax(0, 1fr); border: 1px solid #343940; background: #0d0f12; }
-.fallback-body { overflow: hidden; padding: clamp(14px, 2vh, 22px) 26px; font-family: var(--mono); }
+.fallback-body { min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; padding: clamp(14px, 2vh, 22px) 26px; font-family: var(--mono); }
 .fallback-prompt { display: grid; grid-template-columns: 16px 1fr; gap: 8px; margin-bottom: clamp(10px, 1.8vh, 18px); padding-bottom: clamp(10px, 1.6vh, 16px); border-bottom: 1px solid #262a30; }
 .fallback-prompt span { color: var(--cyan); font-size: 18px; }
 .fallback-prompt p { margin: 0; color: #a3a9b0; font: 11px/1.6 var(--sans); }
+.fallback-task-list { min-height: 0; overflow-y: auto; scrollbar-color: #45525f #101419; }
 .fallback-task { min-height: clamp(27px, 3.6vh, 36px); display: grid; grid-template-columns: 56px 1fr 120px; align-items: center; border-bottom: 1px solid #202328; color: #575e68; }
 .fallback-task > span { font-size: 8px; }
 .fallback-task strong { font-size: 10px; font-weight: 500; }
@@ -544,7 +547,7 @@ button, textarea { font: inherit; }
   .loom-graph-layout { display: grid; grid-template-columns: minmax(0, 1fr); overflow: hidden; }
   .graph-inspector { display: none; }
   .graph-stage { height: auto; min-height: 0; }
-  .task-graph-grid { display: none; }
+  .graph-navigation > span { font-size: 8px; }
   .loom-graph-footer { grid-template-columns: 1fr auto; }
   .loom-graph-footer > div, .loom-graph-footer .graph-cli-toggle { display: none; }
 }

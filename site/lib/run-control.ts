@@ -1,6 +1,6 @@
-export const finalRunStorageKey = 'flogi-final-run-state-v2';
-export const presenterCommandKey = 'flogi-presenter-command-v2';
-export const presenterChannelName = 'flogi-ohayo-presenter-v2';
+export const finalRunStorageKey = 'flogi-final-run-state-v3';
+export const presenterCommandKey = 'flogi-presenter-command-v3';
+export const presenterChannelName = 'flogi-ohayo-presenter-v3';
 
 export type PresenterCommand =
   | { type: 'pause' }
