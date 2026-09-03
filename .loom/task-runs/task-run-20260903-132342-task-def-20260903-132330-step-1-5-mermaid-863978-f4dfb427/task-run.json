@@ -2,9 +2,9 @@
   "id": "task-run-20260903-132342-task-def-20260903-132330-step-1-5-mermaid-863978-f4dfb427",
   "job_run_id": "job-run-20260903-132342-job-20260829-090057-ohayo-autonomous-harness-sim-595b714d",
   "task_definition_id": "task-def-20260903-132330-step-1-5-mermaid-8639789c",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-09-03T13:23:42+00:00",
-  "updated_at": "2026-09-03T13:23:42+00:00",
+  "updated_at": "2026-09-03T13:27:52+00:00",
   "legacy_task_id": "task-20260903-132330-step-1-5-mermaid-fc6492bc",
   "attempt": 1,
   "assigned_agent": "foreground",
@@ -13,13 +13,31 @@
   "lease_expires_at": "",
   "queued_at": "",
   "started_at": "2026-09-03T13:23:42+00:00",
-  "completed_at": "",
+  "completed_at": "2026-09-03T13:27:52+00:00",
   "last_error": "",
-  "commit_refs": [],
-  "branch_name": "",
-  "git_dirty": false,
-  "git_snapshot_captured_at": "",
-  "artifacts": [],
-  "checkpoint_ids": [],
+  "commit_refs": [
+    "471b3ceba31a0b0822a055f49f45dba1c1f65613",
+    "72e1f79d2fea57190d158ebf0fe65cc45592f33c"
+  ],
+  "branch_name": "develop",
+  "git_dirty": true,
+  "git_snapshot_captured_at": "2026-09-03T13:27:52+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/agent-events.jsonl",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/artifacts.json",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/context.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/decision.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/git-snapshot.json",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/logs.txt",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/previous-results.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/prompt.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/result.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/troubleshooting.md",
+    "docs/harness-demo/diagrams.md",
+    "docs/harness-demo/source.md"
+  ],
+  "checkpoint_ids": [
+    "checkpoint-20260903-132752-task-completed-step-1-5-mermaid-8d6a37e7"
+  ],
   "review_required_reason": ""
 }

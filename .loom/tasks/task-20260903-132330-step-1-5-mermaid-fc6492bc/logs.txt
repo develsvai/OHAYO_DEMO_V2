@@ -6,3 +6,4 @@
 [2026-09-03] git diff --check 성공; git diff --quiet -- site README.md demo-start demo_start 성공. 앱 소스 변경 없음.
 [2026-09-03] 원본 보존 사본 source.md 535행의 기존 끝 공백은 보존했다. Mermaid 실제 렌더링과 앱 구현 검증은 후속 Task로 남겼다.
 [2026-09-03] 스테이징 후 git diff --cached --check -- . ':!docs/harness-demo/source.md' 성공. 원문 사본 1개를 제외한 모든 새 파일 검사 완료. git diff --cached --quiet -- site README.md demo-start demo_start 성공.
+[2026-09-03T13:27:52+00:00] agent=foreground task=task-20260903-132330-step-1-5-mermaid-fc6492bc 원문 Mermaid 5개를 추출·대조하고 STEP별 Viewer 및 6단계 Loom 직접 진입 범위를 고정했다. 구현·검증 Task는 PENDING으로 등록했고 앱 소스는 변경하지 않았다. 추출본과 workflow 기록은 471b3ce에 커밋했다.

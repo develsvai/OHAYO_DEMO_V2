@@ -4,7 +4,7 @@
   "title": "STEP 1~5 Mermaid 원본 추출 및 화면 전환 계약 고정",
   "description": "사용자가 2026-09-03 제공한 /Users/hongyongjae/Desktop/하네스 시연.md에서 STEP 1~5의 Mermaid를 원문 그대로 추출하여 확인한다. 기존 최종 통합 다이어그램 페이지를 제거하고 STEP별 다이어그램만 표시하며 6번째 CLI 입력 후 Loom 제품 프롬프트로 직접 진입하는 구현 범위를 문서와 후속 Loom Task에 고정한다. 사용자의 이번 요청은 우선 추출·확인·작업 고정이며 앱 구현 Task의 실행이나 Queue 등록은 수행하지 않는다.",
   "created_at": "2026-09-03T13:23:30+00:00",
-  "updated_at": "2026-09-03T13:23:42+00:00",
+  "updated_at": "2026-09-03T13:27:52+00:00",
   "order_index": 5,
   "legacy_task_id": "task-20260903-132330-step-1-5-mermaid-fc6492bc",
   "depends_on": [],

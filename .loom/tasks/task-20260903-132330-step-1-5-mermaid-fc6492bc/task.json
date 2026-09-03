@@ -3,9 +3,9 @@
   "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
   "title": "STEP 1~5 Mermaid 원본 추출 및 화면 전환 계약 고정",
   "description": "사용자가 2026-09-03 제공한 /Users/hongyongjae/Desktop/하네스 시연.md에서 STEP 1~5의 Mermaid를 원문 그대로 추출하여 확인한다. 기존 최종 통합 다이어그램 페이지를 제거하고 STEP별 다이어그램만 표시하며 6번째 CLI 입력 후 Loom 제품 프롬프트로 직접 진입하는 구현 범위를 문서와 후속 Loom Task에 고정한다. 사용자의 이번 요청은 우선 추출·확인·작업 고정이며 앱 구현 Task의 실행이나 Queue 등록은 수행하지 않는다.",
-  "status": "RUNNING",
+  "status": "DONE",
   "created_at": "2026-09-03T13:23:30+00:00",
-  "updated_at": "2026-09-03T13:23:42+00:00",
+  "updated_at": "2026-09-03T13:27:52+00:00",
   "order_index": 5,
   "assigned_agent": "foreground",
   "depends_on": [],
@@ -24,12 +24,26 @@
   "run_attempts": 0,
   "last_error": "",
   "commit_refs": [
-    "72e1f79d2fea57190d158ebf0fe65cc45592f33c"
+    "72e1f79d2fea57190d158ebf0fe65cc45592f33c",
+    "471b3ceba31a0b0822a055f49f45dba1c1f65613"
   ],
   "branch_name": "develop",
   "git_dirty": true,
-  "git_snapshot_captured_at": "2026-09-03T13:23:42+00:00",
-  "artifacts": [],
+  "git_snapshot_captured_at": "2026-09-03T13:27:52+00:00",
+  "artifacts": [
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/agent-events.jsonl",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/artifacts.json",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/context.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/decision.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/git-snapshot.json",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/logs.txt",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/previous-results.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/prompt.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/result.md",
+    ".loom/tasks/task-20260903-132330-step-1-5-mermaid-fc6492bc/troubleshooting.md",
+    "docs/harness-demo/diagrams.md",
+    "docs/harness-demo/source.md"
+  ],
   "source_proposal_id": "",
   "source_prompt": ""
 }

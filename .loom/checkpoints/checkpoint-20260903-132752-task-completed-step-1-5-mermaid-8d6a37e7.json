@@ -1,0 +1,19 @@
+{
+  "id": "checkpoint-20260903-132752-task-completed-step-1-5-mermaid-8d6a37e7",
+  "created_at": "2026-09-03T13:27:52+00:00",
+  "reason": "Task completed: STEP 1~5 Mermaid 원본 추출 및 화면 전환 계약 고정",
+  "summary": "STEP 1~5 Mermaid 원본 추출 및 화면 전환 계약 고정 -> DONE @ develop/471b3ceba31a",
+  "job_id": "job-20260829-090057-ohayo-autonomous-harness-simulator-9ce20221",
+  "task_id": "task-20260903-132330-step-1-5-mermaid-fc6492bc",
+  "commit_sha": "471b3ceba31a0b0822a055f49f45dba1c1f65613",
+  "branch_name": "develop",
+  "dirty": true,
+  "staged_files": [],
+  "modified_files": [
+    ".loom/job-runs/job-run-20260903-132342-job-20260829-090057-ohayo-autonomous-harness-sim-595b714d/job-run.json",
+    ".loom/task-definitions/task-def-20260903-132330-step-1-5-mermaid-8639789c/task-definition.json"
+  ],
+  "untracked_files": [],
+  "snapshot_captured_at": "2026-09-03T13:27:52+00:00",
+  "rollback_strategy": "revert-or-branch"
+}
