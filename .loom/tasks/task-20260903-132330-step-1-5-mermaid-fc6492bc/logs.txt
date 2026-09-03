@@ -1,0 +1,8 @@
+[2026-09-03T13:23:42+00:00] agent=foreground task=task-20260903-132330-step-1-5-mermaid-fc6492bc Foreground task session started.
+[2026-09-03] 첨부 문서 559행을 읽고 STEP 1~5 Mermaid 5개를 원문 그대로 docs/harness-demo에 추출했다.
+[2026-09-03] Python 검증: 원본 사본·SHA-256·5개 추출본·검토 문서 Mermaid 블록 바이트 동일, 순서 1~5, 모든 연결 대상 노드 존재 확인 성공.
+[2026-09-03] 노드 수 11/17/19/25/28, 연결문 수 11/19/24/32/35 확인.
+[2026-09-03] loom docs index로 기준 문서를 등록하고 기존 Job에 구현 및 검증 Task를 순서대로 생성했다. Task boundary validation 2개와 loom validate --strict 성공.
+[2026-09-03] git diff --check 성공; git diff --quiet -- site README.md demo-start demo_start 성공. 앱 소스 변경 없음.
+[2026-09-03] 원본 보존 사본 source.md 535행의 기존 끝 공백은 보존했다. Mermaid 실제 렌더링과 앱 구현 검증은 후속 Task로 남겼다.
+[2026-09-03] 스테이징 후 git diff --cached --check -- . ':!docs/harness-demo/source.md' 성공. 원문 사본 1개를 제외한 모든 새 파일 검사 완료. git diff --cached --quiet -- site README.md demo-start demo_start 성공.

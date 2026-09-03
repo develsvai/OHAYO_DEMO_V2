@@ -1,0 +1,93 @@
+flowchart TD
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    GOAL["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+    STATE[("상태 저장소")]
+
+    INPUT -- "훅: intake.start" --> INTAKE
+    INTAKE -- "훅: goal.extract" --> GOAL
+    INTAKE -- "훅: resource.register" --> RESOURCE
+
+    GOAL -- "훅: goal.ready" --> ORCH
+    RESOURCE -- "훅: context.load" --> ORCH
+    ORCH <-->|"체크포인트 · 실행 로그"| STATE
+
+    subgraph PLAN_LOOP["오토 플랜 루프"]
+        PLAN{{"기획<br/>에이전트"}}
+        REQ["요구사항 분석"]
+        SCOPE["범위 설정"]
+        RISK["리스크 점검"]
+        TASK["작업 분해"]
+        PLAN_DOC["실행 계획"]
+        PLAN_CHECK{"계획 충분?"}
+
+        PLAN -- "훅: requirements.analyze" --> REQ
+        REQ -- "훅: scope.define" --> SCOPE
+        SCOPE -- "훅: risk.scan" --> RISK
+        RISK -- "훅: tasks.breakdown" --> TASK
+        TASK -- "훅: plan.write" --> PLAN_DOC
+        PLAN_DOC -- "훅: plan.review" --> PLAN_CHECK
+        PLAN_CHECK -- "정책: 보완 필요<br/>스크립트: replan" --> REQ
+    end
+
+    subgraph BUILD_LOOP["제작 루프"]
+        WORK_CTX["제작 컨텍스트"]
+        DEV{{"개발<br/>에이전트"}}
+        QA{{"검증<br/>에이전트"}}
+        RESEARCH{{"리서치<br/>에이전트"}}
+        BUILD_CHECK{"제작 충분?"}
+
+        WORK_CTX -- "훅: dev.start" --> DEV
+        DEV -- "훅: qa.run" --> QA
+        QA -- "훅: build.review" --> BUILD_CHECK
+        BUILD_CHECK -- "정책: 구현 부족<br/>스크립트: patch" --> DEV
+        BUILD_CHECK -- "정책: 정보 부족<br/>스크립트: research" --> RESEARCH
+        RESEARCH -- "훅: context.patch" --> DEV
+    end
+
+    subgraph DEPLOY_LOOP["배포 루프"]
+        DEPLOY_CTX["배포 컨텍스트"]
+        DEPLOY{{"배포<br/>에이전트"}}
+        PACKAGE["패키징"]
+        CONFIG["배포 설정 확인"]
+        RELEASE["배포 실행"]
+        HEALTH["배포 결과 확인"]
+        DEPLOY_CHECK{"배포 성공?"}
+
+        DEPLOY_CTX -- "훅: deploy.start" --> DEPLOY
+        DEPLOY -- "훅: package.build" --> PACKAGE
+        PACKAGE -- "훅: config.verify" --> CONFIG
+        CONFIG -- "훅: release.execute" --> RELEASE
+        RELEASE -- "훅: health.check" --> HEALTH
+        HEALTH -- "훅: deploy.review" --> DEPLOY_CHECK
+        DEPLOY_CHECK -- "정책: 실패<br/>스크립트: redeploy" --> DEPLOY
+    end
+
+    PLAN_GATE{"기획 실행<br/>허용?"}
+    BUILD_GATE{"제작 실행<br/>허용?"}
+    DEPLOY_GATE{"배포 실행<br/>허용?"}
+
+    ORCH -- "훅: plan.request" --> PLAN_GATE
+    PLAN_GATE -- "정책 승인<br/>훅: plan.start" --> PLAN
+    PLAN_CHECK -- "정책: plan.ready" --> ORCH
+
+    ORCH -- "훅: build.request" --> BUILD_GATE
+    BUILD_GATE -- "정책 승인<br/>훅: build.start" --> WORK_CTX
+    BUILD_CHECK -- "정책: build.ready" --> ORCH
+
+    ORCH -- "훅: deploy.request" --> DEPLOY_GATE
+    DEPLOY_GATE -- "정책 승인<br/>훅: deploy.start" --> DEPLOY_CTX
+    DEPLOY_CHECK -- "정책: deploy.success" --> ORCH
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef gate fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,DEV,QA,RESEARCH,DEPLOY agent;
+    class RESOURCE,STATE store;
+    class PLAN_CHECK,BUILD_CHECK,DEPLOY_CHECK,PLAN_GATE,BUILD_GATE,DEPLOY_GATE gate;
+    class INPUT,GOAL,REQ,SCOPE,RISK,TASK,PLAN_DOC,WORK_CTX,DEPLOY_CTX,PACKAGE,CONFIG,RELEASE,HEALTH normal;

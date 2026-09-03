@@ -1,0 +1,57 @@
+flowchart TD
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    GOAL["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+    STATE[("상태 저장소")]
+
+    INPUT --> INTAKE
+    INTAKE --> GOAL
+    INTAKE --> RESOURCE
+
+    GOAL --> ORCH
+    RESOURCE --> ORCH
+    ORCH <--> STATE
+
+    subgraph PLAN_LOOP["오토 플랜 루프"]
+        PLAN{{"기획<br/>에이전트"}}
+        REQ["요구사항 분석"]
+        SCOPE["범위 설정"]
+        RISK["리스크 점검"]
+        TASK["작업 분해"]
+        PLAN_DOC["실행 계획"]
+        PLAN_CHECK{"계획 충분?"}
+
+        PLAN --> REQ
+        REQ --> SCOPE
+        SCOPE --> RISK
+        RISK --> TASK
+        TASK --> PLAN_DOC
+        PLAN_DOC --> PLAN_CHECK
+        PLAN_CHECK -- "보완" --> REQ
+    end
+
+    RESEARCH{{"리서치<br/>에이전트"}}
+    DEV{{"개발<br/>에이전트"}}
+    QA{{"검증<br/>에이전트"}}
+    DEPLOY{{"배포<br/>에이전트"}}
+
+    ORCH --> PLAN
+    PLAN_CHECK -- "충분" --> ORCH
+
+    ORCH <--> RESEARCH
+    ORCH <--> DEV
+    ORCH <--> QA
+    ORCH <--> DEPLOY
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef gate fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,RESEARCH,DEV,QA,DEPLOY agent;
+    class RESOURCE,STATE store;
+    class PLAN_CHECK gate;
+    class INPUT,GOAL,REQ,SCOPE,RISK,TASK,PLAN_DOC normal;

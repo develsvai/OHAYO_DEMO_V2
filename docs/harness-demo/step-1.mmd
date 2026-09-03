@@ -1,0 +1,40 @@
+flowchart TD
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    CONTRACT["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+    STATE[("상태 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+
+    PLAN{{"기획<br/>에이전트"}}
+    RESEARCH{{"리서치<br/>에이전트"}}
+    DEV{{"개발<br/>에이전트"}}
+    QA{{"검증<br/>에이전트"}}
+    DEPLOY{{"배포<br/>에이전트"}}
+
+    INPUT --> INTAKE
+    INTAKE --> CONTRACT
+    INTAKE --> RESOURCE
+
+    CONTRACT --> ORCH
+    RESOURCE --> ORCH
+    ORCH <--> STATE
+
+    ORCH <--> PLAN
+
+    ORCH <--> RESEARCH
+
+    ORCH <--> DEV
+
+    ORCH <--> QA
+
+    ORCH <--> DEPLOY
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,RESEARCH,DEV,QA,DEPLOY agent;
+    class RESOURCE,STATE store;
+    class INPUT,CONTRACT normal;
