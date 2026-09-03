@@ -466,7 +466,7 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
       <main className="product-prompt-shell">
         <header className="run-topbar">
           <div className="brand-lockup"><span className="brand-mark">F</span><div><strong>Auto Plan Loom</strong><span>준비 완료 · v1.0</span></div></div>
-          <div className="mode-transition"><span>HARNESS VIEWER</span><i>→</i><strong>LOOM 구성</strong></div>
+          <div className="mode-transition"><span>HARNESS 준비 완료</span><i>→</i><strong>제품 목표 입력</strong></div>
           <div className="harness-ready-chip"><span /> HARNESS 준비됨</div>
         </header>
         <section className="product-prompt-content">
@@ -493,7 +493,7 @@ export function FinalRunExperience({ initialSpeed, onResetAll }: { initialSpeed:
             </form>
           </div>
         </section>
-        <footer className="run-footer"><span>CTRL + SHIFT + P · PRESENTER</span><strong>입력 2 / 2</strong></footer>
+        <footer className="run-footer"><span>CTRL + SHIFT + P · PRESENTER</span><strong>제품 실행 준비</strong></footer>
       </main>
     );
   }

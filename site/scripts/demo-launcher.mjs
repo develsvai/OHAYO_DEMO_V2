@@ -89,10 +89,7 @@ async function chooseMode() {
 }
 
 function openViewer(viewerUrl) {
-  if (process.env.DEMO_NO_OPEN === '1') {
-    console.log(`Harness Viewer  ${viewerUrl}`);
-    return;
-  }
+  if (process.env.DEMO_NO_OPEN === '1') return;
 
   const command = process.platform === 'darwin' ? 'open' : 'xdg-open';
   const browser = spawn(command, [viewerUrl], { detached: true, stdio: 'ignore' });
@@ -103,13 +100,10 @@ function openViewer(viewerUrl) {
 async function main() {
   const mode = await chooseMode();
   const speed = mode.speed;
-  const viewerUrl = `${serverUrl}?screen=viewer&reset=1&speed=${speed}`;
   await ensureViewerServer();
   process.env.OHAYO_DEMO_SPEED = String(speed);
-  process.env.OHAYO_VIEWER_URL = viewerUrl;
   const { runDemoCli } = await import('./demo-cli.mjs');
-  await runDemoCli();
-  openViewer(viewerUrl);
+  await runDemoCli({ baseUrl: serverUrl, openViewer });
 }
 
 main().catch((error) => {

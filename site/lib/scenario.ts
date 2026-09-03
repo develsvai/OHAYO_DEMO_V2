@@ -21,271 +21,547 @@ export type BuildStage = {
 
 const minute = 60_000;
 
-// 발표 문구와 타이밍의 단일 수정 지점입니다.
-// STEP 1~5의 canonicalPrompt는 writing-block.md를 따르며,
-// STEP 3만 최종 회의 결정에 따라 Test Orchestrator를 제외합니다.
+// 정본: docs/harness-demo/source.md의 STEP 1~5.
+// Mermaid 원문은 docs/harness-demo/step-1.mmd~step-5.mmd와 동일하게 유지합니다.
 export const buildStages: BuildStage[] = [
   {
     id: 1,
-    title: 'Harness Skeleton',
-    shortTitle: 'Skeleton',
-    subtitle: 'Global Architecture',
-    eyebrow: '하네스의 골격 생성',
-    description: '제품 개발 전체 생명주기의 상위 실행 구조와 주요 Orchestrator를 구성합니다.',
-    version: 'v0.1',
-    canonicalPrompt: `제품을 처음부터 끝까지 스스로 완성하는 자율 개발 하네스를 만들어줘.
+    title: "Harness Skeleton",
+    shortTitle: "Skeleton",
+    subtitle: "Global Architecture",
+    eyebrow: "하네스의 골격 생성",
+    description: "제품 입력, 목표와 저장소, 오케스트레이터 및 하위 에이전트의 골격을 구성합니다.",
+    version: "v0.1",
+    canonicalPrompt: `제품을 처음부터 끝까지 스스로 완성하는 자율 개발 하네스를 만들고 싶어.
 
-입력으로는 제품 설명서, 실행 명령어, 데이터, API Key, 배포 정보 등을 제공할 예정이야.
+입력으로는 제품 설명서와 함께 에셋, 데이터, 인증정보, 배포 설정이 담긴 폴더를 제공할 예정이야.
 
-우선 전체적인 실행 구조와 주요 오케스트레이터만 설계해줘.
-세부 구현은 아직 하지 말고 상위 그래프만 생성해줘.`,
+이번 1단계에서는 실제 개발이나 배포 로직을 구현하지 말고,
+하네스가 자율 실행을 시작할 수 있는 상위 런타임 골격만 설계해줘.
+
+반드시 포함할 구조는 다음과 같아.
+
+- 제품 설명서를 읽는 입력 분석 에이전트
+- 제품의 성공 조건을 정리하는 목표 정의
+- 에셋, 데이터, 인증정보, 배포 설정을 등록하는 리소스 저장소
+- 전체 실행을 조율하는 오케스트레이터 에이전트
+- 실행 상태와 체크포인트를 기록하는 상태 저장소
+- 이후 확장될 기획, 리서치, 개발, 검증, 배포 에이전트들
+- 하네스 실행은 슬래시 명령어로 /harness로 할 수 있게 해줘
+
+오케스트레이터 에이전트가 중심이 되어 하위 에이전트들을 조율하는 구조로 만들어줘.
+
+각 하위 에이전트는 작업 결과를 오케스트레이터에게 보고할 수 있어야 해.
+다만 이번 단계에서는 정책 게이트, 스킬, 훅, 스크립트, 반복 실행 조건은 만들지 말고,
+나중에 확장 가능한 빈 슬롯으로만 남겨줘.
+
+이 하네스는 OHAYO 라는 이름의 프로젝트 폴더를 만들고 그 안에 담아줘
+하네스 생성이 끝나면 미리 만들어둔 Harness Viewer에서 확인할 수 있도록 링크 줘.`,
     duration: minute,
     logs: [
-      { at: 2_000, type: 'thinking', text: '제품 라이프사이클 분석 중' },
-      { at: 7_000, type: 'work', text: '입력 리소스와 실행 경계 확인' },
-      { at: 15_000, type: 'success', text: '상위 실행 단계 정의' },
-      { at: 25_000, type: 'success', text: '기획 Orchestrator 생성' },
-      { at: 34_000, type: 'success', text: '리서치·개발·검증 Orchestrator 연결' },
-      { at: 44_000, type: 'success', text: '실행 Graph 생성' },
-      { at: 52_000, type: 'work', text: 'Global architecture snapshot 준비 중' },
-      { at: 57_000, type: 'success', text: 'Harness Skeleton 반영 완료' },
+      { at: 2_000, type: "thinking", text: "제품 입력과 자율 실행 경계 분석 중" },
+      { at: 8_000, type: "success", text: "입력 분석 에이전트 생성" },
+      { at: 15_000, type: "success", text: "목표 정의와 리소스 저장소 연결" },
+      { at: 23_000, type: "success", text: "오케스트레이터 에이전트 생성" },
+      { at: 32_000, type: "success", text: "상태 저장소와 체크포인트 슬롯 연결" },
+      { at: 42_000, type: "success", text: "기획·리서치·개발·검증·배포 에이전트 연결" },
+      { at: 51_000, type: "work", text: "상위 런타임 골격 확인" },
+      { at: 57_000, type: "success", text: "Harness Skeleton 반영 완료" },
     ],
-    resources: ['Product specification', 'Data & API keys', 'Deployment context'],
+    resources: ["제품 설명서", "리소스 저장소", "상태 저장소"],
     mermaid: `flowchart TD
-INPUT["\uc81c\ud488 \uba85\uc138<br/>\ub370\uc774\ud130<br/>API Key<br/>\ubc30\ud3ec \uc815\ubcf4"]
-PLAN["\uae30\ud68d Orchestrator"]
-RESEARCH["\ub9ac\uc11c\uce58 Orchestrator"]
-BUILD["\uac1c\ubc1c Orchestrator"]
-VERIFY["\uac80\uc99d Orchestrator"]
-DEPLOY["\ubc30\ud3ec Orchestrator"]
-INPUT --> PLAN --> RESEARCH --> BUILD --> VERIFY --> DEPLOY`,
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    CONTRACT["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+    STATE[("상태 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+
+    PLAN{{"기획<br/>에이전트"}}
+    RESEARCH{{"리서치<br/>에이전트"}}
+    DEV{{"개발<br/>에이전트"}}
+    QA{{"검증<br/>에이전트"}}
+    DEPLOY{{"배포<br/>에이전트"}}
+
+    INPUT --> INTAKE
+    INTAKE --> CONTRACT
+    INTAKE --> RESOURCE
+
+    CONTRACT --> ORCH
+    RESOURCE --> ORCH
+    ORCH <--> STATE
+
+    ORCH <--> PLAN
+
+    ORCH <--> RESEARCH
+
+    ORCH <--> DEV
+
+    ORCH <--> QA
+
+    ORCH <--> DEPLOY
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,RESEARCH,DEV,QA,DEPLOY agent;
+    class RESOURCE,STATE store;
+    class INPUT,CONTRACT normal;
+`,
   },
   {
     id: 2,
-    title: 'Auto Planning Graph',
-    shortTitle: 'Planning',
-    subtitle: 'Planning Subgraph',
-    eyebrow: 'Planning Orchestrator 확장',
-    description: '목표 설정부터 계획 평가까지, 목표를 만족할 때까지 계획 자체를 수정하는 Loop를 구성합니다.',
-    version: 'v0.2',
-    canonicalPrompt: `기획 오케스트레이터를 확장해줘.
+    title: "Auto Planning Graph",
+    shortTitle: "Planning",
+    subtitle: "Planning Loop",
+    eyebrow: "Auto Planning Graph 생성",
+    description: "목표에서 실행 계획까지 기획을 구체화하고 충분할 때까지 보완하는 루프를 구성합니다.",
+    version: "v0.2",
+    canonicalPrompt: `이번에는 기획 에이전트를 오토 플랜 모드로 업그레이드해줘.
 
-단순히 계획을 만드는 것이 아니라
+제품 설명서를 읽고 한 번에 계획을 끝내는 게 아니라,
+스스로 목표를 정리하고 계획이 충분한지 검토하면서 보완하는 구조였으면 해.
 
-- 목표 설정
+기획 에이전트 안에는 다음 흐름이 들어가면 좋겠어.
+
+- 목표 정리
 - 요구사항 분석
-- 레퍼런스 수집
-- 컨텍스트 구성
+- 범위 설정
+- 리스크 점검
 - 작업 분해
-- 계획 평가
+- 실행 계획 작성
+- 계획이 충분한지 판단하는 루프
 
-까지 스스로 수행하고,
+계획이 부족하면 스스로 다시 요구사항 분석으로 돌아가서 보완하고,
+충분하면 오케스트레이터 에이전트에게 보고하도록 만들어줘.
 
-목표가 만족될 때까지 반복해서 계획을 수정하는 Auto Planning Graph로 만들어줘.`,
+완료되면 Harness Viewer 링크를 보여줘.`,
     duration: minute,
     logs: [
-      { at: 2_000, type: 'thinking', text: '현재 Planning Orchestrator 구조 분석 중' },
-      { at: 8_000, type: 'work', text: 'Planning 책임과 반복 경계 매핑' },
-      { at: 15_000, type: 'success', text: 'Goal Discovery 추가' },
-      { at: 22_000, type: 'success', text: 'Requirement Analysis 생성' },
-      { at: 29_000, type: 'success', text: 'Reference Collector 생성' },
-      { at: 36_000, type: 'success', text: 'Context Builder 연결' },
-      { at: 43_000, type: 'success', text: 'Plan Evaluator 생성' },
-      { at: 50_000, type: 'success', text: 'Goal Loop 연결' },
-      { at: 57_000, type: 'work', text: 'Planning Subgraph 최종 검증' },
+      { at: 2_000, type: "thinking", text: "기획 에이전트의 목표와 역할 분석 중" },
+      { at: 8_000, type: "success", text: "요구사항 분석 연결" },
+      { at: 15_000, type: "success", text: "범위 설정과 리스크 점검 구성" },
+      { at: 23_000, type: "success", text: "작업 분해와 실행 계획 연결" },
+      { at: 32_000, type: "success", text: "계획 충분성 판단 추가" },
+      { at: 42_000, type: "success", text: "보완 경로를 요구사항 분석으로 연결" },
+      { at: 51_000, type: "work", text: "계획 완료 보고를 오케스트레이터에 연결" },
+      { at: 57_000, type: "success", text: "Auto Planning Graph 반영 완료" },
     ],
-    resources: ['Goal discovery', 'Reference context', 'Plan evaluation'],
+    resources: ["요구사항과 범위", "리스크와 작업 분해", "계획 평가"],
     mermaid: `flowchart TD
-HARNESS["Global Harness"] --> PLAN["Planning Orchestrator"]
-PLAN --> GOAL
-subgraph AP["Auto Planning · Current Subgraph"]
-direction TD
-GOAL["Goal Discovery"] --> REQ["Requirement Analysis"]
-REQ --> REF["Reference Collection"]
-REF --> CTX["Context Building"]
-CTX --> TASK["Task Decomposition"]
-TASK --> EVAL["Plan Evaluation"]
-EVAL --> CHECK{"Goal Satisfied?"}
-CHECK -- "NO" --> REQ
-CHECK -- "YES" --> OUT["Approved Plan"]
-end
-OUT --> BUILD["Engineering Orchestrator"]`,
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    GOAL["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+    STATE[("상태 저장소")]
+
+    INPUT --> INTAKE
+    INTAKE --> GOAL
+    INTAKE --> RESOURCE
+
+    GOAL --> ORCH
+    RESOURCE --> ORCH
+    ORCH <--> STATE
+
+    subgraph PLAN_LOOP["오토 플랜 루프"]
+        PLAN{{"기획<br/>에이전트"}}
+        REQ["요구사항 분석"]
+        SCOPE["범위 설정"]
+        RISK["리스크 점검"]
+        TASK["작업 분해"]
+        PLAN_DOC["실행 계획"]
+        PLAN_CHECK{"계획 충분?"}
+
+        PLAN --> REQ
+        REQ --> SCOPE
+        SCOPE --> RISK
+        RISK --> TASK
+        TASK --> PLAN_DOC
+        PLAN_DOC --> PLAN_CHECK
+        PLAN_CHECK -- "보완" --> REQ
+    end
+
+    RESEARCH{{"리서치<br/>에이전트"}}
+    DEV{{"개발<br/>에이전트"}}
+    QA{{"검증<br/>에이전트"}}
+    DEPLOY{{"배포<br/>에이전트"}}
+
+    ORCH --> PLAN
+    PLAN_CHECK -- "충분" --> ORCH
+
+    ORCH <--> RESEARCH
+    ORCH <--> DEV
+    ORCH <--> QA
+    ORCH <--> DEPLOY
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef gate fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,RESEARCH,DEV,QA,DEPLOY agent;
+    class RESOURCE,STATE store;
+    class PLAN_CHECK gate;
+    class INPUT,GOAL,REQ,SCOPE,RISK,TASK,PLAN_DOC normal;
+`,
   },
   {
     id: 3,
-    title: 'Engineering Runtime',
-    shortTitle: 'Engineering',
-    subtitle: 'Engineering Subgraph',
-    eyebrow: '개발 Graph Runtime 확장',
-    description: '개발을 전문 Orchestrator로 나누고 각 역할에 필요한 Skill·Context·Hook·Script를 연결합니다.',
-    version: 'v0.3',
-    canonicalPrompt: `개발 오케스트레이터를 그래프 기반 런타임으로 확장해줘.
+    title: "Production Agent Cluster",
+    shortTitle: "Build",
+    subtitle: "Build Loop",
+    eyebrow: "제작 에이전트 클러스터 생성",
+    description: "개발·검증·리서치가 구현과 정보를 보완하며 결과를 완성하는 제작 루프를 구성합니다.",
+    version: "v0.3",
+    canonicalPrompt: `이번에는 리서치, 개발, 검증 에이전트들을 묶어서 제작 루프를 만들어줘.
 
-프론트엔드, 백엔드, 디자인, 인프라를 각각 독립적인 오케스트레이터로 분리하고,
+오케스트레이터 에이전트가 제작 컨텍스트를 개발 에이전트에게 주면,
+검증 에이전트가 검증한 뒤, 개발 결과가 부족하면 다시 개발 에이전트가 보완하고,
+정보가 부족하면 리서치 에이전트가 필요한 근거를 찾아 보강하게 해줘.
 
-각 오케스트레이터는
+충분하다고 판단되면 오케스트레이터 에이전트에게 보고하도록 만들어줘.
 
-- Skill
-- Context
-- Hook
-- Script
-
-를 사용할 수 있도록 설계해줘.`,
+완료되면 Harness Viewer 링크를 보여줘.`,
     duration: minute,
     logs: [
-      { at: 2_000, type: 'thinking', text: 'Engineering 역할과 실행 자원 분해 중' },
-      { at: 8_000, type: 'work', text: 'Graph Router 실행 경계 설계' },
-      { at: 15_000, type: 'success', text: 'Frontend Orchestrator 생성' },
-      { at: 22_000, type: 'success', text: 'Backend Orchestrator 생성' },
-      { at: 29_000, type: 'success', text: 'Design Orchestrator 생성' },
-      { at: 36_000, type: 'success', text: 'Infrastructure Orchestrator 생성' },
-      { at: 43_000, type: 'success', text: 'Skill Hub·Context 연결' },
-      { at: 50_000, type: 'success', text: 'Hook·Script 연결' },
-      { at: 57_000, type: 'work', text: 'Engineering Subgraph 최종 검증' },
+      { at: 2_000, type: "thinking", text: "제작 컨텍스트와 결과 조건 분석 중" },
+      { at: 8_000, type: "success", text: "제작 컨텍스트를 개발 에이전트에 연결" },
+      { at: 15_000, type: "success", text: "개발 결과의 검증 경로 생성" },
+      { at: 23_000, type: "success", text: "제작 충분성 판단 추가" },
+      { at: 32_000, type: "success", text: "구현 보완 경로를 개발 에이전트에 연결" },
+      { at: 42_000, type: "success", text: "정보 보완 경로를 리서치 에이전트에 연결" },
+      { at: 51_000, type: "work", text: "제작 완료 보고를 오케스트레이터에 연결" },
+      { at: 57_000, type: "success", text: "제작 에이전트 클러스터 반영 완료" },
     ],
-    resources: ['Skill hub', 'Context registry', 'Hooks & scripts'],
+    resources: ["제작 컨텍스트", "개발·검증·리서치", "구현·정보 보완"],
     mermaid: `flowchart TD
-HARNESS["Global Harness"] --> ENGINE["Engineering Runtime"]
-ENGINE --> ROUTER["Engineering Router"]
-ROUTER --> FE["Frontend"]
-ROUTER --> BE["Backend"]
-ROUTER --> DESIGN["Design"]
-ROUTER --> INFRA["Infrastructure"]
-subgraph F["Frontend Orchestrator"]
-FE --> FSKILL["Skill"]
-FE --> FHOOK["Hook"]
-FE --> FCTX["Context"]
-end
-subgraph B["Backend Orchestrator"]
-BE --> BSKILL["Skill"]
-BE --> BSCRIPT["Script"]
-BE --> BCTX["Context"]
-end
-subgraph D["Design Orchestrator"]
-DESIGN --> DSKILL["Skill"]
-DESIGN --> DCTX["Context"]
-end
-subgraph I["Infrastructure Orchestrator"]
-INFRA --> ISKILL["Skill"]
-INFRA --> ICTX["Context"]
-end`,
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    GOAL["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+    STATE[("상태 저장소")]
+
+    INPUT --> INTAKE
+    INTAKE --> GOAL
+    INTAKE --> RESOURCE
+
+    GOAL --> ORCH
+    RESOURCE --> ORCH
+    ORCH <--> STATE
+
+    subgraph PLAN_LOOP["오토 플랜 루프"]
+        PLAN{{"기획<br/>에이전트"}}
+        REQ["요구사항 분석"]
+        SCOPE["범위 설정"]
+        RISK["리스크 점검"]
+        TASK["작업 분해"]
+        PLAN_DOC["실행 계획"]
+        PLAN_CHECK{"계획 충분?"}
+
+        PLAN --> REQ
+        REQ --> SCOPE
+        SCOPE --> RISK
+        RISK --> TASK
+        TASK --> PLAN_DOC
+        PLAN_DOC --> PLAN_CHECK
+        PLAN_CHECK -- "보완" --> REQ
+    end
+
+    subgraph BUILD_LOOP["제작 루프"]
+        WORK_CTX["제작 컨텍스트"]
+        DEV{{"개발<br/>에이전트"}}
+        QA{{"검증<br/>에이전트"}}
+        BUILD_CHECK{"제작 충분?"}
+        RESEARCH{{"리서치<br/>에이전트"}}
+
+        WORK_CTX --> DEV
+        DEV --> QA
+        QA --> BUILD_CHECK
+
+        BUILD_CHECK -- "구현 보완" --> DEV
+        BUILD_CHECK -- "정보 보완" --> RESEARCH
+        RESEARCH --> DEV
+    end
+
+    DEPLOY{{"배포<br/>에이전트"}}
+
+    ORCH --> PLAN
+    PLAN_CHECK -- "충분" --> ORCH
+
+    ORCH --> WORK_CTX
+    BUILD_CHECK -- "충분" --> ORCH
+
+    ORCH <--> DEPLOY
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef gate fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,DEV,QA,RESEARCH,DEPLOY agent;
+    class STATE,RESOURCE store;
+    class PLAN_CHECK,BUILD_CHECK gate;
+    class INPUT,GOAL,REQ,SCOPE,RISK,TASK,PLAN_DOC,WORK_CTX normal;
+`,
   },
   {
     id: 4,
-    title: 'Runtime Intelligence',
-    shortTitle: 'Intelligence',
-    subtitle: 'Dynamic Runtime',
-    eyebrow: '고정 Workflow에서 동적 Runtime으로',
-    description: '실행 시점에 자원과 다음 Graph를 선택하고, 목표 달성까지 기록·평가·재시도하는 동적 Runtime을 구성합니다.',
-    version: 'v0.4',
-    canonicalPrompt: `이제 고정된 실행 순서를 제거해줘.
+    title: "Deployment Agent",
+    shortTitle: "Deployment",
+    subtitle: "Deployment Loop",
+    eyebrow: "배포 에이전트 생성",
+    description: "패키징부터 배포 결과 확인까지 연결하고 실패 시 재시도하는 배포 루프를 구성합니다.",
+    version: "v0.4",
+    canonicalPrompt: `이번에는 배포 에이전트를 실제 배포까지 수행하는 구조로 업그레이드해줘.
 
-모든 오케스트레이터가 실행 중에
+검증이 끝난 결과를 바탕으로,
+오케스트레이터 에이전트가 배포 컨텍스트를 만들고 배포 에이전트에게 전달하게 해줘.
 
-- 어떤 Skill을 사용할지
-- 어떤 Context를 가져올지
-- 어떤 Script를 실행할지
-- 어느 Graph를 호출할지
+배포 에이전트는 패키징, 배포 설정 확인, 배포 실행, 배포 결과 확인까지 처리하게 해줘.
 
-스스로 판단하도록 만들어줘.
+배포에 실패하면 배포 에이전트가 다시 보완해서 재시도하고,
+성공하면 오케스트레이터 에이전트에게 보고하도록 만들어줘.
 
-그리고
+이번 단계에서는 아직 정책 게이트, 훅, 스크립트, 모니터링은 넣지 말고,
+배포 에이전트가 배포 흐름을 책임지는 구조까지만 보여줘.
 
-- Shared Memory
-- Execution History
-- Goal Evaluator
-- Retry Loop
-- Conditional Routing
-
-을 추가해서 완전한 Graph Runtime으로 확장해줘.`,
+완료되면 Harness Viewer 링크를 보여줘.`,
     duration: minute,
     logs: [
-      { at: 2_000, type: 'thinking', text: '고정 Flow의 실행 의존성 분석 중' },
-      { at: 8_000, type: 'work', text: '동적 라우팅 규칙 설계' },
-      { at: 15_000, type: 'success', text: 'Runtime Graph 생성' },
-      { at: 22_000, type: 'success', text: 'Shared Memory 연결' },
-      { at: 29_000, type: 'success', text: 'Execution History 연결' },
-      { at: 36_000, type: 'success', text: 'Dynamic·Conditional Routing 생성' },
-      { at: 43_000, type: 'success', text: 'Retry Policy 생성' },
-      { at: 50_000, type: 'success', text: 'Goal Satisfaction Loop 생성' },
-      { at: 57_000, type: 'work', text: 'Dynamic Runtime 최종 검증' },
+      { at: 2_000, type: "thinking", text: "검증 결과와 배포 컨텍스트 분석 중" },
+      { at: 8_000, type: "success", text: "배포 컨텍스트와 배포 에이전트 연결" },
+      { at: 15_000, type: "success", text: "패키징 경로 생성" },
+      { at: 23_000, type: "success", text: "배포 설정 확인과 배포 실행 연결" },
+      { at: 32_000, type: "success", text: "배포 결과 확인과 성공 판단 추가" },
+      { at: 42_000, type: "success", text: "실패 시 배포 에이전트 재시도 연결" },
+      { at: 51_000, type: "work", text: "성공 시 오케스트레이터 보고 연결" },
+      { at: 57_000, type: "success", text: "배포 에이전트 반영 완료" },
     ],
-    resources: ['Shared memory', 'Execution history', 'Runtime policies'],
+    resources: ["배포 컨텍스트", "패키징과 배포 설정", "배포 결과와 재시도"],
     mermaid: `flowchart TD
-FIXED["FIXED FLOW"] -->|"EVOLVE"| GRAPH["DYNAMIC RUNTIME"]
-MEM["Shared Memory"] --> GRAPH
-HISTORY["Execution History"] --> GRAPH
-CTX["Context Manager"] --> GRAPH
-GRAPH --> PLAN["Planning"]
-GRAPH --> RESEARCH["Research"]
-GRAPH --> ENGINEERING["Engineering"]
-PLAN --> GOAL["Goal Evaluator"]
-RESEARCH --> GOAL
-ENGINEERING --> GOAL
-GOAL --> CHECK{"Goal Satisfied?"}
-CHECK -- "NO · RETRY" --> GRAPH
-CHECK -- "YES" --> PACKAGE["Packaging"]`,
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    GOAL["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+    STATE[("상태 저장소")]
+
+    INPUT --> INTAKE
+    INTAKE --> GOAL
+    INTAKE --> RESOURCE
+
+    GOAL --> ORCH
+    RESOURCE --> ORCH
+    ORCH <--> STATE
+
+    subgraph PLAN_LOOP["오토 플랜 루프"]
+        PLAN{{"기획<br/>에이전트"}}
+        REQ["요구사항 분석"]
+        SCOPE["범위 설정"]
+        RISK["리스크 점검"]
+        TASK["작업 분해"]
+        PLAN_DOC["실행 계획"]
+        PLAN_CHECK{"계획 충분?"}
+
+        PLAN --> REQ
+        REQ --> SCOPE
+        SCOPE --> RISK
+        RISK --> TASK
+        TASK --> PLAN_DOC
+        PLAN_DOC --> PLAN_CHECK
+        PLAN_CHECK -- "보완" --> REQ
+    end
+
+    subgraph BUILD_LOOP["제작 루프"]
+        WORK_CTX["제작 컨텍스트"]
+        DEV{{"개발<br/>에이전트"}}
+        QA{{"검증<br/>에이전트"}}
+        RESEARCH{{"리서치<br/>에이전트"}}
+        BUILD_CHECK{"제작 충분?"}
+
+        WORK_CTX --> DEV
+        DEV --> QA
+        QA --> BUILD_CHECK
+        BUILD_CHECK -- "구현 보완" --> DEV
+        BUILD_CHECK -- "정보 보완" --> RESEARCH
+        RESEARCH --> DEV
+    end
+
+    subgraph DEPLOY_LOOP["배포 루프"]
+        DEPLOY_CTX["배포 컨텍스트"]
+        DEPLOY{{"배포<br/>에이전트"}}
+        PACKAGE["패키징"]
+        CONFIG["배포 설정 확인"]
+        RELEASE["배포 실행"]
+        HEALTH["배포 결과 확인"]
+        DEPLOY_CHECK{"배포 성공?"}
+
+        DEPLOY_CTX --> DEPLOY
+        DEPLOY --> PACKAGE
+        PACKAGE --> CONFIG
+        CONFIG --> RELEASE
+        RELEASE --> HEALTH
+        HEALTH --> DEPLOY_CHECK
+        DEPLOY_CHECK -- "실패" --> DEPLOY
+    end
+
+    ORCH --> PLAN
+    PLAN_CHECK -- "충분" --> ORCH
+
+    ORCH --> WORK_CTX
+    BUILD_CHECK -- "충분" --> ORCH
+
+    ORCH --> DEPLOY_CTX
+    DEPLOY_CHECK -- "성공" --> ORCH
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef gate fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,DEV,QA,RESEARCH,DEPLOY agent;
+    class RESOURCE,STATE store;
+    class PLAN_CHECK,BUILD_CHECK,DEPLOY_CHECK gate;
+    class INPUT,GOAL,REQ,SCOPE,RISK,TASK,PLAN_DOC,WORK_CTX,DEPLOY_CTX,PACKAGE,CONFIG,RELEASE,HEALTH normal;
+`,
   },
   {
     id: 5,
-    title: 'Production Harness',
-    shortTitle: 'Production',
-    subtitle: 'Autonomous Product Engineering Harness',
-    eyebrow: '프로덕션 하네스 완성',
-    description: '패키징부터 배포·모니터링·복구·관측까지 제품 완성 이후의 전체 운영 루프를 연결합니다.',
-    version: 'v1.0',
-    canonicalPrompt: `이 하네스를 실제 프로덕션 런타임 수준으로 완성해줘.
+    title: "Production Harness",
+    shortTitle: "Production",
+    subtitle: "Runtime Policies & Hooks",
+    eyebrow: "프로덕션 하네스 완성",
+    description: "기획·제작·배포 루프에 정책 게이트, 훅, 보완 스크립트와 실행 기록을 연결합니다.",
+    version: "v1.0",
+    canonicalPrompt: `지금까지 만든 하네스 구조는 유지한 채,
+각 연결선을 실제 실행 규칙이 있는 런타임 엣지로 바꿔줘.
 
-추가해야 하는 기능은
+오케스트레이터가 기획, 제작, 배포 루프를 실행할 때는
+바로 실행하지 말고 각 루프 앞의 정책 게이트를 먼저 통과하게 해줘.
 
-- Production Packaging
-- Artifact Management
-- Release Validation
-- Deployment Automation
-- Monitoring
-- Recovery
-- Observability
+대부분의 연결선은 훅으로 강제 실행되게 만들고,
+판단이 필요한 지점에는 정책 게이트를 붙여줘.
 
-그리고 실행 명령 하나로
+보완이나 재시도가 필요한 경우에는
+어떤 스크립트가 실행되는지도 엣지에 표시해줘.
 
-제품이 완성될 때까지 스스로 반복 실행되는
-최종 Autonomous Product Engineering Harness를 만들어줘.`,
+상태 저장소에는 체크포인트와 실행 로그가 기록되고,
+리소스 저장소에서는 필요한 컨텍스트를 불러오는 구조로 만들어줘.
+
+완료되면 Harness Viewer 링크를 보여줘.`,
     duration: minute,
     logs: [
-      { at: 2_000, type: 'thinking', text: '프로덕션 완성 조건과 운영 경계 분석 중' },
-      { at: 8_000, type: 'work', text: 'Release Lifecycle 설계' },
-      { at: 15_000, type: 'success', text: 'Packaging Graph 생성' },
-      { at: 22_000, type: 'success', text: 'Artifact Management 연결' },
-      { at: 29_000, type: 'success', text: 'Release Validation 추가' },
-      { at: 36_000, type: 'success', text: 'Deployment Graph 생성' },
-      { at: 43_000, type: 'success', text: 'Monitoring·Observability 추가' },
-      { at: 50_000, type: 'success', text: 'Recovery Workflow 생성' },
-      { at: 57_000, type: 'success', text: 'Autonomous Harness 완성' },
+      { at: 2_000, type: "thinking", text: "기획·제작·배포의 실행 규칙 분석 중" },
+      { at: 8_000, type: "success", text: "각 루프 앞의 정책 게이트 생성" },
+      { at: 15_000, type: "success", text: "입력 분석과 컨텍스트 로드 훅 연결" },
+      { at: 23_000, type: "success", text: "기획·제작 루프의 실행 훅 연결" },
+      { at: 32_000, type: "success", text: "배포 루프의 실행 훅 연결" },
+      { at: 42_000, type: "success", text: "replan·patch·research·redeploy 스크립트 연결" },
+      { at: 51_000, type: "work", text: "체크포인트와 실행 로그 기록 연결" },
+      { at: 57_000, type: "success", text: "Production Harness 반영 완료" },
     ],
-    resources: ['Release artifacts', 'Deployment automation', 'Operations telemetry'],
+    resources: ["정책 게이트", "실행 훅과 스크립트", "체크포인트와 실행 로그"],
     mermaid: `flowchart TD
-INPUT["Product Spec"] --> GRAPH["Global Runtime Graph"]
-MEM["Global Memory"] --> GRAPH
-CTX["Context Hub"] --> GRAPH
-HISTORY["Execution History"] --> GRAPH
-GRAPH --> PLAN["Auto Planning"]
-GRAPH --> RESEARCH["Research"]
-GRAPH --> ENGINEERING["Engineering"]
-PLAN --> QA["Validation"]
-RESEARCH --> QA
-ENGINEERING --> QA
-QA --> CHECK{"Goal Satisfied?"}
-CHECK -- "NO" --> GRAPH
-CHECK -- "YES" --> PACKAGE["Production Packaging"]
-PACKAGE --> ARTIFACT["Artifact Management"]
-ARTIFACT --> RELEASE["Release Validation"]
-RELEASE --> DEPLOY["Deployment Automation"]
-DEPLOY --> MONITOR["Monitoring"]
-MONITOR --> OBSERVE["Observability"]
-OBSERVE --> HEALTH{"Healthy?"}
-HEALTH -- "NO" --> RECOVERY["Recovery"]
-RECOVERY --> GRAPH
-HEALTH -- "YES" --> READY["Production Ready"]`,
+    INPUT["제품 설명서<br/>(에셋 · 데이터 · 인증 · 배포)"]
+    INTAKE{{"입력 분석<br/>에이전트"}}
+    GOAL["목표 정의"]
+    RESOURCE[("리소스 저장소")]
+
+    ORCH{{"오케스트레이터<br/>에이전트"}}
+    STATE[("상태 저장소")]
+
+    INPUT -- "훅: intake.start" --> INTAKE
+    INTAKE -- "훅: goal.extract" --> GOAL
+    INTAKE -- "훅: resource.register" --> RESOURCE
+
+    GOAL -- "훅: goal.ready" --> ORCH
+    RESOURCE -- "훅: context.load" --> ORCH
+    ORCH <-->|"체크포인트 · 실행 로그"| STATE
+
+    subgraph PLAN_LOOP["오토 플랜 루프"]
+        PLAN{{"기획<br/>에이전트"}}
+        REQ["요구사항 분석"]
+        SCOPE["범위 설정"]
+        RISK["리스크 점검"]
+        TASK["작업 분해"]
+        PLAN_DOC["실행 계획"]
+        PLAN_CHECK{"계획 충분?"}
+
+        PLAN -- "훅: requirements.analyze" --> REQ
+        REQ -- "훅: scope.define" --> SCOPE
+        SCOPE -- "훅: risk.scan" --> RISK
+        RISK -- "훅: tasks.breakdown" --> TASK
+        TASK -- "훅: plan.write" --> PLAN_DOC
+        PLAN_DOC -- "훅: plan.review" --> PLAN_CHECK
+        PLAN_CHECK -- "정책: 보완 필요<br/>스크립트: replan" --> REQ
+    end
+
+    subgraph BUILD_LOOP["제작 루프"]
+        WORK_CTX["제작 컨텍스트"]
+        DEV{{"개발<br/>에이전트"}}
+        QA{{"검증<br/>에이전트"}}
+        RESEARCH{{"리서치<br/>에이전트"}}
+        BUILD_CHECK{"제작 충분?"}
+
+        WORK_CTX -- "훅: dev.start" --> DEV
+        DEV -- "훅: qa.run" --> QA
+        QA -- "훅: build.review" --> BUILD_CHECK
+        BUILD_CHECK -- "정책: 구현 부족<br/>스크립트: patch" --> DEV
+        BUILD_CHECK -- "정책: 정보 부족<br/>스크립트: research" --> RESEARCH
+        RESEARCH -- "훅: context.patch" --> DEV
+    end
+
+    subgraph DEPLOY_LOOP["배포 루프"]
+        DEPLOY_CTX["배포 컨텍스트"]
+        DEPLOY{{"배포<br/>에이전트"}}
+        PACKAGE["패키징"]
+        CONFIG["배포 설정 확인"]
+        RELEASE["배포 실행"]
+        HEALTH["배포 결과 확인"]
+        DEPLOY_CHECK{"배포 성공?"}
+
+        DEPLOY_CTX -- "훅: deploy.start" --> DEPLOY
+        DEPLOY -- "훅: package.build" --> PACKAGE
+        PACKAGE -- "훅: config.verify" --> CONFIG
+        CONFIG -- "훅: release.execute" --> RELEASE
+        RELEASE -- "훅: health.check" --> HEALTH
+        HEALTH -- "훅: deploy.review" --> DEPLOY_CHECK
+        DEPLOY_CHECK -- "정책: 실패<br/>스크립트: redeploy" --> DEPLOY
+    end
+
+    PLAN_GATE{"기획 실행<br/>허용?"}
+    BUILD_GATE{"제작 실행<br/>허용?"}
+    DEPLOY_GATE{"배포 실행<br/>허용?"}
+
+    ORCH -- "훅: plan.request" --> PLAN_GATE
+    PLAN_GATE -- "정책 승인<br/>훅: plan.start" --> PLAN
+    PLAN_CHECK -- "정책: plan.ready" --> ORCH
+
+    ORCH -- "훅: build.request" --> BUILD_GATE
+    BUILD_GATE -- "정책 승인<br/>훅: build.start" --> WORK_CTX
+    BUILD_CHECK -- "정책: build.ready" --> ORCH
+
+    ORCH -- "훅: deploy.request" --> DEPLOY_GATE
+    DEPLOY_GATE -- "정책 승인<br/>훅: deploy.start" --> DEPLOY_CTX
+    DEPLOY_CHECK -- "정책: deploy.success" --> ORCH
+
+    classDef agent fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#0F172A;
+    classDef store fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#0F172A;
+    classDef gate fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#0F172A;
+    classDef normal fill:#FFFFFF,stroke:#94A3B8,stroke-width:1.5px,color:#0F172A;
+
+    class INTAKE,ORCH,PLAN,DEV,QA,RESEARCH,DEPLOY agent;
+    class RESOURCE,STATE store;
+    class PLAN_CHECK,BUILD_CHECK,DEPLOY_CHECK,PLAN_GATE,BUILD_GATE,DEPLOY_GATE gate;
+    class INPUT,GOAL,REQ,SCOPE,RISK,TASK,PLAN_DOC,WORK_CTX,DEPLOY_CTX,PACKAGE,CONFIG,RELEASE,HEALTH normal;
+`,
   },
 ];
 

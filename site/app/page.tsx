@@ -2,114 +2,41 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { FinalRunExperience } from '@/components/FinalRunExperience';
-import { MermaidChart } from '@/components/MermaidChart';
-import { buildStages } from '@/lib/scenario';
 import { finalRunStorageKey, presenterCommandKey } from '@/lib/run-control';
-
-type Screen = 'viewer' | 'product';
 
 function validSpeed(value: string | null) {
   const speed = Number(value);
   return Number.isFinite(speed) && speed >= 1 && speed <= 60 ? speed : 1;
 }
 
-function GlobalResetButton({ onReset }: { onReset: () => void }) {
-  return <button className="global-reset-button" type="button" onClick={onReset} aria-label="모든 실행 흐름 초기화" title="모든 실행 흐름 초기화">↻ RESET</button>;
-}
-
 export default function Home() {
-  const [screen, setScreen] = useState<Screen>('viewer');
-  const [zoom, setZoom] = useState(1);
-  const [runSpeed, setRunSpeed] = useState(1);
-  const [runKey, setRunKey] = useState(0);
+  const [run, setRun] = useState<{ speed: number; key: number } | null>(null);
 
   useEffect(() => {
-    const restore = window.setTimeout(() => {
+    // Clear the previous run before mounting the component that restores it.
+    const bootstrap = window.setTimeout(() => {
       const params = new URLSearchParams(window.location.search);
-      const requested = params.get('screen');
-      setRunSpeed(validSpeed(params.get('speed')));
+      const speed = validSpeed(params.get('speed'));
       if (params.get('reset') === '1') {
         window.localStorage.removeItem(finalRunStorageKey);
         window.localStorage.removeItem(presenterCommandKey);
       }
-      if (requested === 'run') setScreen('product');
+      window.history.replaceState(null, '', `/?screen=run&speed=${speed}`);
+      setRun({ speed, key: 0 });
     }, 0);
-    return () => window.clearTimeout(restore);
-  }, []);
-
-  const openLoom = useCallback(() => {
-    const speed = validSpeed(new URLSearchParams(window.location.search).get('speed'));
-    setRunSpeed(speed);
-    setScreen('product');
-    window.history.replaceState(null, '', `/?screen=run&speed=${speed}`);
+    return () => window.clearTimeout(bootstrap);
   }, []);
 
   const resetAll = useCallback(() => {
-    const speed = validSpeed(new URLSearchParams(window.location.search).get('speed'));
     window.localStorage.removeItem(finalRunStorageKey);
     window.localStorage.removeItem(presenterCommandKey);
-    setRunSpeed(speed);
-    setScreen('product');
-    setZoom(1);
-    setRunKey((value) => value + 1);
-    window.history.replaceState(null, '', `/?screen=run&speed=${speed}`);
+    setRun((current) => current ? { ...current, key: current.key + 1 } : current);
   }, []);
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') {
-        event.preventDefault();
-        window.open('/presenter', 'flogi-presenter', 'width=520,height=820');
-      }
-      if (screen === 'viewer' && (event.key === 'Enter' || event.key === 'ArrowRight')) openLoom();
-      if (screen === 'viewer' && event.key.toLowerCase() === 'r') setZoom(1);
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [openLoom, screen]);
+  if (!run) return <main className="product-prompt-shell" aria-busy="true" aria-label="Loom 준비 중" />;
 
-  if (screen === 'product') {
-    return <><FinalRunExperience key={runKey} initialSpeed={runSpeed} onResetAll={resetAll} /><GlobalResetButton onReset={resetAll} /></>;
-  }
-
-  const finalStage = buildStages[buildStages.length - 1];
-  return (
-    <><main className="viewer-shell">
-      <header className="viewer-topbar">
-        <div className="brand-lockup">
-          <span className="brand-mark" aria-hidden="true">F</span>
-          <div><strong>Harness Viewer</strong><span>최종 MERMAID SNAPSHOT</span></div>
-        </div>
-        <div className="viewer-version">HARNESS v1.0</div>
-        <div className="viewer-step">05 <span>/ 05 완료</span></div>
-      </header>
-
-      <section className="viewer-titlebar">
-        <div>
-          <div className="viewer-breadcrumb"><span>CLI 구성 완료</span><i>/</i><strong>GLOBAL RUNTIME GRAPH</strong></div>
-          <p>AUTO PLAN LOOM</p>
-          <h1>Production Harness</h1>
-          <h2>Autonomous Product Engineering Harness</h2>
-        </div>
-        <p className="viewer-description">Shell에서 구성된 5개 Harness Layer가 하나의 Global Runtime Graph로 연결되었습니다. 이제 이 Loom에 제품 구현 목표를 전달할 수 있습니다.</p>
-      </section>
-
-      <section className="graph-canvas">
-        <div className="graph-grid" />
-        <div className="graph-badge"><span /> MERMAID FLOWCHART · 최종 결과</div>
-        <MermaidChart chart={finalStage.mermaid} stageId={finalStage.id} zoom={zoom} />
-        <div className="zoom-controls" aria-label="그래프 확대/축소">
-          <button onClick={() => setZoom((value) => Math.min(1.5, value + .1))} aria-label="확대">+</button>
-          <button onClick={() => setZoom(1)} aria-label="배율 초기화">{Math.round(zoom * 100)}%</button>
-          <button onClick={() => setZoom((value) => Math.max(.55, value - .1))} aria-label="축소">−</button>
-        </div>
-      </section>
-
-      <footer className="viewer-footer">
-        <div><span className="complete-dot" /> AUTO PLAN LOOM 준비 완료</div>
-        <div className="shortcut-list"><kbd>R</kbd> 배율 초기화 <kbd>ENTER</kbd> 계속 <kbd>→</kbd> 계속</div>
-        <button onClick={openLoom}>Loom 구성 계속 <span>→</span></button>
-      </footer>
-    </main><GlobalResetButton onReset={resetAll} /></>
-  );
+  return <>
+    <FinalRunExperience key={run.key} initialSpeed={run.speed} onResetAll={resetAll} />
+    <button className="global-reset-button" type="button" onClick={resetAll} aria-label="모든 실행 흐름 초기화" title="모든 실행 흐름 초기화">↻ RESET</button>
+  </>;
 }

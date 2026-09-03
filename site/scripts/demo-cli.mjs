@@ -6,7 +6,6 @@ import { StringDecoder } from 'node:string_decoder';
 import { buildStages } from '../lib/scenario.ts';
 
 const speed = Math.max(1, Number(process.env.OHAYO_DEMO_SPEED) || 1);
-const viewerUrl = process.env.OHAYO_VIEWER_URL || 'http://localhost:3000/?screen=viewer';
 const tty = Boolean(process.stdin.isTTY && process.stdout.isTTY);
 const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
@@ -67,36 +66,34 @@ function printBanner() {
 }
 
 function renderPromptBar(value = '') {
-  const width = Math.max(72, process.stdout.columns || 100);
+  const width = Math.max(20, process.stdout.columns || 100);
   const placeholder = 'Ask Codex to do anything';
-  const raw = `› ${value || placeholder}`;
-  const padding = ' '.repeat(Math.max(1, width - visibleWidth(raw)));
-  const content = value
-    ? `${colors.white}› ${value}`
-    : `${colors.white}› ${colors.gray}${placeholder}`;
-  process.stdout.write(`\r${colors.panel}${content}${colors.panel}${padding}${colors.reset}`);
-  process.stdout.write(`\r\x1b[${2 + visibleWidth(value)}C`);
+  const characters = [...value.replace(/\r\n?/g, '\n').replaceAll('\n', ' ↵ ')];
+  let displayWidth = visibleWidth(characters.join(''));
+  while (displayWidth > width - 5 && characters.length) {
+    displayWidth -= visibleWidth(characters.shift());
+  }
+  const display = characters.join('');
+  const content = value ? `${colors.white}› ${display}` : `${colors.white}› ${colors.gray}${placeholder}`;
+  process.stdout.write(`\r\x1b[2K${colors.panel}${content}${colors.reset}`);
+  process.stdout.write(`\r\x1b[${2 + visibleWidth(display)}C`);
 }
 
 function printStatusLine() {
   console.log(`${color('  gpt-5.6-sol xhigh fast', 'cream')}  ${color('·', 'gray')}  ${color('~/Desktop/Flogy/OHAYO_DEMO_V2', 'green')}`);
 }
 
-async function readPrompt() {
-  if (!tty) {
-    const input = createInterface({ input: process.stdin, output: process.stdout });
-    try {
-      return await input.question('› ');
-    } finally {
-      input.close();
-    }
-  }
-
+export async function readTerminalPrompt() {
   return new Promise((resolvePromise, rejectPromise) => {
     const decoder = new StringDecoder('utf8');
     let value = '';
+    let pending = '';
+    let pasting = false;
+    const pasteStart = '\x1b[200~';
+    const pasteEnd = '\x1b[201~';
     process.stdin.setRawMode(true);
     process.stdin.resume();
+    process.stdout.write('\x1b[?2004h');
     renderPromptBar();
     process.stdout.write('\n');
     printStatusLine();
@@ -104,37 +101,66 @@ async function readPrompt() {
 
     const cleanup = () => {
       process.stdin.off('data', onData);
+      process.stdin.off('end', onEnd);
       process.stdin.setRawMode(false);
       process.stdin.pause();
+      process.stdout.write('\x1b[?2004l');
     };
-
+    const onEnd = () => {
+      cleanup();
+      rejectPromise(new Error('프롬프트 입력이 종료되었습니다.'));
+    };
     const finish = () => {
       renderPromptBar(value);
       process.stdout.write('\x1b[1B\r\n');
       cleanup();
-      resolvePromise(value);
+      resolvePromise(value.replace(/\r\n?/g, '\n'));
     };
-
     const onData = (chunk) => {
       const input = decoder.write(chunk);
-      if (input === '\u0003') {
-        cleanup();
-        process.stdout.write(colors.reset);
-        rejectPromise(Object.assign(new Error('중단됨'), { code: 'SIGINT' }));
+      // Terminals without bracketed paste may deliver several lines together.
+      // Keep them as one prompt; only a subsequent Enter submits it.
+      if (!pasting && !pending && !input.includes('\x1b') && /[\r\n]/.test(input) && /[^\r\n]/.test(input) && !input.includes('\x03')) {
+        value += input.replace(/\r\n?/g, '\n').replace(/[\x00-\x08\x0b-\x1f\x7f]/g, '');
+        renderPromptBar(value);
         return;
       }
-      const endIndex = input.search(/[\r\n]/);
-      const content = endIndex >= 0 ? input.slice(0, endIndex) : input;
-      if (content === '\u007f' || content === '\b') {
-        value = [...value].slice(0, -1).join('');
-      } else if (content && !content.startsWith('\u001b')) {
-        value += content.replace(/[\u0000-\u001f\u007f]/g, '');
+      pending += input;
+      while (pending) {
+        if (pending.startsWith('\x1b')) {
+          if (pending.length < pasteStart.length && (pasteStart.startsWith(pending) || pasteEnd.startsWith(pending))) break;
+          const escape = pending.match(/^\x1b\[[0-?]*[ -/]*[@-~]/)?.[0];
+          if (escape) {
+            if (escape === pasteStart) pasting = true;
+            if (escape === pasteEnd) pasting = false;
+            pending = pending.slice(escape.length);
+          } else {
+            pending = pending.slice(1);
+          }
+          continue;
+        }
+        const character = String.fromCodePoint(pending.codePointAt(0));
+        pending = pending.slice(character.length);
+        if (character === '\x03' || (!pasting && character === '\x04')) {
+          cleanup();
+          rejectPromise(Object.assign(new Error('중단됨'), { code: 'SIGINT' }));
+          return;
+        }
+        if (pasting) {
+          if (!/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(character)) value += character;
+        } else if (character === '\r' || character === '\n') {
+          finish();
+          return;
+        } else if (character === '\x7f' || character === '\b') {
+          value = [...value].slice(0, -1).join('');
+        } else if (!/[\x00-\x1f\x7f]/.test(character)) {
+          value += character;
+        }
       }
       renderPromptBar(value);
-      if (endIndex >= 0) finish();
     };
-
     process.stdin.on('data', onData);
+    process.stdin.once('end', onEnd);
   });
 }
 
@@ -168,28 +194,57 @@ async function runStage(stage) {
     console.log(`  ${marker} ${log.text}`);
   }
   await waitWithSpinner(stage.duration - elapsed, '단계 마무리 중…');
-  console.log(`  ${color('✓', 'green')} ${color(`STEP ${stage.id} 완료`, 'bold')} ${stage.id < 5 ? color('· 다음 단계 진행', 'gray') : ''}`);
+  console.log(`  ${color('✓', 'green')} ${color(`STEP ${stage.id} 완료`, 'bold')}`);
 }
 
-export async function runDemoCli() {
+export async function runDemoCli({
+  baseUrl = 'http://localhost:3000/',
+  openViewer = () => {},
+  readInput,
+  executeStage = runStage,
+} = {}) {
   printBanner();
-  const answer = await readPrompt();
+  const input = !readInput && !tty ? createInterface({ input: process.stdin, output: process.stdout }) : null;
+  const lines = input?.[Symbol.asyncIterator]();
 
-  console.log();
-  console.log(`  ${color('• Thinking', 'bold')}`);
-  await waitWithSpinner(2_000, '저장소 구조와 현재 Harness 상태를 확인하는 중…');
-  console.log(`  ${color('✓', 'green')} 제품 개발 Lifecycle과 Orchestrator 경계를 확인했습니다.`);
-  console.log(`  ${color('✓', 'green')} 요청을 5개 Harness Layer로 분해했습니다.`);
-  if (answer.trim()) console.log(`  ${color('✓', 'green')} 작업 목표: ${color(answer.trim(), 'gray')}`);
+  async function nextPrompt() {
+    while (true) {
+      let answer;
+      if (readInput) answer = await readInput();
+      else if (tty) answer = await readTerminalPrompt();
+      else {
+        process.stdout.write('› ');
+        const line = await lines.next();
+        if (line.done) throw new Error('다음 단계의 프롬프트 입력이 필요합니다.');
+        answer = line.value;
+      }
+      if (answer.trim()) return answer.trim();
+      console.log('  프롬프트를 입력한 뒤 Enter를 눌러주세요.');
+    }
+  }
 
-  for (const stage of buildStages) await runStage(stage);
+  try {
+    for (const stage of buildStages) {
+      console.log(`\n  ${color(`STEP ${stage.id} 입력`, 'violet')} · ${stage.eyebrow}`);
+      await nextPrompt();
+      await executeStage(stage);
+      const url = new URL(`/harness/${stage.id}`, baseUrl);
+      url.searchParams.set('speed', String(speed));
+      console.log(`\n  ${color(`STEP ${stage.id} Harness Viewer`, 'bold')}  ${color(url.href, 'cyan')}`);
+      await openViewer(url.href);
+      console.log(color('  다이어그램 설명 후 터미널로 돌아와 다음 입력을 진행하세요.', 'gray'));
+    }
 
-  console.log();
-  console.log(color('  ────────────────────────────────────────────────────────', 'gray'));
-  console.log(`  ${color('✓ AUTO PLAN LOOM 구성 완료', 'green')}`);
-  console.log(`  ${color('✓ 5 / 5 COMPLETE', 'green')}`);
-  console.log();
-  console.log(`  ${color('Harness Viewer', 'bold')}  ${color(viewerUrl, 'cyan')}`);
-  console.log(color('  브라우저에서 최종 Mermaid Viewer를 여는 중…', 'gray'));
-  await sleep(Math.max(300, 1_200 / speed));
+    console.log(`\n  ${color('✓ AUTO PLAN LOOM 구성 완료', 'green')}`);
+    console.log(`\n  ${color('STEP 6 입력', 'violet')} · /harness — Loom 실행 화면 열기`);
+    await nextPrompt();
+    const url = new URL('/', baseUrl);
+    url.searchParams.set('screen', 'run');
+    url.searchParams.set('reset', '1');
+    url.searchParams.set('speed', String(speed));
+    console.log(`\n  ${color('Loom 제품 프롬프트', 'bold')}  ${color(url.href, 'cyan')}`);
+    await openViewer(url.href);
+  } finally {
+    input?.close();
+  }
 }

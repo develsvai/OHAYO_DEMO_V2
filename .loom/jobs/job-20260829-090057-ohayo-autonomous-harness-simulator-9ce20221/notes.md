@@ -18,3 +18,7 @@ STEP 5 그림 자체는 유지한다. 현재 앱의 별도 최종 다이어그�
 
 - Task: `task-20260903-132330-step-1-5-mermaid-fc6492bc`
 - Tags: `scope`, `user-request`, `harness-diagrams`
+## 2026-09-03T13:30:52+00:00
+
+2026-09-03 사용자가 "오케 바로 시작해"라고 명시하여 고정된 구현 Task와 후속 검증 Task를 현재 에이전트가 순서대로 직접 실행한다. 이전 계약의 등록만/미실행 문구는 당시 상태 기록이며 이번 명시적 실행 요청이 우선한다. 원격 게시와 40개 제품 Task 개편은 계속 범위 밖이다.
+- Tags: `user-authorization`, `execution`

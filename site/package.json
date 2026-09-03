@@ -10,7 +10,7 @@
     "build": "vinext build",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "validate:scenario": "node scripts/validate-simulator.mjs"
+    "validate:scenario": "node --no-warnings --experimental-strip-types scripts/validate-simulator.mjs"
   },
   "dependencies": {
     "mermaid": "^11.12.2",
