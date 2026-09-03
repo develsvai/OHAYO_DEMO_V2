@@ -1,0 +1,3 @@
+[2026-09-03T13:43:07+00:00] agent=foreground task=task-20260903-132538-5-6-b26f7551 Foreground task session started.
+
+선행 구현의 lint/validate:scenario/build/PTY 검증 결과 재사용. 실제 DEMO_MODE=test DEMO_NO_OPEN=1 ./demo-start 리허설 완료: STEP 1~5 각각 8.58초, 6회 입력, Viewer 5개 speed=7, STEP 6 root reset URL. 브라우저 SVG·확대·빈 prompt 진입·1×/7×·0/10·Presenter pause/complete/result/reset·C fallback·새로고침·URL/QR 통과. /harness/6 HTTP 404. README 2개와 validation.md 갱신. git diff --check, loom docs index, loom validate --strict 성공.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T13:24:58+00:00",
+  "generated_at": "2026-09-03T13:46:58+00:00",
   "docs_paths": [
     "docs"
   ],
@@ -58,6 +58,15 @@
       "document_type": "docs",
       "updated_at": "2026-09-03T22:24:52+09:00",
       "size_bytes": 18227
+    },
+    {
+      "id": "docs/harness-demo/validation.md",
+      "title": "하네스 단계별 시연 검증 기록",
+      "path": "docs/harness-demo/validation.md",
+      "source": "repository_docs",
+      "document_type": "docs",
+      "updated_at": "2026-09-03T22:46:50+09:00",
+      "size_bytes": 6313
     }
   ],
   "path": "/Users/hongyongjae/Desktop/Flogi/OHAYO_DEMO_V2/.loom/memory/docs-index.json"
